@@ -16,6 +16,12 @@ import UIKit
 
 public final class CMCTextField: UIView{
 	
+	public enum AccessoryType {
+		case image(image: UIImage)
+		case button(title: String)
+		case none
+	}
+	
 	// MARK: - UI
 	fileprivate lazy var textField: UITextField = {
 		let textField = UITextField()
@@ -41,8 +47,21 @@ public final class CMCTextField: UIView{
 		return label
 	}()
 	
+	
+	/// 우측 악세서리 이미지는, 외부에서 접근 가능해야함.
 	public lazy var accessoryButton: CMCTouchArea = {
 		let button = CMCTouchArea(image: accessoryImage)
+		return button
+	}()
+	
+	/// 우측 악세서리 버튼은, 외부에서 접근 가능해야함.
+	public lazy var accessoryCMCButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: accessoryTitle
+		)
 		return button
 	}()
 	
@@ -57,7 +76,9 @@ public final class CMCTextField: UIView{
 	private var disposeBag = DisposeBag()
 	
 	private var placeHolder: String
-	private var accessoryImage: UIImage?
+	private var accessoryImage: UIImage = UIImage()
+	private var accessoryTitle: String = ""
+	private var accessoryType: AccessoryType
 	private var keyboardType: UIKeyboardType
 	
 	public var rxType = BehaviorRelay<TextFieldType>(value: .def)
@@ -66,23 +87,31 @@ public final class CMCTextField: UIView{
 	/// 텍스트필드의 `placeHolder`, `maxCount`를 설정합니다.
 	/// - Parameters:
 	///   - placeHolder : placeHolder로 들어갈 텍스트
-	///   - accessoryImage: 우측 악세서리에 들어가는 버튼의 이미지 (nil 이면 없음)
+	///   - accessoryType: 우측 악세서리에 들어가는 타입 (.none 이면 없음)
 	///   - keyboardType: 키보드 타입
 	/// - Parameters (Optional):
-	///   - keyboardType : 키보드 타입
-	///   - hideMode : isSecureTextEntry를 조절하는 버튼 on / off
 	/// - Parameters (Accessable):
 	///   - rxType: GalapagosTextField의 타입변환 조종값
-	///   - accessoryState: 우측 악세서리 버튼의 상태
+	///   - accessoryState: 우측 악세서리 버튼의 상태 (이미지 일 경우만)
 	// MARK: - Initializers
 	public init(
 		placeHolder: String,
-		accessoryImage: UIImage?,
+		accessoryType: AccessoryType,
 		keyboardType: UIKeyboardType
 	) {
 		self.placeHolder = placeHolder
-		self.accessoryImage = accessoryImage
 		self.keyboardType = keyboardType
+		self.accessoryType = accessoryType
+		
+		switch accessoryType {
+		case .button(let title):
+			self.accessoryTitle = title
+		case .image(let image):
+			self.accessoryImage = image
+		case .none:
+			self.accessoryImage = UIImage()
+			self.accessoryTitle = ""
+		}
 		
 		super.init(frame: .zero)
 		
@@ -104,6 +133,7 @@ public final class CMCTextField: UIView{
 		self.addSubview(textField)
 		self.addSubview(textFieldTitle)
 		self.addSubview(accessoryButton)
+		self.addSubview(accessoryCMCButton)
 	}
 	
 	private func setConstraint() {
@@ -122,6 +152,23 @@ public final class CMCTextField: UIView{
 			$0.trailing.equalToSuperview().offset(-6)
 			$0.bottom.equalToSuperview()
 		}
+		
+		accessoryCMCButton.snp.makeConstraints {
+			$0.height.equalTo(34)
+			$0.trailing.equalToSuperview().offset(-18)
+			$0.centerY.equalToSuperview()
+		}
+		
+		switch accessoryType {
+		case .button:
+			accessoryButton.isHidden = true
+		case .image:
+			accessoryCMCButton.isHidden = true
+		case .none:
+			accessoryButton.isHidden = true
+			accessoryCMCButton.isHidden = true
+		}
+		
 	}
 	
 	private func bind() {
@@ -132,15 +179,21 @@ public final class CMCTextField: UIView{
 			.drive(onNext: { [weak self] colorSet in
 				guard let self = self else { return }
 				self.configureColorSet(colorSet: colorSet.colorSet)
+				if rxType.value == .disabled || rxType.value == .def {
+					accessoryCMCButton.rxType.accept(.login(.disabled))
+				} else {
+					accessoryCMCButton.rxType.accept(.login(.inactive))
+				}
 			})
 			.disposed(by: disposeBag)
 		
-		accessoryButton.rx.tapped
+		accessoryButton.rx.tapped()
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.accessoryState.accept(!owner.accessoryState.value)
 			})
 			.disposed(by: disposeBag)
+		
 	}
 	
 	private func configureColorSet(colorSet: TextFieldColorSet) {
@@ -148,7 +201,6 @@ public final class CMCTextField: UIView{
 		textField.layer.borderColor = colorSet.borderColor.cgColor
 		textField.backgroundColor = colorSet.textFieldBackgroundColor
 		textField.textColor = colorSet.textFieldTextColor
-		accessoryButton.isHidden = accessoryImage == nil
 		self.isUserInteractionEnabled = colorSet.isUserInteractive
 	}
 	
@@ -166,8 +218,6 @@ extension CMCTextField{
 	///   - textFieldBackgroundColor : TextField의 background color 색상 // 우선 살리자
 	///   - textFieldTextColor : TextField의 text  color 색상						// 우선 살리자
 	///   - isUserInteractive : TextField의 isUserInteractive						// 우선 살리자
-	
-	
 	public enum TextFieldType {
 		case def /// 초기 상태
 		case focus /// 입력 중
