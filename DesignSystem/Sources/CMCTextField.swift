@@ -42,7 +42,7 @@ public final class CMCTextField: UIView{
 	}()
 	
 	public lazy var accessoryButton: CMCTouchArea = {
-		let button = CMCTouchArea(image: DesignSystemAsset._24x24show.image)
+		let button = CMCTouchArea(image: accessoryImage)
 		return button
 	}()
 	
