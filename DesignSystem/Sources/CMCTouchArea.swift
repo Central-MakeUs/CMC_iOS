@@ -41,9 +41,8 @@ public final class CMCTouchArea: UIView{
 	/// - Parameters (Accessable):
 	// MARK: - Initializers
 	public init(
-		image: UIImage
+		image: UIImage? = nil
 	) {
-		self.image.updateValue(image, forKey: style.rawValue)
 		super.init(frame: .zero)
 		
 		self.setImage(image, for: .normal)
@@ -80,8 +79,10 @@ public final class CMCTouchArea: UIView{
 			.disposed(by: disposeBag)
 	}
 	
-	public func setImage(_ image: UIImage, for style: TouchAreaStyle) {
-		self.image.updateValue(image, forKey: style.rawValue)
+	public func setImage(_ image: UIImage?, for style: TouchAreaStyle) {
+		if let image = image {
+			self.image.updateValue(image, forKey: style.rawValue)
+		}
 	}
 	
 }
