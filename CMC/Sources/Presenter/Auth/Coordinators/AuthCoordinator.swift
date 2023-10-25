@@ -54,6 +54,7 @@ class AuthCoordinator: CoordinatorType {
 						self.pushViewController(viewController: mainAuthViewController)
 					}
 				case .emailSignUp:
+					print("111111")
 					CMCToastManager.shared.addToast(message: "🍎 여기는 아직이지롱~ 😀")
 //					let emailSignUpViewController = EmailSignUpViewController(
 //						viewModel: EmailSignUpViewModel(
@@ -69,6 +70,7 @@ class AuthCoordinator: CoordinatorType {
 //						self.pushViewController(viewController: emailSignUpViewController)
 //					}
 				case .emailSignIn:
+					print("2222222")
 					CMCToastManager.shared.addToast(message: "🍎 여기도 아직이지롱~ 😀")
 //					let emailSignInViewController = EmailSignInViewController(
 //						viewModel: EmailSignInViewModel(
@@ -84,7 +86,6 @@ class AuthCoordinator: CoordinatorType {
 //						self.pushViewController(viewController: emailSignInViewController)
 //					}
 				}
-				
 			}).disposed(by: disposeBag)
 	}
 	

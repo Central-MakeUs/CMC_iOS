@@ -76,10 +76,10 @@ class MainAuthViewController: BaseViewController {
 	
 	override func setAddSubView() {
 		self.view.addSubview(backgroundImageView)
-		backgroundImageView.addSubview(mainTitle)
-		backgroundImageView.addSubview(mainLogo)
-		backgroundImageView.addSubview(signInButton)
-		backgroundImageView.addSubview(signUpButton)
+		self.view.addSubview(mainTitle)
+		self.view.addSubview(mainLogo)
+		self.view.addSubview(signInButton)
+		self.view.addSubview(signUpButton)
 	}
 	
 	override func setConstraint() {
@@ -100,20 +100,28 @@ class MainAuthViewController: BaseViewController {
 		}
 		
 		signInButton.snp.makeConstraints { make in
-			make.leading.equalToSuperview().offset(24)
-			make.trailing.equalToSuperview().offset(-24)
+			make.centerX.equalToSuperview()
 			make.height.equalTo(56)
+			make.width.equalTo(self.view.frame.width - 48)
 			make.top.equalTo(mainLogo.snp.bottom).offset(84)
 		}
 		
 		signUpButton.snp.makeConstraints { make in
-			make.leading.trailing.equalTo(signInButton)
+			make.centerX.equalToSuperview()
 			make.height.equalTo(56)
+			make.width.equalTo(self.view.frame.width - 48)
 			make.top.equalTo(signInButton.snp.bottom).offset(28)
 		}
 		
 	}
 	
 	override func bind() {
+		let input = MainAuthViewModel.Input(
+			signInBtnTapped: signInButton.rx.tap.asObservable(),
+			signUpBtnTapped: signUpButton.rx.tap.asObservable()
+		)
+		
+		let _ = viewModel.transform(input: input)
+		
 	}
 }

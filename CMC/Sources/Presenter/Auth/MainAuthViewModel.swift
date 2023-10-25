@@ -14,8 +14,8 @@ import RxSwift
 class MainAuthViewModel: ViewModelType{
 	
 	struct Input {
-		let signUpBtnTapped: Observable<Void>
 		let signInBtnTapped: Observable<Void>
+		let signUpBtnTapped: Observable<Void>
 	}
 	
 	struct Output {}
@@ -32,13 +32,13 @@ class MainAuthViewModel: ViewModelType{
 	
 	
 	func transform(input: Input) -> Output {
-		input.signUpBtnTapped
+		input.signInBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.userActionState.accept(.emailSignUp)
+				owner.coordinator?.userActionState.accept(.emailSignIn)
 		}).disposed(by: disposeBag)
 		
-		input.signInBtnTapped
+		input.signUpBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.coordinator?.userActionState.accept(.emailSignUp)
