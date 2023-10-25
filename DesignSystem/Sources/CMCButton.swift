@@ -59,7 +59,7 @@ public final class CMCButton: UIView{
 	///   - iconTitle : 버튼의 이미지를 설정합니다. (nil이면 icon을 사용 안한다는 의미)
 	///   - buttonType : 버튼의 타입을 결정함 ( ex: fill, outline, boldOutline )
 	///   - title: 버튼의 타이틀을 설정합니다.
-	public init(isRound: Bool, iconTitle: String?, type: CMCButtonType, title: String) {
+	public init(isRound: Bool, iconTitle: String? = nil, type: CMCButtonType, title: String) {
 		self.isRound = isRound
 		self.iconTitle = iconTitle
 		self.type = type
