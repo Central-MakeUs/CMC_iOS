@@ -43,7 +43,12 @@ class AppCoordinator: CoordinatorType {
 				guard let self = self else {return}
 				switch state{
 				case .auth:
-					print("🍎 여기 들어가면, 메인 로그인 화면으로~ 🍎")
+					let authCoordinator = AuthCoordinator(
+						navigationController: self.navigationController
+					)
+					authCoordinator.delegate = self
+					authCoordinator.start()
+					self.childCoordinators.append(authCoordinator)
 				case .tabBar:
 					print("🍎 여기 들어가면, 메인 탭 화면으로~ 🍎")
 				}
