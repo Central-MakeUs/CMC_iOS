@@ -70,7 +70,8 @@ public final class CMCTextField: UIView{
 		borderColor: UIColor,
 		textFieldBackgroundColor: UIColor,
 		textFieldTextColor: UIColor,
-		isUserInteractive: Bool
+		isUserInteractive: Bool,
+		accessoryHidden: Bool
 	)
 	
 	private var disposeBag = DisposeBag()
@@ -159,16 +160,6 @@ public final class CMCTextField: UIView{
 			$0.centerY.equalToSuperview()
 		}
 		
-		switch accessoryType {
-		case .button:
-			accessoryButton.isHidden = true
-		case .image:
-			accessoryCMCButton.isHidden = true
-		case .none:
-			accessoryButton.isHidden = true
-			accessoryCMCButton.isHidden = true
-		}
-		
 	}
 	
 	private func bind() {
@@ -202,6 +193,16 @@ public final class CMCTextField: UIView{
 		textField.backgroundColor = colorSet.textFieldBackgroundColor
 		textField.textColor = colorSet.textFieldTextColor
 		self.isUserInteractionEnabled = colorSet.isUserInteractive
+		
+		switch accessoryType {
+		case .button:
+			accessoryButton.isHidden = colorSet.accessoryHidden
+		case .image:
+			accessoryCMCButton.isHidden = colorSet.accessoryHidden
+		case .none:
+			accessoryButton.isHidden = true
+			accessoryCMCButton.isHidden = true
+		}
 	}
 	
 	func makeCustomState(textFieldState: TextFieldType) {
@@ -212,12 +213,13 @@ public final class CMCTextField: UIView{
 extension CMCTextField{
 	
 	/// TextField의 상태에 따라서
-	/// `Boarder color`, `textField background color`, `textField text color`, `isUserInteractive` 를 선택한다.
+	/// `Boarder color`, `textField background color`, `textField text color`, `isUserInteractive`,  `accessoryHidden`를 선택한다.
 	/// - Parameters:
 	///   - BorderColor : TextField의 border color 색상								// 우선 살리자
 	///   - textFieldBackgroundColor : TextField의 background color 색상 // 우선 살리자
 	///   - textFieldTextColor : TextField의 text  color 색상						// 우선 살리자
 	///   - isUserInteractive : TextField의 isUserInteractive						// 우선 살리자
+	///   - accessoryHidden : 우측 악세서리의 hidden 상태 처리						// 우선 살리자
 	public enum TextFieldType {
 		case def /// 초기 상태
 		case focus /// 입력 중
@@ -232,35 +234,40 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
-					isUserInteractive: true
+					isUserInteractive: true,
+					accessoryHidden: true
 				)
 			case .focus:
 				return TextFieldColorSet(
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
-					isUserInteractive: true
+					isUserInteractive: true,
+					accessoryHidden: false
 				)
 			case .filed:
 				return TextFieldColorSet(
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
-					isUserInteractive: true
+					isUserInteractive: true,
+					accessoryHidden: false
 				)
 			case .disabled:
 				return TextFieldColorSet(
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
-					isUserInteractive: true
+					isUserInteractive: true,
+					accessoryHidden: false
 				)
 			case .error:
 				return TextFieldColorSet(
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
-					isUserInteractive: true
+					isUserInteractive: true,
+					accessoryHidden: false
 				)
 			}
 		}
