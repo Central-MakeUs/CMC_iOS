@@ -23,20 +23,24 @@ public final class CMCTextField: UIView{
 	}
 	
 	// MARK: - UI
-	fileprivate lazy var textField: UITextField = {
-		let textField = UITextField()
+	fileprivate lazy var textField: CustomTextField = {
+		let textField = CustomTextField()
 		let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
 		let rightPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
 		textField.leftView = leftPadding
 		textField.rightView = rightPadding
 		textField.leftViewMode = .always
 		textField.rightViewMode = .always
-		textField.placeholder = placeHolder
 		textField.layer.cornerRadius = 5
 		textField.layer.borderWidth = 1
 		textField.keyboardType = keyboardType
 		textField.font = DesignSystemFontFamily.Pretendard.medium.font(size: 15)
 		textField.textColor = DesignSystemAsset.gray50.color
+		let attributes = [
+			NSAttributedString.Key.foregroundColor: DesignSystemAsset.gray700.color,
+			NSAttributedString.Key.font: DesignSystemFontFamily.Pretendard.medium.font(size: 15)
+		]
+		textField.attributedPlaceholder = NSAttributedString(string: placeHolder, attributes: attributes)
 		return textField
 	}()
 	
@@ -280,6 +284,34 @@ extension CMCTextField{
 	
 }
 
+class CustomTextField: UITextField {
+		override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+			return CGRect(
+				x: bounds.origin.x + 18,
+				y: bounds.origin.y,
+				width: bounds.width,
+				height: bounds.height
+			)
+		}
+		
+		override func textRect(forBounds bounds: CGRect) -> CGRect {
+				return CGRect(
+					x: bounds.origin.x + 18,
+					y: bounds.origin.y,
+					width: bounds.width,
+					height: bounds.height
+				)
+		}
+		
+		override func editingRect(forBounds bounds: CGRect) -> CGRect {
+				return CGRect(
+					x: bounds.origin.x + 18,
+					y: bounds.origin.y,
+					width: bounds.width,
+					height: bounds.height
+				)
+		}
+}
 
 extension CMCTextField: UITextFieldDelegate {
 	

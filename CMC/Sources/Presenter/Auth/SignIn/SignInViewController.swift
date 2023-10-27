@@ -51,8 +51,8 @@ final class SignInViewController: BaseViewController {
 			textFieldSubTitle: "비밀번호",
 			accessoryType: .image(image: CMCAsset._24x24hide.image),
 			keyboardType: .emailAddress
-			
 		)
+		textField.accessoryButton.setImage(CMCAsset._24x24show.image, for: .selected)
 		return textField
 	}()
 	
