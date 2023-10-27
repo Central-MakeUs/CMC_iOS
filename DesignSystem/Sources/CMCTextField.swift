@@ -44,6 +44,7 @@ public final class CMCTextField: UIView{
 		let label = UILabel()
 		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 14)
 		label.textColor = DesignSystemAsset.gray200.color
+		label.text = textFieldSubTitle
 		return label
 	}()
 	
@@ -77,6 +78,7 @@ public final class CMCTextField: UIView{
 	private var disposeBag = DisposeBag()
 	
 	private var placeHolder: String
+	private var textFieldSubTitle: String
 	private var accessoryImage: UIImage = UIImage()
 	private var accessoryTitle: String = ""
 	private var accessoryType: AccessoryType
@@ -85,10 +87,10 @@ public final class CMCTextField: UIView{
 	public var rxType = BehaviorRelay<TextFieldType>(value: .def)
 	public var accessoryState = BehaviorRelay<Bool>(value: false)
 	
-	/// 텍스트필드의 `placeHolder`, `maxCount`를 설정합니다.
 	/// - Parameters:
 	///   - placeHolder : placeHolder로 들어갈 텍스트
 	///   - accessoryType: 우측 악세서리에 들어가는 타입 (.none 이면 없음)
+	///   - textFieldSubTitle: 텍스트필드의 이름을 나타냄
 	///   - keyboardType: 키보드 타입
 	/// - Parameters (Optional):
 	/// - Parameters (Accessable):
@@ -97,12 +99,15 @@ public final class CMCTextField: UIView{
 	// MARK: - Initializers
 	public init(
 		placeHolder: String,
+		textFieldSubTitle: String,
 		accessoryType: AccessoryType,
 		keyboardType: UIKeyboardType
 	) {
 		self.placeHolder = placeHolder
+		self.textFieldSubTitle = textFieldSubTitle
 		self.keyboardType = keyboardType
 		self.accessoryType = accessoryType
+		
 		
 		switch accessoryType {
 		case .button(let title):

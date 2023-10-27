@@ -8,12 +8,12 @@
 
 import Foundation
 
-enum EmailEndpoint: Endpoint {
+enum LaunchEndpoint: Endpoint {
 	
 	case health
 	
 	var baseURL: URL? {
-		return URL(string: "http://cmcapiserverdev-env.eba-au6k5x3x.ap-northeast-2.elasticbeanstalk.com")
+		return URL(string: Xcconfig.BASE_URL)
 	}
 	
 	var method: HTTPMethod {

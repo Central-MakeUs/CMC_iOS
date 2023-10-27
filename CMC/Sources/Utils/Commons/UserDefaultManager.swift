@@ -15,7 +15,8 @@ class UserDefaultManager {
 	
 	/// 요기에는 내 맘대로 추가 해야징~
 	enum Key: String {
-		case jwtToken
+		case accessToken
+		case refreshToken
 	}
 	
 	func save<T>(_ value: T, for key: Key) {

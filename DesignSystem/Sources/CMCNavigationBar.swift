@@ -38,7 +38,7 @@ public final class CMCNavigationBar: UIView {
 	private var accessoryLabelHidden: Bool
 	
 	// MARK: - Initializers
-	init(accessoryLabelHidden: Bool) {
+	public init(accessoryLabelHidden: Bool) {
 		self.accessoryLabelHidden = accessoryLabelHidden
 		
 		super.init(frame: .zero)
