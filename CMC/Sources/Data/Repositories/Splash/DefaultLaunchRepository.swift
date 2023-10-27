@@ -18,7 +18,7 @@ final class DefaultLaunchRepository: LaunchRepository {
 	}
 	
 	func health() -> Single<LaunchDTO> {
-		let endpoint = EmailEndpoint.health
+		let endpoint = LaunchEndpoint.health
 		return networkService.request(endpoint)
 			.flatMap { data in
 				guard let dto = Utility.decode(LaunchDTO.self, from: data) else {

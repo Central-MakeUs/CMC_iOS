@@ -14,8 +14,8 @@ class AuthCoordinator: CoordinatorType {
 	// MARK: - Navigation DEPTH 1 -
 	enum AuthCoordinatorChild{
 		case main
-		case emailSignUp
-		case emailSignIn
+		case signUp
+		case signIn
 		/// SignIn이 AuthHome의 역할
 	}
 	
@@ -53,7 +53,7 @@ class AuthCoordinator: CoordinatorType {
 					}else {
 						self.pushViewController(viewController: mainAuthViewController)
 					}
-				case .emailSignUp:
+				case .signUp:
 					print("111111")
 					CMCToastManager.shared.addToast(message: "🍎 여기는 아직이지롱~ 😀")
 //					let emailSignUpViewController = EmailSignUpViewController(
@@ -69,22 +69,20 @@ class AuthCoordinator: CoordinatorType {
 //					}else {
 //						self.pushViewController(viewController: emailSignUpViewController)
 //					}
-				case .emailSignIn:
-					print("2222222")
-					CMCToastManager.shared.addToast(message: "🍎 여기도 아직이지롱~ 😀")
-//					let emailSignInViewController = EmailSignInViewController(
-//						viewModel: EmailSignInViewModel(
-//							coordinator: self,
-//							userEmailSignInUsecase: DefaultUserEmailSignInUsecase(
-//								userRepository: DefaultUserRepository()
-//							)
-//						)
-//					)
-//					if self.navigationController.viewControllers.contains(where: {$0 is EmailSignInViewController}) {
-//						self.navigationController.popViewController(animated: true)
-//					}else {
-//						self.pushViewController(viewController: emailSignInViewController)
-//					}
+				case .signIn:
+					let signInViewController = SignInViewController(
+						viewModel: SignInViewModel(
+							coordinator: self,
+							authUsecase: DefaultAuthUsecase(
+								authRepository: DefaultAuthRepository()
+							)
+						)
+					)
+					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
+						self.navigationController.popViewController(animated: true)
+					}else {
+						self.pushViewController(viewController: signInViewController)
+					}
 				}
 			}).disposed(by: disposeBag)
 	}
