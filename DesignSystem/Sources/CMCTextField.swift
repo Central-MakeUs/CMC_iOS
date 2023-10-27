@@ -288,7 +288,7 @@ class CustomTextField: UITextField {
 		override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
 			return CGRect(
 				x: bounds.origin.x + 18,
-				y: bounds.origin.y,
+				y: bounds.origin.y + 15,
 				width: bounds.width,
 				height: bounds.height
 			)
@@ -297,7 +297,7 @@ class CustomTextField: UITextField {
 		override func textRect(forBounds bounds: CGRect) -> CGRect {
 				return CGRect(
 					x: bounds.origin.x + 18,
-					y: bounds.origin.y,
+					y: bounds.origin.y + 15,
 					width: bounds.width,
 					height: bounds.height
 				)
@@ -306,7 +306,7 @@ class CustomTextField: UITextField {
 		override func editingRect(forBounds bounds: CGRect) -> CGRect {
 				return CGRect(
 					x: bounds.origin.x + 18,
-					y: bounds.origin.y,
+					y: bounds.origin.y + 15,
 					width: bounds.width,
 					height: bounds.height
 				)
