@@ -19,6 +19,13 @@ class SplashViewController: BaseViewController {
 		return imageView
 	}()
 	
+	private lazy var splashLogoImageView: UIImageView = {
+		let imageView = UIImageView()
+		imageView.image = CMCAsset.splashLogo.image
+		imageView.contentMode = .scaleAspectFill
+		return imageView
+	}()
+	
 	private let viewModel: SplashViewModel
 	
 	init(
@@ -30,11 +37,17 @@ class SplashViewController: BaseViewController {
 	
 	override func setAddSubView() {
 		view.addSubview(splashImageView)
+		view.addSubview(splashLogoImageView)
 	}
 	
 	override func setConstraint() {
 		splashImageView.snp.makeConstraints { make in
 			make.edges.equalToSuperview()
+		}
+		
+		splashLogoImageView.snp.makeConstraints { make in
+			make.centerX.centerY.equalToSuperview()
+			make.width.height.equalTo(108)
 		}
 	}
 	

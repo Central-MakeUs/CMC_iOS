@@ -56,7 +56,7 @@ class CMCIndecatorManager {
 	private func createAndShowIndicator() {
 		if backgroundView == nil {
 			backgroundView = UIView()
-			backgroundView?.backgroundColor = CMCAsset.gray400.color.withAlphaComponent(0.4)
+			backgroundView?.backgroundColor = CMCAsset.gray900.color.withAlphaComponent(0.4)
 		}
 		
 		let indicatorView: UIActivityIndicatorView = {
