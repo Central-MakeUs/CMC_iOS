@@ -55,12 +55,12 @@ class AuthCoordinator: CoordinatorType {
 					}
 				case .signUp:
 					let signUpViewController = SignUpViewController(
-//						viewModel: EmailSignUpViewModel(
-//							coordinator: self,
-//							userSignUpUsecase: DefaultUserSignUpUsecase(
-//								userRepository: DefaultUserRepository()
-//							)
-//						)
+						viewModel: SignUpViewModel(
+							coordinator: self,
+							authUsecase: DefaultAuthUsecase(
+								authRepository: DefaultAuthRepository()
+							)
+						)
 					)
 					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
 						self.navigationController.popViewController(animated: true)

@@ -111,7 +111,7 @@ public final class CMCProgressPager: UIView {
 		currentPage.asObservable()
 			.subscribe(onNext: { [weak self] page in
 				guard let self = self else { return }
-				let xOffset = CGFloat(page) * self.frame.size.width
+				let xOffset = CGFloat(page - 1) * self.frame.size.width
 				self.pagerScrollView.setContentOffset(CGPoint(x: xOffset, y: 0), animated: true)
 			})
 			.disposed(by: disposeBag)
