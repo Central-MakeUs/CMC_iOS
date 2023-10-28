@@ -90,6 +90,14 @@ public final class CMCTextField: UIView{
 	
 	public var rxType = BehaviorRelay<TextFieldType>(value: .def)
 	public var accessoryState = BehaviorRelay<Bool>(value: false)
+	public var isSecureTextEntry: Bool {
+		get {
+			return textField.isSecureTextEntry
+		}
+		set {
+			textField.isSecureTextEntry = newValue
+		}
+	}
 	
 	/// - Parameters:
 	///   - placeHolder : placeHolder로 들어갈 텍스트
@@ -100,6 +108,7 @@ public final class CMCTextField: UIView{
 	/// - Parameters (Accessable):
 	///   - rxType: GalapagosTextField의 타입변환 조종값
 	///   - accessoryState: 우측 악세서리 버튼의 상태 (이미지 일 경우만)
+	///   - isSecureTextEntry: 텍스트필드의 secureTextEntry 상태
 	// MARK: - Initializers
 	public init(
 		placeHolder: String,

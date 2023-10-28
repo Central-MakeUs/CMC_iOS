@@ -49,10 +49,10 @@ final class SignInViewController: BaseViewController {
 		let textField = CMCTextField(
 			placeHolder: "비밀번호를 입력해주세요",
 			textFieldSubTitle: "비밀번호",
-			accessoryType: .image(image: CMCAsset._24x24hide.image),
+			accessoryType: .image(image: CMCAsset._24x24show.image),
 			keyboardType: .emailAddress
 		)
-		textField.accessoryButton.setImage(CMCAsset._24x24show.image, for: .selected)
+		textField.accessoryButton.setImage(CMCAsset._24x24hide.image, for: .selected)
 		return textField
 	}()
 	
@@ -194,7 +194,7 @@ final class SignInViewController: BaseViewController {
 		}
 		
 		goSignUpStackView.snp.makeConstraints { make in
-			make.bottom.equalTo(signInButton.snp.top).offset(-30)
+			make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-30 - 56 - 20)
 			make.centerX.equalToSuperview()
 		}
 		
@@ -207,6 +207,28 @@ final class SignInViewController: BaseViewController {
 	}
 	
 	override func bind() {
+		
+		NotificationManager.shared.keyboardHeightSubject
+			.withUnretained(self)
+			.subscribe(onNext: { owner, keyboardHeight in
+				let realHeight = keyboardHeight > 0 ? keyboardHeight - 30 : 0
+				owner.signInButton.snp.updateConstraints { make in
+					make.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-20 - realHeight)
+				}
+				UIView.animate(withDuration: 0.3) {
+					owner.view.layoutIfNeeded()
+				}
+			})
+			.disposed(by: disposeBag)
+		
+		passwordTextField.accessoryState
+			.observe(on: MainScheduler.instance)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, state in
+				owner.passwordTextField.isSecureTextEntry = state
+			})
+			.disposed(by: disposeBag)
+		
 		let input = SignInViewModel.Input(
 			email: emailTextField.rx.text.orEmpty.asObservable(),
 			password: passwordTextField.rx.text.orEmpty.asObservable(),
@@ -216,7 +238,6 @@ final class SignInViewController: BaseViewController {
 			goSignUpButtonTapped: goSignUpLabel.rx.tapGesture().when(.recognized).map{_ in }.asObservable(),
 			goSignInButtonTapped: signInButton.rx.tap.asObservable()
 		)
-		
 		
 		let output = viewModel.transform(input: input)
 		
