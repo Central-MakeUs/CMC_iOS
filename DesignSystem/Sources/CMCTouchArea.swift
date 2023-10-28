@@ -24,14 +24,14 @@ public final class CMCTouchArea: UIView{
 	// MARK: - UI
 	private lazy var imageView: UIImageView = {
 		let imageView = UIImageView()
-		imageView.image = image[style.rawValue]
+		imageView.image = image[style.value.rawValue]
 		return imageView
 	}()
 	
 	// MARK: - Properties
 	private var disposeBag = DisposeBag()
 	
-	private var style: TouchAreaStyle = .normal
+	private var style = BehaviorRelay<TouchAreaStyle>(value: .normal)
 	private var image: [Int:UIImage] = [:]
 	
 	/// 터치 영역의 `image`를 설정합니다.
@@ -70,11 +70,18 @@ public final class CMCTouchArea: UIView{
 	}
 	
 	private func bind() {
+		
+		self.style
+			.withUnretained(self)
+			.subscribe(onNext: { owner, style in
+				owner.imageView.image = owner.image[style.rawValue]
+			})
+			.disposed(by: disposeBag)
+		
 		self.rx.tapped()
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.style = owner.style == .normal ? .selected : .normal
-				owner.imageView.image = owner.image[owner.style.rawValue]
+				owner.style.accept(owner.style.value == .normal ? .selected : .normal)
 			})
 			.disposed(by: disposeBag)
 	}
@@ -83,6 +90,10 @@ public final class CMCTouchArea: UIView{
 		if let image = image {
 			self.image.updateValue(image, forKey: style.rawValue)
 		}
+	}
+	
+	public func makeCustomState(type: TouchAreaStyle) {
+		style.accept(type)
 	}
 	
 }
