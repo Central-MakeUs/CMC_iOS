@@ -28,9 +28,12 @@ class SignUpViewController: BaseViewController {
 		return navigationBar
 	}()
 	
-	private lazy var termsAndConditionsView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .blue
+	private lazy var termsAndConditionsView: TermsAndConditionsView = {
+		let view = TermsAndConditionsView(
+			viewModel: TermsAndConditionsViewModel(
+				parentViewModel: self.viewModel
+			)
+		)
 		return view
 	}()
 	
@@ -55,19 +58,16 @@ class SignUpViewController: BaseViewController {
 		return progressPager
 	}()
 	
-	private lazy var nextButton: CMCButton = {
-		let button = CMCButton(
-			isRound: false,
-			iconTitle: nil,
-			type:	.login(.inactive),
-			title: "다음"
-		)
-		return button
-	}()
-	
 	// MARK: - Properties
+	private let viewModel: SignUpViewModel
 	
 	// MARK: - Initializers
+	init(
+		viewModel: SignUpViewModel
+	) {
+		self.viewModel = viewModel
+		super.init()
+	}
 	
 	// MARK: - LifeCycle
 	
@@ -77,7 +77,6 @@ class SignUpViewController: BaseViewController {
 	override func setAddSubView() {
 		self.view.addSubview(navigationBar)
 		self.view.addSubview(cmcPager)
-		self.view.addSubview(nextButton)
 	}
 	
 	override func setConstraint() {
@@ -89,40 +88,45 @@ class SignUpViewController: BaseViewController {
 		
 		cmcPager.snp.makeConstraints{ cmcPager in
 			cmcPager.top.equalTo(navigationBar.snp.bottom)
-			cmcPager.leading.trailing.equalToSuperview()
-			cmcPager.bottom.equalToSuperview()
+			cmcPager.leading.trailing.bottom.equalToSuperview()
 		}
 		
-		nextButton.snp.makeConstraints { make in
-			make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
-			make.leading.equalToSuperview().offset(24)
-			make.trailing.equalToSuperview().offset(-24)
-			make.height.equalTo(56)
-		}
 	}
 	
 	override func bind() {
-		nextButton.rx.tap
+		
+		let input = SignUpViewModel.Input(
+			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
+			nowPage: cmcPager.getCurrentPage(),
+			totalPage: cmcPager.totalPages()
+		)
+		
+		let output = viewModel.transform(input: input)
+		
+		output.nextBtnTapped
+			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.cmcPager.nextPage()
 			})
 			.disposed(by: disposeBag)
 		
-		cmcPager.getCurrentPage()
+		output.backButtonHidden
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, page in
-				owner.navigationBar.accessoryLabel.text = "\(page)/\(owner.cmcPager.totalPages())"
+			.subscribe(onNext: { owner, hidden in
+				owner.navigationBar.backButton.isHidden = hidden
 			})
 			.disposed(by: disposeBag)
 		
-		navigationBar.backButton.rx.tapped()
+		output.navigationAccessoryText
+			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.cmcPager.previousPage()
+			.subscribe(onNext: { owner, text in
+				owner.navigationBar.accessoryLabel.text = text
 			})
 			.disposed(by: disposeBag)
+		
 	}
 	
 }
