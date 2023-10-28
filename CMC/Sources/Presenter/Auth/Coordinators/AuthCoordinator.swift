@@ -54,21 +54,19 @@ class AuthCoordinator: CoordinatorType {
 						self.pushViewController(viewController: mainAuthViewController)
 					}
 				case .signUp:
-					print("111111")
-					CMCToastManager.shared.addToast(message: "🍎 여기는 아직이지롱~ 😀")
-//					let emailSignUpViewController = EmailSignUpViewController(
+					let signUpViewController = SignUpViewController(
 //						viewModel: EmailSignUpViewModel(
 //							coordinator: self,
 //							userSignUpUsecase: DefaultUserSignUpUsecase(
 //								userRepository: DefaultUserRepository()
 //							)
 //						)
-//					)
-//					if self.navigationController.viewControllers.contains(where: {$0 is EmailSignUpViewController}) {
-//						self.navigationController.popViewController(animated: true)
-//					}else {
-//						self.pushViewController(viewController: emailSignUpViewController)
-//					}
+					)
+					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
+						self.navigationController.popViewController(animated: true)
+					}else {
+						self.pushViewController(viewController: signUpViewController)
+					}
 				case .signIn:
 					let signInViewController = SignInViewController(
 						viewModel: SignInViewModel(
