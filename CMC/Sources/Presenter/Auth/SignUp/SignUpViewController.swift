@@ -30,9 +30,8 @@ class SignUpViewController: BaseViewController {
 	
 	private lazy var termsAndConditionsView: TermsAndConditionsView = {
 		let view = TermsAndConditionsView(
-			viewModel: TermsAndConditionsViewModel(
-				parentViewModel: self.viewModel
-			)
+			viewModel: TermsAndConditionsViewModel(),
+			parentViewModel: viewModel
 		)
 		return view
 	}()
@@ -58,6 +57,16 @@ class SignUpViewController: BaseViewController {
 		return progressPager
 	}()
 	
+	private lazy var nextButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "다음"
+		)
+		return button
+	}()
+	
 	// MARK: - Properties
 	private let viewModel: SignUpViewModel
 	
@@ -77,6 +86,7 @@ class SignUpViewController: BaseViewController {
 	override func setAddSubView() {
 		self.view.addSubview(navigationBar)
 		self.view.addSubview(cmcPager)
+		self.view.addSubview(nextButton)
 	}
 	
 	override func setConstraint() {
@@ -91,23 +101,39 @@ class SignUpViewController: BaseViewController {
 			cmcPager.leading.trailing.bottom.equalToSuperview()
 		}
 		
+		nextButton.snp.makeConstraints{ nextButton in
+			nextButton.leading.trailing.equalToSuperview().inset(20)
+			nextButton.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+			nextButton.height.equalTo(56)
+		}
+		
 	}
 	
 	override func bind() {
 		
 		let input = SignUpViewModel.Input(
 			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
+			nextButtonTapped: nextButton.rx.tap.asObservable(),
 			nowPage: cmcPager.getCurrentPage(),
 			totalPage: cmcPager.totalPages()
 		)
 		
 		let output = viewModel.transform(input: input)
 		
-		output.nextBtnTapped
-			.observe(on: MainScheduler.instance)
+		nextButton.rx.tap
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.cmcPager.nextPage()
+			})
+			.disposed(by: disposeBag)
+		
+		output.readyForNextButton
+			.asObservable()
+			.withUnretained(self)
+			.subscribe(onNext: { owner, isActive in
+				isActive
+				? owner.nextButton.makeCustomState(type: .login(.inactive))
+				: owner.nextButton.makeCustomState(type: .login(.disabled))
 			})
 			.disposed(by: disposeBag)
 		
@@ -127,6 +153,13 @@ class SignUpViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
+		output.nextButtonTitle
+			.observe(on: MainScheduler.instance)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, title in
+				owner.nextButton.setTitle(title: title)
+			})
+			.disposed(by: disposeBag)
 	}
 	
 }
