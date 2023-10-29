@@ -20,14 +20,16 @@ class SignUpViewModel: ViewModelType{
 	
 	struct Input {
 		let backButtonTapped: Observable<Void>
+		let nextButtonTapped: Observable<Void>
 		let nowPage: Observable<Int>
 		let totalPage: Int
 	}
 	
 	struct Output {
-		let nextBtnTapped: Observable<Void>
+		let readyForNextButton: Observable<Bool>
 		let backButtonHidden: Observable<Bool>
 		let navigationAccessoryText: Observable<String>
+		let nextButtonTitle: Observable<String>
 	}
 	
 	// MARK: - Properties
@@ -36,7 +38,7 @@ class SignUpViewModel: ViewModelType{
 	var disposeBag: DisposeBag = DisposeBag()
 	weak var coordinator: AuthCoordinator?
 	
-	let nextBtnTapped = PublishRelay<Void>()
+	let readyForNextButton = BehaviorRelay<Bool>(value: false)
 	
 	private let backButtonHidden = BehaviorSubject<Bool>(value: false)
 	
@@ -51,6 +53,13 @@ class SignUpViewModel: ViewModelType{
 	
 	// MARK: - Methods
 	func transform(input: Input) -> Output {
+		
+		input.nextButtonTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.readyForNextButton.accept(false)
+			})
+			.disposed(by: disposeBag)
 
 		input.backButtonTapped
 			.withUnretained(self)
@@ -71,10 +80,16 @@ class SignUpViewModel: ViewModelType{
 				return "\(page)/\(input.totalPage)"
 			}
 		
+		let nextbuttonTitle = input.nowPage
+			.map { page in
+				return page == input.totalPage ? "가입 신청하기" : "다음"
+			}
+		
 		return Output(
-			nextBtnTapped: nextBtnTapped.asObservable(),
+			readyForNextButton: readyForNextButton.asObservable(),
 			backButtonHidden: backButtonHidden.asObservable(),
-			navigationAccessoryText: navigationAccessoryText
+			navigationAccessoryText: navigationAccessoryText,
+			nextButtonTitle: nextbuttonTitle
 		)
 	}
 }

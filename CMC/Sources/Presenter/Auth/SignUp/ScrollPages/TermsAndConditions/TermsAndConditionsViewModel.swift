@@ -21,8 +21,6 @@ final class TermsAndConditionsViewModel: ViewModelType {
 		let conditionBtnTapped: Observable<Void>
 		let locateBtnTapped: Observable<Void>
 		let eventBtnTapped: Observable<Void>
-		
-		let nextBtnTapped: Observable<Void>
 	}
 	
 	struct Output {
@@ -32,17 +30,10 @@ final class TermsAndConditionsViewModel: ViewModelType {
 		let locateBtnState: Observable<Bool>
 		let eventBtnState: Observable<Bool>
 		
-		let nextButtonState: Observable<Bool>
+		let moveToNext: Observable<Bool>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
-	var parentViewModel: SignUpViewModel
-	
-	init(
-		parentViewModel: SignUpViewModel
-	) {
-		self.parentViewModel = parentViewModel
-	}
 	
 	private var allAgreeBtnRelay = BehaviorRelay<Bool>(value: false)
 	private var termsBtnRelay = BehaviorRelay<Bool>(value: false)
@@ -80,13 +71,6 @@ final class TermsAndConditionsViewModel: ViewModelType {
 			eventBtnRelay.accept(newState)
 		}.disposed(by: disposeBag)
 		
-		input.nextBtnTapped
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.parentViewModel.nextBtnTapped.accept(())
-			})
-			.disposed(by: disposeBag)
-		
 		let moveToNext = Observable.combineLatest(termsBtnRelay, conditionBtnRelay)
 			.map { $0 && $1 }
 		
@@ -96,7 +80,7 @@ final class TermsAndConditionsViewModel: ViewModelType {
 			conditionBtnState: conditionBtnRelay.asObservable(),
 			locateBtnState: locateBtnRelay.asObservable(),
 			eventBtnState: eventBtnRelay.asObservable(),
-			nextButtonState: moveToNext.asObservable()
+			moveToNext: moveToNext
 		)
 	}
 	

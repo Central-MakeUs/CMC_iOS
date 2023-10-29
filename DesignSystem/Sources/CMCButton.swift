@@ -131,6 +131,10 @@ public final class CMCButton: UIView{
 		rxType.accept(type)
 	}
 	
+	public func setTitle(title: String) {
+		self.buttonLabel.text = title
+	}
+	
 }
 
 // MARK: - CMCButton.ButtonType

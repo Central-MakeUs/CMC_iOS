@@ -105,24 +105,18 @@ final class TermsAndConditionsView: BaseView {
 		}
 		return stackViews
 	}()
-
-	private lazy var nextButton: CMCButton = {
-		let button = CMCButton(
-			isRound: false,
-			iconTitle: nil,
-			type: .login(.disabled),
-			title: "다음")
-		return button
-	}()
 	
 	// MARK: - Properties
 	private var viewModel: TermsAndConditionsViewModel
+	private var parentViewModel: SignUpViewModel
 	
 	// MARK: - Initializers
 	init(
-		viewModel: TermsAndConditionsViewModel
+		viewModel: TermsAndConditionsViewModel,
+		parentViewModel: SignUpViewModel
 	) {
 		self.viewModel = viewModel
+		self.parentViewModel = parentViewModel
 		super.init(frame: .zero)
 		self.backgroundColor = CMCAsset.background.color
 	}
@@ -143,7 +137,6 @@ final class TermsAndConditionsView: BaseView {
 		self.addSubview(rowStackViews[1])
 		self.addSubview(rowStackViews[2])
 		self.addSubview(rowStackViews[3])
-		self.addSubview(nextButton)
 	}
 	
 	override func setConstraint() {
@@ -196,13 +189,6 @@ final class TermsAndConditionsView: BaseView {
 			make.leading.trailing.equalTo(rowStackViews[0])
 		}
 		
-		nextButton.snp.makeConstraints { make in
-			make.bottom.equalTo(self.safeAreaLayoutGuide.snp.bottom).offset(-20)
-			make.leading.equalToSuperview().offset(14)
-			make.trailing.equalToSuperview().offset(-14)
-			make.height.equalTo(50)
-		}
-		
 	}
 	
 	override func bind() {
@@ -212,9 +198,7 @@ final class TermsAndConditionsView: BaseView {
 			termsBtnTapped: buttons[1].rx.tapped().asObservable(),
 			conditionBtnTapped: buttons[2].rx.tapped().asObservable(),
 			locateBtnTapped: buttons[3].rx.tapped().asObservable(),
-			eventBtnTapped: buttons[4].rx.tapped().asObservable(),
-			
-			nextBtnTapped: nextButton.rx.tap.asObservable()
+			eventBtnTapped: buttons[4].rx.tapped().asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
@@ -259,10 +243,10 @@ final class TermsAndConditionsView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
-		output.nextButtonState
+		output.moveToNext
 			.withUnretained(self)
-			.subscribe(onNext: { owner, state in
-				owner.nextButton.rxType.accept(state ? .login(.inactive) : .login(.disabled))
+			.bind(onNext: { owner, state in
+				owner.parentViewModel.readyForNextButton.accept(state)
 			})
 			.disposed(by: disposeBag)
 		
