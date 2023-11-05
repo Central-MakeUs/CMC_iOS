@@ -174,6 +174,7 @@ public final class CMCTextField: UIView{
 		
 		accessoryCMCButton.snp.makeConstraints {
 			$0.height.equalTo(34)
+			$0.width.equalTo(76)
 			$0.trailing.equalToSuperview().offset(-18)
 			$0.centerY.equalToSuperview()
 		}
@@ -214,12 +215,12 @@ public final class CMCTextField: UIView{
 		
 		switch accessoryType {
 		case .button:
-			accessoryButton.isHidden = colorSet.accessoryHidden
+			accessoryButton.removeFromSuperview()
 		case .image:
-			accessoryCMCButton.isHidden = colorSet.accessoryHidden
+			accessoryCMCButton.removeFromSuperview()
 		case .none:
-			accessoryButton.isHidden = true
-			accessoryCMCButton.isHidden = true
+			accessoryButton.removeFromSuperview()
+			accessoryCMCButton.removeFromSuperview()
 		}
 	}
 	
@@ -353,6 +354,7 @@ extension CMCTextField: UITextFieldDelegate {
 		}
 		return true
 	}
+	
 }
 
 
