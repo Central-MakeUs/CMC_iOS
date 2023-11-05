@@ -7,3 +7,25 @@
 //
 
 import Foundation
+
+import RxCocoa
+import RxSwift
+
+import UIKit
+
+final class MainSignUpViewModel: ViewModelType {
+	
+	struct Input {
+	}
+	
+	struct Output {
+	}
+	
+	var disposeBag: DisposeBag = DisposeBag()
+	
+	func transform(input: Input) -> Output {
+		
+		return Output()
+	}
+	
+}
