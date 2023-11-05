@@ -49,10 +49,10 @@ final class SignInViewController: BaseViewController {
 		let textField = CMCTextField(
 			placeHolder: "비밀번호를 입력해주세요",
 			textFieldSubTitle: "비밀번호",
-			accessoryType: .image(image: CMCAsset._24x24show.image),
+			accessoryType: .image(image: CMCAsset._24x24hide.image),
 			keyboardType: .emailAddress
 		)
-		textField.accessoryButton.setImage(CMCAsset._24x24hide.image, for: .selected)
+		textField.accessoryButton.setImage(CMCAsset._24x24show.image, for: .selected)
 		return textField
 	}()
 	
@@ -225,7 +225,7 @@ final class SignInViewController: BaseViewController {
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, state in
-				owner.passwordTextField.isSecureTextEntry = state
+				owner.passwordTextField.isSecureTextEntry = !state
 			})
 			.disposed(by: disposeBag)
 		

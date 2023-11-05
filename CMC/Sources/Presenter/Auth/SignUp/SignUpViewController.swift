@@ -36,9 +36,11 @@ class SignUpViewController: BaseViewController {
 		return view
 	}()
 	
-	private lazy var emailCheckView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .red
+	private lazy var mainSignUpView: MainSignUpView = {
+		let view = MainSignUpView(
+			viewModel: MainSignUpViewModel(),
+			parentViewModel: viewModel
+		)
 		return view
 	}()
 	
@@ -51,7 +53,7 @@ class SignUpViewController: BaseViewController {
 	private lazy var cmcPager: CMCProgressPager = {
 		let progressPager = CMCProgressPager(pages: [
 			termsAndConditionsView,
-			emailCheckView,
+			mainSignUpView,
 			completeSignUpView
 		])
 		return progressPager
@@ -110,6 +112,21 @@ class SignUpViewController: BaseViewController {
 	}
 	
 	override func bind() {
+		
+//		NotificationManager.shared.keyboardHeightSubject
+//			.debug()
+//			.observe(on: MainScheduler.instance)
+//			.withUnretained(self)
+//			.subscribe(onNext: { owner, keyboardHeight in
+//				let realHeight = keyboardHeight > 0 ? keyboardHeight : 0
+//				owner.cmcPager.snp.updateConstraints { make in
+//					make.bottom.equalToSuperview().offset(-realHeight)
+//				}
+//				UIView.animate(withDuration: 0.3) {
+//					owner.view.layoutIfNeeded()
+//				}
+//			})
+//			.disposed(by: disposeBag)
 		
 		let input = SignUpViewModel.Input(
 			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
