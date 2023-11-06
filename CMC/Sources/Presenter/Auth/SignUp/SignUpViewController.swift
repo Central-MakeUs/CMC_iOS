@@ -105,35 +105,36 @@ class SignUpViewController: BaseViewController {
 			navigationBar.height.equalTo(68)
 		}
 		
-		cmcPager.snp.makeConstraints{ cmcPager in
-			cmcPager.top.equalTo(navigationBar.snp.bottom)
-			cmcPager.leading.trailing.bottom.equalToSuperview()
-		}
-		
 		nextButton.snp.makeConstraints{ nextButton in
 			nextButton.leading.trailing.equalToSuperview().inset(20)
-			nextButton.bottom.equalTo(self.view.safeAreaLayoutGuide).inset(20)
+			nextButton.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-20)
 			nextButton.height.equalTo(56)
+		}
+		
+		cmcPager.snp.makeConstraints{ cmcPager in
+			cmcPager.top.equalTo(navigationBar.snp.bottom)
+			cmcPager.leading.trailing.equalToSuperview()
+			cmcPager.bottom.equalTo(nextButton.snp.top).offset(-12)
 		}
 		
 	}
 	
 	override func bind() {
 		
-//		NotificationManager.shared.keyboardHeightSubject
-//			.debug()
-//			.observe(on: MainScheduler.instance)
-//			.withUnretained(self)
-//			.subscribe(onNext: { owner, keyboardHeight in
-//				let realHeight = keyboardHeight > 0 ? keyboardHeight : 0
-//				owner.cmcPager.snp.updateConstraints { make in
-//					make.bottom.equalToSuperview().offset(-realHeight)
-//				}
-//				UIView.animate(withDuration: 0.3) {
-//					owner.view.layoutIfNeeded()
-//				}
-//			})
-//			.disposed(by: disposeBag)
+		NotificationManager.shared.keyboardHeightSubject
+			.debug()
+			.observe(on: MainScheduler.instance)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, keyboardHeight in
+				let realHeight = keyboardHeight > 0 ? keyboardHeight : 20
+				owner.nextButton.snp.updateConstraints { make in
+					make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-realHeight)
+				}
+				UIView.animate(withDuration: 0.3) {
+					owner.view.layoutIfNeeded()
+				}
+			})
+			.disposed(by: disposeBag)
 		
 		let input = SignUpViewModel.Input(
 			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),

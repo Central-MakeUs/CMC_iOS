@@ -140,14 +140,13 @@ final class MainSignUpView: BaseView {
 	override func setConstraint() {
 		
 		scrollView.snp.makeConstraints { make in
-			make.top.leading.trailing.equalToSuperview()
-			make.bottom.equalTo(self.layoutMarginsGuide.snp.bottom).offset(-56 - 10 - 20)
+			make.top.leading.trailing.bottom.equalToSuperview()
 		}
 		
 		mainContentView.snp.makeConstraints { make in
 			make.edges.equalTo(scrollView.contentLayoutGuide)
 			make.width.equalTo(scrollView.frameLayoutGuide.snp.width)
-			make.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide.snp.height).offset(1)
+//			make.height.greaterThanOrEqualTo(500)
 		}
 		
 		emailTextField.snp.makeConstraints{ make in
@@ -186,6 +185,7 @@ final class MainSignUpView: BaseView {
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(74)
+			make.bottom.equalToSuperview().offset(-24)
 		}
 		
 	}
