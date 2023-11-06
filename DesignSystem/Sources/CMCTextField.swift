@@ -159,10 +159,35 @@ public final class CMCTextField: UIView{
 	}
 	
 	private func setConstraint() {
-		textField.snp.makeConstraints {
-			$0.top.leading.trailing.equalToSuperview()
-			$0.height.equalTo(74)
+		
+		
+		switch accessoryType {
+			
+		case .button:
+			bottomBoarder.snp.makeConstraints {
+				$0.height.equalTo(1)
+				$0.leading.bottom.equalToSuperview()
+				$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-8)
+			}
+			
+			textField.snp.makeConstraints {
+				$0.top.leading.equalToSuperview()
+				$0.height.equalTo(74)
+				$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-8)
+			}
+		default:
+			bottomBoarder.snp.makeConstraints {
+				$0.height.equalTo(1)
+				$0.leading.trailing.bottom.equalToSuperview()
+			}
+			
+			textField.snp.makeConstraints {
+				$0.top.leading.trailing.equalToSuperview()
+				$0.height.equalTo(74)
+			}
 		}
+		
+		
 		
 		textFieldTitle.snp.makeConstraints {
 			$0.top.equalToSuperview().offset(12)
@@ -182,10 +207,6 @@ public final class CMCTextField: UIView{
 			$0.centerY.equalToSuperview()
 		}
 		
-		bottomBoarder.snp.makeConstraints {
-			$0.height.equalTo(1)
-			$0.leading.trailing.bottom.equalToSuperview()
-		}
 		
 	}
 	
@@ -309,32 +330,32 @@ extension CMCTextField{
 }
 
 class CustomTextField: UITextField {
-		override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-			return CGRect(
-				x: bounds.origin.x + 5,
-				y: bounds.origin.y + 15,
-				width: bounds.width,
-				height: bounds.height
-			)
-		}
-		
-		override func textRect(forBounds bounds: CGRect) -> CGRect {
-				return CGRect(
-					x: bounds.origin.x + 5,
-					y: bounds.origin.y + 15,
-					width: bounds.width,
-					height: bounds.height
-				)
-		}
-		
-		override func editingRect(forBounds bounds: CGRect) -> CGRect {
-				return CGRect(
-					x: bounds.origin.x + 5,
-					y: bounds.origin.y + 15,
-					width: bounds.width,
-					height: bounds.height
-				)
-		}
+	override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+		return CGRect(
+			x: bounds.origin.x + 5,
+			y: bounds.origin.y + 15,
+			width: bounds.width,
+			height: bounds.height
+		)
+	}
+	
+	override func textRect(forBounds bounds: CGRect) -> CGRect {
+		return CGRect(
+			x: bounds.origin.x + 5,
+			y: bounds.origin.y + 15,
+			width: bounds.width,
+			height: bounds.height
+		)
+	}
+	
+	override func editingRect(forBounds bounds: CGRect) -> CGRect {
+		return CGRect(
+			x: bounds.origin.x + 5,
+			y: bounds.origin.y + 15,
+			width: bounds.width,
+			height: bounds.height
+		)
+	}
 }
 
 extension CMCTextField: UITextFieldDelegate {
