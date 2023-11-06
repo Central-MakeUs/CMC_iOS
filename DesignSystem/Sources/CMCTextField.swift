@@ -25,14 +25,14 @@ public final class CMCTextField: UIView{
 	// MARK: - UI
 	fileprivate lazy var textField: CustomTextField = {
 		let textField = CustomTextField()
-		let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
-		let rightPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
+		let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: textField.frame.height))
+//		let rightPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
 		textField.leftView = leftPadding
-		textField.rightView = rightPadding
+//		textField.rightView = rightPadding
 		textField.leftViewMode = .always
-		textField.rightViewMode = .always
-		textField.layer.cornerRadius = 5
-		textField.layer.borderWidth = 1
+//		textField.rightViewMode = .always
+//		textField.layer.cornerRadius = 5
+//		textField.layer.borderWidth = 1
 		textField.keyboardType = keyboardType
 		textField.font = DesignSystemFontFamily.Pretendard.medium.font(size: 15)
 		textField.textColor = DesignSystemAsset.gray50.color
@@ -70,11 +70,18 @@ public final class CMCTextField: UIView{
 		return button
 	}()
 	
+	private lazy var bottomBoarder: UIView = {
+		let view = UIView()
+		view.backgroundColor = DesignSystemAsset.gray700.color
+		return view
+	}()
+	
 	// MARK: - Properties
 	typealias TextFieldColorSet = (
 		borderColor: UIColor,
 		textFieldBackgroundColor: UIColor,
 		textFieldTextColor: UIColor,
+		bottomBoarderColor: UIColor,
 		isUserInteractive: Bool,
 		accessoryHidden: Bool
 	)
@@ -153,6 +160,7 @@ public final class CMCTextField: UIView{
 		self.addSubview(textFieldTitle)
 		self.addSubview(accessoryButton)
 		self.addSubview(accessoryCMCButton)
+		self.addSubview(bottomBoarder)
 	}
 	
 	private func setConstraint() {
@@ -163,7 +171,7 @@ public final class CMCTextField: UIView{
 		
 		textFieldTitle.snp.makeConstraints {
 			$0.top.equalToSuperview().offset(12)
-			$0.leading.equalToSuperview().offset(18)
+			$0.leading.equalToSuperview().offset(5)
 		}
 		
 		accessoryButton.snp.makeConstraints {
@@ -177,6 +185,11 @@ public final class CMCTextField: UIView{
 			$0.width.equalTo(76)
 			$0.trailing.equalToSuperview().offset(-18)
 			$0.centerY.equalToSuperview()
+		}
+		
+		bottomBoarder.snp.makeConstraints {
+			$0.height.equalTo(1)
+			$0.leading.trailing.bottom.equalToSuperview()
 		}
 		
 	}
@@ -208,9 +221,10 @@ public final class CMCTextField: UIView{
 	
 	private func configureColorSet(colorSet: TextFieldColorSet) {
 		// TODO: 여기서 색깔놀이 하자
-		textField.layer.borderColor = colorSet.borderColor.cgColor
-		textField.backgroundColor = colorSet.textFieldBackgroundColor
+		textField.layer.borderColor = UIColor.clear.cgColor
+		textField.backgroundColor = .clear
 		textField.textColor = colorSet.textFieldTextColor
+		bottomBoarder.backgroundColor = colorSet.bottomBoarderColor
 		self.isUserInteractionEnabled = colorSet.isUserInteractive
 		
 		switch accessoryType {
@@ -253,6 +267,7 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
+					bottomBoarderColor: DesignSystemAsset.gray700.color,
 					isUserInteractive: true,
 					accessoryHidden: true
 				)
@@ -261,6 +276,7 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
+					bottomBoarderColor: DesignSystemAsset.gray100.color,
 					isUserInteractive: true,
 					accessoryHidden: false
 				)
@@ -269,6 +285,7 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
+					bottomBoarderColor: DesignSystemAsset.gray100.color,
 					isUserInteractive: true,
 					accessoryHidden: false
 				)
@@ -277,6 +294,7 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
+					bottomBoarderColor: DesignSystemAsset.gray700.color,
 					isUserInteractive: true,
 					accessoryHidden: false
 				)
@@ -285,6 +303,7 @@ extension CMCTextField{
 					borderColor: DesignSystemAsset.gray800.color,
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
+					bottomBoarderColor: DesignSystemAsset.error.color,
 					isUserInteractive: true,
 					accessoryHidden: false
 				)
@@ -297,7 +316,7 @@ extension CMCTextField{
 class CustomTextField: UITextField {
 		override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
 			return CGRect(
-				x: bounds.origin.x + 18,
+				x: bounds.origin.x + 5,
 				y: bounds.origin.y + 15,
 				width: bounds.width,
 				height: bounds.height
@@ -306,7 +325,7 @@ class CustomTextField: UITextField {
 		
 		override func textRect(forBounds bounds: CGRect) -> CGRect {
 				return CGRect(
-					x: bounds.origin.x + 18,
+					x: bounds.origin.x + 5,
 					y: bounds.origin.y + 15,
 					width: bounds.width,
 					height: bounds.height
@@ -315,7 +334,7 @@ class CustomTextField: UITextField {
 		
 		override func editingRect(forBounds bounds: CGRect) -> CGRect {
 				return CGRect(
-					x: bounds.origin.x + 18,
+					x: bounds.origin.x + 5,
 					y: bounds.origin.y + 15,
 					width: bounds.width,
 					height: bounds.height
