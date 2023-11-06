@@ -26,13 +26,8 @@ public final class CMCTextField: UIView{
 	fileprivate lazy var textField: CustomTextField = {
 		let textField = CustomTextField()
 		let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: textField.frame.height))
-//		let rightPadding = UIView(frame: CGRect(x: 0, y: 0, width: 18, height: textField.frame.height))
 		textField.leftView = leftPadding
-//		textField.rightView = rightPadding
 		textField.leftViewMode = .always
-//		textField.rightViewMode = .always
-//		textField.layer.cornerRadius = 5
-//		textField.layer.borderWidth = 1
 		textField.keyboardType = keyboardType
 		textField.font = DesignSystemFontFamily.Pretendard.medium.font(size: 15)
 		textField.textColor = DesignSystemAsset.gray50.color
