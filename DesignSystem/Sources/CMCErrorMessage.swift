@@ -122,7 +122,7 @@ public final class CMCErrorMessage: UIView {
 	
 }
 
-// MARK: - GalapagosErrorMessage.Type
+// MARK: - CMCErrorMessage.Type
 extension CMCErrorMessage {
 	
 	/// 에러의 상태에 따라서
