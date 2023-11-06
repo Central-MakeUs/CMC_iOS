@@ -52,6 +52,27 @@ final class MainSignUpView: BaseView {
 		return textField
 	}()
 	
+	private lazy var passwordErrorCells: [CMCErrorMessage] = {
+		let errorCell: [CMCErrorMessage] = [
+			CMCErrorMessage(title: "영문", type: .disabled),
+			CMCErrorMessage(title: "숫자", type: .disabled),
+			CMCErrorMessage(title: "8자~16자", type: .disabled)
+		]
+		return errorCell
+	}()
+	
+	private lazy var passwordErrorStackView: UIStackView = {
+		let stackView = UIStackView(
+			arrangedSubviews:
+				[	passwordErrorCells[0],
+					passwordErrorCells[1],
+					passwordErrorCells[2] ]
+		)
+		stackView.axis = .horizontal
+		stackView.spacing = 8
+		return stackView
+	}()
+	
 	private lazy var confirmPasswordTextField: CMCTextField = {
 		let textField = CMCTextField(
 			placeHolder: "비밀번호를 입력해주세요",
@@ -63,21 +84,16 @@ final class MainSignUpView: BaseView {
 		return textField
 	}()
 	
+	
+	private lazy var passwordCheckErrorCell: CMCErrorMessage = {
+		let errorCell = CMCErrorMessage(title: "비밀번호 일치", type: .disabled)
+		return errorCell
+	}()
+	
 	private lazy var nameTextField: CMCTextField = {
 		let textField = CMCTextField(
 			placeHolder: "이름을 입력해주세요",
 			textFieldSubTitle: "이름",
-			accessoryType: .none,
-			keyboardType: .default
-		)
-		return textField
-	}()
-	
-	
-	private lazy var nickNameTextField: CMCTextField = {
-		let textField = CMCTextField(
-			placeHolder: "닉네임을 입력해주세요",
-			textFieldSubTitle: "닉네임",
 			accessoryType: .none,
 			keyboardType: .default
 		)
@@ -115,9 +131,10 @@ final class MainSignUpView: BaseView {
 		
 		mainContentView.addSubview(emailTextField)
 		mainContentView.addSubview(passwordTextField)
+		mainContentView.addSubview(passwordErrorStackView)
 		mainContentView.addSubview(confirmPasswordTextField)
+		mainContentView.addSubview(passwordCheckErrorCell)
 		mainContentView.addSubview(nameTextField)
-		mainContentView.addSubview(nickNameTextField)
 	}
 	
 	override func setConstraint() {
@@ -147,25 +164,27 @@ final class MainSignUpView: BaseView {
 			make.height.equalTo(74)
 		}
 		
+		passwordErrorStackView.snp.makeConstraints{ make in
+			make.top.equalTo(passwordTextField.snp.bottom).offset(9)
+			make.leading.equalTo(passwordTextField).offset(5)
+		}
+		
 		confirmPasswordTextField.snp.makeConstraints{ make in
-			make.top.equalTo(passwordTextField.snp.bottom).offset(30)
+			make.top.equalTo(passwordErrorStackView.snp.bottom).offset(30)
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(74)
+		}
+		
+		passwordCheckErrorCell.snp.makeConstraints{ make in
+			make.top.equalTo(confirmPasswordTextField.snp.bottom).offset(9)
+			make.leading.equalTo(confirmPasswordTextField).offset(5)
 		}
 		
 		nameTextField.snp.makeConstraints{ make in
-			make.top.equalTo(confirmPasswordTextField.snp.bottom).offset(30)
+			make.top.equalTo(passwordCheckErrorCell.snp.bottom).offset(30)
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
-			make.height.equalTo(74)
-		}
-		
-		nickNameTextField.snp.makeConstraints{ make in
-			make.top.equalTo(nameTextField.snp.bottom).offset(30)
-			make.leading.equalToSuperview().offset(24)
-			make.trailing.equalToSuperview().offset(-24)
-			make.bottom.equalToSuperview()
 			make.height.equalTo(74)
 		}
 		
