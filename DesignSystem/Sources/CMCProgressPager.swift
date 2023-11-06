@@ -108,6 +108,7 @@ public final class CMCProgressPager: UIView {
 		self.titleLabel.snp.makeConstraints { titleLabel in
 			titleLabel.top.equalTo(progressView.snp.bottom).offset(30)
 			titleLabel.leading.equalToSuperview().offset(24)
+			titleLabel.height.lessThanOrEqualTo(32)
 		}
 		
 		self.pagerScrollView.snp.makeConstraints { scrollView in
