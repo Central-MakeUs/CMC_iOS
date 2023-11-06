@@ -67,7 +67,7 @@ class BaseProjectProfile: ProjectProfile{
 		],
 		"CFBundleURLTypes": [
 			[
-				"CFBundleURLName": "com.centralMakeusChallenge.CMC"
+				"CFBundleURLName": "com.softsquared.cmc.ios"
 			]
 		],
 		"NSAppTransportSecurity": [
@@ -100,7 +100,7 @@ class BaseProjectProfile: ProjectProfile{
 				name: projectName,
 				platform: .iOS,
 				product: .app,
-				bundleId: "com.centralMakeusChallenge.\(projectName)",
+				bundleId: "com.softsquared.cmc.ios",
 				deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone]),
 				infoPlist: .extendingDefault(with: infoPlist),
 				sources: ["\(projectName)/Sources/**"],
@@ -112,7 +112,7 @@ class BaseProjectProfile: ProjectProfile{
 				name: "DesignSystem",
 				platform: .iOS,
 				product: .framework,
-				bundleId: "com.centralMakeusChallenge.\(projectName).DesignSystem",
+				bundleId: "com.softsquared.cmc.ios.DesignSystem",
 				deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone]),
 				infoPlist: .default,
 				sources: ["DesignSystem/Sources/**"],
@@ -128,9 +128,9 @@ let profile = BaseProjectProfile()
 
 let project: Project = .init(
 	name: profile.projectName,
-	organizationName: "com.centralMakeusChallenge",
+	organizationName: "com.softsquared.cmc",
 	settings: .settings(configurations: [
-		.debug(name: "DEV"),
+		.debug(name: "Dev"),
 		.release(name: "Release")
 	]),
 	targets: profile.generateTarget()

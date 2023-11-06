@@ -13,7 +13,7 @@ extension Project {
 																		 dependencies: additionalTargets.map { TargetDependency.target(name: $0) })
 				targets += additionalTargets.flatMap({ makeFrameworkTargets(name: $0, platform: platform) })
 				return Project(name: name,
-											 organizationName: "com.centralMakeusChallenge",
+											 organizationName: "com.softsquared.cmc",
 											 targets: targets)
 		}
 
@@ -24,7 +24,7 @@ extension Project {
 				let sources = Target(name: name,
 								platform: platform,
 								product: .framework,
-								bundleId: "com.centralMakeusChallenge.\(name)",
+								bundleId: "com.softsquared.cmc.ios",
 								infoPlist: .default,
 								sources: ["\(name)/Sources/**"],
 								resources: [],
@@ -54,7 +54,7 @@ extension Project {
 						name: name,
 						platform: platform,
 						product: .app,
-						bundleId: "com.centralMakeusChallenge.\(name)",
+						bundleId: "com.softsquared.cmc.ios",
 						infoPlist: .extendingDefault(with: infoPlist),
 						sources: ["\(name)/Sources/**"],
 						resources: ["\(name)/Resources/**"],
