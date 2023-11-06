@@ -30,15 +30,7 @@ final class MainSignUpView: BaseView {
 		let view = UIView()
 		return view
 	}()
-	
-	private lazy var titleLabel: UILabel = {
-		let label = UILabel()
-		label.text = "가입 정보를 입력해주세요"
-		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 26)
-		label.textColor = DesignSystemAsset.gray50.color
-		return label
-	}()
-	
+
 	private lazy var emailTextField: CMCTextField = {
 		let textField = CMCTextField(
 			placeHolder: "이메일을 입력해주세요",
@@ -121,7 +113,6 @@ final class MainSignUpView: BaseView {
 		self.addSubview(scrollView)
 		scrollView.addSubview(mainContentView)
 		
-		mainContentView.addSubview(titleLabel)
 		mainContentView.addSubview(emailTextField)
 		mainContentView.addSubview(passwordTextField)
 		mainContentView.addSubview(confirmPasswordTextField)
@@ -142,13 +133,8 @@ final class MainSignUpView: BaseView {
 			make.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide.snp.height).offset(1)
 		}
 		
-		titleLabel.snp.makeConstraints{ make in
-			make.top.equalToSuperview().offset(30)
-			make.leading.equalToSuperview().offset(24)
-		}
-		
 		emailTextField.snp.makeConstraints{ make in
-			make.top.equalTo(titleLabel.snp.bottom).offset(30)
+			make.top.equalToSuperview()
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(74)

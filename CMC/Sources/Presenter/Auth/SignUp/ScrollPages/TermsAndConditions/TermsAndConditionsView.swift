@@ -19,14 +19,6 @@ import UIKit
 final class TermsAndConditionsView: BaseView {
 	// MARK: - UI
 	
-	private lazy var titleLabel: UILabel = {
-		let label = UILabel()
-		label.text = "약관동의"
-		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 26)
-		label.textColor = DesignSystemAsset.gray50.color
-		return label
-	}()
-	
 	private lazy var buttonStackViews: [UIStackView] = {
 		var stackViews: [UIStackView] = []
 		buttons.enumerated().forEach { index, button in
@@ -130,7 +122,6 @@ final class TermsAndConditionsView: BaseView {
 	// MARK: - Methods
 	
 	override func setAddSubView() {
-		self.addSubview(titleLabel)
 		self.addSubview(buttonStackViews[0])
 		self.addSubview(separeteBar)
 		self.addSubview(rowStackViews[0])
@@ -140,11 +131,6 @@ final class TermsAndConditionsView: BaseView {
 	}
 	
 	override func setConstraint() {
-		titleLabel.snp.makeConstraints{ make in
-			make.top.equalToSuperview().offset(30)
-			make.leading.equalToSuperview().offset(24)
-		}
-		
 		buttons.forEach { button in
 			button.snp.makeConstraints { make in
 				make.width.height.equalTo(44)
@@ -158,7 +144,7 @@ final class TermsAndConditionsView: BaseView {
 		}
 		
 		buttonStackViews[0].snp.makeConstraints{ make in
-			make.top.equalTo(titleLabel.snp.bottom).offset(30)
+			make.top.equalToSuperview()
 			make.leading.equalToSuperview().offset(14)
 		}
 		

@@ -51,11 +51,18 @@ class SignUpViewController: BaseViewController {
 	}()
 	
 	private lazy var cmcPager: CMCProgressPager = {
-		let progressPager = CMCProgressPager(pages: [
+		let progressPager = CMCProgressPager(
+			pages: [
 			termsAndConditionsView,
 			mainSignUpView,
 			completeSignUpView
-		])
+		],
+			titles: [
+				"약관동의",
+				"가입 정보를 입력해주세요",
+				"CMC 정보를 입력해주세요"
+			]
+		)
 		return progressPager
 	}()
 	

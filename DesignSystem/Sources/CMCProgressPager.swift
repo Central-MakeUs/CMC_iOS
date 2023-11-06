@@ -26,6 +26,14 @@ public final class CMCProgressPager: UIView {
 		return progressView
 	}()
 	
+	private lazy var titleLabel: UILabel = {
+		let label = UILabel()
+		label.text = "default"
+		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 26)
+		label.textColor = DesignSystemAsset.gray50.color
+		return label
+	}()
+	
 	private lazy var pagerScrollView: UIScrollView = {
 		let scrollView = UIScrollView()
 		scrollView.isPagingEnabled = true
@@ -40,14 +48,17 @@ public final class CMCProgressPager: UIView {
 	private let disposeBag = DisposeBag()
 	private let currentPage = BehaviorRelay(value: 1)
 	
-	private var pages: [UIView] = []
+	private var pages: [UIView]
+	private let titles: [String]
 	private var pagesCount: Int
 	
 	// MARK: - Initializers
 	public init(
-		pages: [UIView]
+		pages: [UIView],
+		titles: [String]
 	) {
 		self.pages = pages
+		self.titles = titles
 		self.pagesCount = pages.count
 		
 		super.init(frame: .zero)
@@ -68,7 +79,7 @@ public final class CMCProgressPager: UIView {
 		for (index, page) in pages.enumerated() {
 			pagerScrollView.addSubview(page)
 			page.snp.makeConstraints { make in
-				make.top.equalTo(progressView.snp.bottom)
+				make.top.equalTo(titleLabel.snp.bottom).offset(24)
 				make.bottom.equalTo(self.snp.bottom)
 				make.width.equalTo(self.frame.size.width)
 				make.leading.equalToSuperview().offset(CGFloat(index) * self.frame.size.width)
@@ -82,6 +93,7 @@ public final class CMCProgressPager: UIView {
 	
 	private func setAddSubView() {
 		self.addSubview(progressView)
+		self.addSubview(titleLabel)
 		self.addSubview(pagerScrollView)
 	}
 	
@@ -93,8 +105,13 @@ public final class CMCProgressPager: UIView {
 			progressView.leading.trailing.equalTo(self)
 		}
 		
+		self.titleLabel.snp.makeConstraints { titleLabel in
+			titleLabel.top.equalTo(progressView.snp.bottom).offset(30)
+			titleLabel.leading.equalToSuperview().offset(24)
+		}
+		
 		self.pagerScrollView.snp.makeConstraints { scrollView in
-			scrollView.top.equalTo(progressView.snp.bottom)
+			scrollView.top.equalTo(titleLabel.snp.bottom).offset(24)
 			scrollView.leading.trailing.bottom.equalTo(self)
 		}
 	}
@@ -113,6 +130,13 @@ public final class CMCProgressPager: UIView {
 				guard let self = self else { return }
 				let xOffset = CGFloat(page - 1) * self.frame.size.width
 				self.pagerScrollView.setContentOffset(CGPoint(x: xOffset, y: 0), animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		currentPage.asObservable()
+			.withUnretained(self)
+			.subscribe(onNext: { owner, page in
+				owner.titleLabel.text = owner.titles[page - 1]
 			})
 			.disposed(by: disposeBag)
 		
