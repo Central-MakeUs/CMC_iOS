@@ -38,7 +38,11 @@ class SignUpViewController: BaseViewController {
 	
 	private lazy var mainSignUpView: MainSignUpView = {
 		let view = MainSignUpView(
-			viewModel: MainSignUpViewModel(),
+			viewModel: MainSignUpViewModel(
+				authUsecase: DefaultAuthUsecase(
+					authRepository: DefaultAuthRepository()
+				)
+			),
 			parentViewModel: viewModel
 		)
 		return view

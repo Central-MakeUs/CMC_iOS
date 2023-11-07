@@ -24,7 +24,7 @@ enum PasswordValidate {
 		case .specialCharRegex:
 			return ".*[!@#$%^&*()_+{}:<>?]+.*"
 		case .lengthRegex:
-			return "^.{8,20}$"
+			return "^.{8,16}$"
 		}
 	}
 }

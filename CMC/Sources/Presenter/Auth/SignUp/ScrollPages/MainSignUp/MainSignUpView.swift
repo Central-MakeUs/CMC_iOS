@@ -41,6 +41,11 @@ final class MainSignUpView: BaseView {
 		return textField
 	}()
 	
+	private lazy var emailErrorCell: CMCErrorMessage = {
+		let errorCell = CMCErrorMessage(title: "", type: .none)
+		return errorCell
+	}()
+	
 	private lazy var passwordTextField: CMCTextField = {
 		let textField = CMCTextField(
 			placeHolder: "비밀번호를 입력해주세요",
@@ -130,6 +135,7 @@ final class MainSignUpView: BaseView {
 		scrollView.addSubview(mainContentView)
 		
 		mainContentView.addSubview(emailTextField)
+		mainContentView.addSubview(emailErrorCell)
 		mainContentView.addSubview(passwordTextField)
 		mainContentView.addSubview(passwordErrorStackView)
 		mainContentView.addSubview(confirmPasswordTextField)
@@ -156,8 +162,13 @@ final class MainSignUpView: BaseView {
 			make.height.equalTo(74)
 		}
 		
+		emailErrorCell.snp.makeConstraints{ make in
+			make.top.equalTo(emailTextField.snp.bottom).offset(9)
+			make.leading.equalTo(emailTextField).offset(5)
+		}
+		
 		passwordTextField.snp.makeConstraints{ make in
-			make.top.equalTo(emailTextField.snp.bottom).offset(30)
+			make.top.equalTo(emailErrorCell.snp.bottom).offset(30)
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(74)
@@ -215,6 +226,51 @@ final class MainSignUpView: BaseView {
 			})
 			.disposed(by: disposeBag)
 
+		let input = MainSignUpViewModel.Input(
+			email: emailTextField.rx.text.orEmpty.asObservable(),
+			password: passwordTextField.rx.text.orEmpty.asObservable(),
+			rePassword: confirmPasswordTextField.rx.text.orEmpty.asObservable(),
+			name: nameTextField.rx.text.orEmpty.asObservable(),
+			emailDupTapped: emailTextField.accessoryCMCButton.rx.tap.asObservable()
+		)
+		
+		let output = viewModel.transform(input: input)
+		
+		output.emailDuplicate
+			.withUnretained(self)
+			.subscribe(onNext: { owner, result in
+				let (duplicate, message) = result
+				let type: CMCErrorMessage.CMCErrorMessageType = duplicate ? .disabled : .success
+				owner.emailErrorCell.rxType.accept(type)
+				owner.emailErrorCell.setErrorMessage(message: message)
+			})
+			.disposed(by: disposeBag)
+		
+		output.passwordValidations.enumerated()
+			.map { idx, observable in
+				observable
+					.withUnretained(self)
+					.subscribe(onNext: { owner, active in
+						let type: CMCErrorMessage.CMCErrorMessageType = active ? .success : .disabled
+						owner.passwordErrorCells[idx].rxType.accept(type)
+					})
+			}
+			.forEach { $0.disposed(by: disposeBag) }
+		
+		output.passwordConfirmRegex
+			.withUnretained(self)
+			.subscribe(onNext: { owner, active in
+				let type: CMCErrorMessage.CMCErrorMessageType = active ? .success : .disabled
+				owner.passwordCheckErrorCell.rxType.accept(type)
+			})
+			.disposed(by: disposeBag)
+		
+		output.nextAvailable
+			.withUnretained(self)
+			.subscribe(onNext: { owner, moveNext in
+				owner.parentViewModel.readyForNextButton.accept(moveNext)
+			})
+			.disposed(by: disposeBag)
 	}
 	
 }
