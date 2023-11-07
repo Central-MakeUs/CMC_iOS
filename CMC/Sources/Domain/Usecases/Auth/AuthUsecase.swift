@@ -12,4 +12,5 @@ import RxSwift
 protocol AuthUsecase {
 	func signUp(body: SignUpBody) -> Single<SignUpModel>
 	func signIn(body: SignInBody) -> Single<SignInModel>
+	func emailDup(query: EmailDupQuery) -> Single<EmailDupModel>
 }

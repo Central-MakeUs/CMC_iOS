@@ -39,5 +39,15 @@ final class DefaultAuthRepository: AuthRepository {
 			}
 	}
 	
+	func emailDup(query: EmailDupQuery) -> Single<EmailDupDTO> {
+		let endpoint = AuthEndpoint.emailDup(query: query)
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(EmailDupDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
 	
 }

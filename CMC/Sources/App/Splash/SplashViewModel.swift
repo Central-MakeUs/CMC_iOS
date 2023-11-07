@@ -36,11 +36,9 @@ class SplashViewModel: ViewModelType{
 			.observe(on: MainScheduler.instance)
 			.subscribe(
 				onSuccess: { [weak self] message in
-					print("\n🍎 >_< \(message.message) 🍎")
 					self?.checkAutoSignIn()
 				}, onFailure: { [weak self] error in
 					self?.coordinator?.userActionState.accept(.auth)
-					print("\n🍎 ㅠ_ㅠ \(error.localizedDescription) 🍎")
 					CMCToastManager.shared.addToast(message: error.localizedDescription)
 				}).disposed(by: disposeBag)
 		
