@@ -202,13 +202,6 @@ final class MainSignUpView: BaseView {
 	}
 	
 	override func bind() {
-		scrollView.rx.tapGesture()
-			.when(.recognized)
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.endEditing(true)
-			})
-			.disposed(by: disposeBag)
 		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)

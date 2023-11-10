@@ -27,7 +27,6 @@ class SignUpViewModel: ViewModelType{
 	
 	struct Output {
 		let readyForNextButton: Observable<Bool>
-		let backButtonHidden: Observable<Bool>
 		let navigationAccessoryText: Observable<String>
 		let nextButtonTitle: Observable<String>
 	}
@@ -39,8 +38,6 @@ class SignUpViewModel: ViewModelType{
 	weak var coordinator: AuthCoordinator?
 	
 	let readyForNextButton = BehaviorRelay<Bool>(value: false)
-	
-	private let backButtonHidden = BehaviorSubject<Bool>(value: false)
 	
 	// MARK: - Initializers
 	init(
@@ -68,13 +65,6 @@ class SignUpViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
-		input.nowPage
-			.withUnretained(self)
-			.subscribe(onNext: { owner, page in
-				owner.backButtonHidden.onNext(page >= 3)
-			})
-			.disposed(by: disposeBag)
-		
 		let navigationAccessoryText = input.nowPage
 			.map { page in
 				return "\(page)/\(input.totalPage)"
@@ -87,7 +77,6 @@ class SignUpViewModel: ViewModelType{
 		
 		return Output(
 			readyForNextButton: readyForNextButton.asObservable(),
-			backButtonHidden: backButtonHidden.asObservable(),
 			navigationAccessoryText: navigationAccessoryText,
 			nextButtonTitle: nextbuttonTitle
 		)

@@ -49,8 +49,10 @@ class SignUpViewController: BaseViewController {
 	}()
 	
 	private lazy var completeSignUpView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .yellow
+		let view = CompletedSignUpView(
+			viewModel: CompletedSignUpViewModel(),
+			parentViewModel: viewModel
+		)
 		return view
 	}()
 	
@@ -126,9 +128,6 @@ class SignUpViewController: BaseViewController {
 	override func bind() {
 		
 		NotificationManager.shared.keyboardHeightSubject
-			.debug()
-			.distinctUntilChanged()
-			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, keyboardHeight in
 				let realHeight = keyboardHeight > 0 ? keyboardHeight : 20
@@ -141,6 +140,22 @@ class SignUpViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
+		nextButton.rx.tap
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.cmcPager.nextPage()
+				owner.view.endEditing(true)
+			})
+			.disposed(by: disposeBag)
+		
+		self.view.rx.tapGesture()
+			.when(.recognized)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.view.endEditing(true)
+			})
+			.disposed(by: disposeBag)
+		
 		let input = SignUpViewModel.Input(
 			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
 			nextButtonTapped: nextButton.rx.tap.asObservable(),
@@ -150,34 +165,12 @@ class SignUpViewController: BaseViewController {
 		
 		let output = viewModel.transform(input: input)
 		
-		nextButton.rx.tap
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.cmcPager.nextPage()
-				owner.nextButton.snp.updateConstraints { make in
-					make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-20)
-				}
-				UIView.animate(withDuration: 0.3) {
-					owner.view.layoutIfNeeded()
-				}
-			})
-			.disposed(by: disposeBag)
-		
 		output.readyForNextButton
-			.asObservable()
 			.withUnretained(self)
 			.subscribe(onNext: { owner, isActive in
 				isActive
 				? owner.nextButton.makeCustomState(type: .login(.inactive))
 				: owner.nextButton.makeCustomState(type: .login(.disabled))
-			})
-			.disposed(by: disposeBag)
-		
-		output.backButtonHidden
-			.observe(on: MainScheduler.instance)
-			.withUnretained(self)
-			.subscribe(onNext: { owner, hidden in
-				owner.navigationBar.backButton.isHidden = hidden
 			})
 			.disposed(by: disposeBag)
 		
