@@ -168,7 +168,7 @@ final class MainSignUpView: BaseView {
 		}
 		
 		passwordTextField.snp.makeConstraints{ make in
-			make.top.equalTo(emailErrorCell.snp.bottom).offset(30)
+			make.top.equalTo(emailTextField.snp.bottom).offset(30)
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(74)
@@ -239,10 +239,12 @@ final class MainSignUpView: BaseView {
 		output.emailDuplicate
 			.withUnretained(self)
 			.subscribe(onNext: { owner, result in
-				let (duplicate, message) = result
-				let type: CMCErrorMessage.CMCErrorMessageType = duplicate ? .disabled : .success
+				let (notDuplicate, message) = result
+				let type: CMCErrorMessage.CMCErrorMessageType = notDuplicate ? .success : .disabled
+				let emailType: CMCTextField.TextFieldType = notDuplicate ? .disabled : .error
 				owner.emailErrorCell.rxType.accept(type)
 				owner.emailErrorCell.setErrorMessage(message: message)
+				owner.emailTextField.rxType.accept(emailType)
 			})
 			.disposed(by: disposeBag)
 		

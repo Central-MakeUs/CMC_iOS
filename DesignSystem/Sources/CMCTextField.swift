@@ -311,7 +311,7 @@ extension CMCTextField{
 					textFieldBackgroundColor: DesignSystemAsset.gray800.color,
 					textFieldTextColor: DesignSystemAsset.gray50.color,
 					bottomBoarderColor: DesignSystemAsset.gray700.color,
-					isUserInteractive: true,
+					isUserInteractive: false,
 					accessoryHidden: false
 				)
 			case .error:

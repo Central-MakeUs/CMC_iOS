@@ -40,7 +40,7 @@ class SignUpViewController: BaseViewController {
 		let view = MainSignUpView(
 			viewModel: MainSignUpViewModel(
 				authUsecase: DefaultAuthUsecase(
-					authRepository: DefaultAuthRepository()
+					authRepository: FakeAuthRepository()
 				)
 			),
 			parentViewModel: viewModel
@@ -127,6 +127,7 @@ class SignUpViewController: BaseViewController {
 		
 		NotificationManager.shared.keyboardHeightSubject
 			.debug()
+			.distinctUntilChanged()
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, keyboardHeight in
@@ -153,6 +154,12 @@ class SignUpViewController: BaseViewController {
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.cmcPager.nextPage()
+				owner.nextButton.snp.updateConstraints { make in
+					make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-20)
+				}
+				UIView.animate(withDuration: 0.3) {
+					owner.view.layoutIfNeeded()
+				}
 			})
 			.disposed(by: disposeBag)
 		
@@ -187,6 +194,7 @@ class SignUpViewController: BaseViewController {
 			.withUnretained(self)
 			.subscribe(onNext: { owner, title in
 				owner.nextButton.setTitle(title: title)
+				owner.view.endEditing(true)
 			})
 			.disposed(by: disposeBag)
 	}
