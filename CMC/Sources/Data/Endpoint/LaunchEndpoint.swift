@@ -24,6 +24,13 @@ enum LaunchEndpoint: Endpoint {
 		}
 	}
 	
+	var headers: HTTPHeaders {
+		return [
+			"Content-Type": "application/json",
+			"accept": "application/json"
+		]
+	}
+	
 	var path: String {
 		switch self {
 		case .health:

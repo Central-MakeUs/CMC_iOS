@@ -27,6 +27,13 @@ enum AuthEndpoint: Endpoint {
 		}
 	}
 	
+	var headers: HTTPHeaders {
+		return [
+			"Content-Type": "application/json;charset=UTF-8",
+			"accept": "application/json;charset=UTF-8"
+		]
+	}
+	
 	var path: String {
 		switch self {
 		case .signUp:

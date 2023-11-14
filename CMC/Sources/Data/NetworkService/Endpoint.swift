@@ -35,12 +35,6 @@ protocol Endpoint {
 
 extension Endpoint {
 	
-	/// 기본 헤더타입 세팅 (어지간하면 json기반이지 않을까..?)
-	/// application/x-www-form-urlencoded 요 타입일 경우가 있을수도??
-	var headers: HTTPHeaders {
-		return ["Content-Type": "application/json"]
-	}
-	
 	/// 최종 완성된 URLSession.shared.request()
 	func toURLRequest() -> URLRequest? {
 		guard let url = configureURL() else { return nil }

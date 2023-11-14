@@ -202,13 +202,6 @@ final class MainSignUpView: BaseView {
 	}
 	
 	override func bind() {
-		scrollView.rx.tapGesture()
-			.when(.recognized)
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.endEditing(true)
-			})
-			.disposed(by: disposeBag)
 		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)
@@ -226,6 +219,21 @@ final class MainSignUpView: BaseView {
 			})
 			.disposed(by: disposeBag)
 
+		Observable.combineLatest(
+			emailTextField.rx.text.orEmpty,
+			passwordTextField.rx.text.orEmpty,
+			nameTextField.rx.text.orEmpty
+		)
+		.withUnretained(self)
+		.subscribe(onNext: { owner, body in
+			let (email, password, name) = body
+			owner.parentViewModel.emailRelay.accept(email)
+			owner.parentViewModel.passwordRelay.accept(password)
+			owner.parentViewModel.nameRelay.accept(name)
+		})
+		.disposed(by: disposeBag)
+		
+		
 		let input = MainSignUpViewModel.Input(
 			email: emailTextField.rx.text.orEmpty.asObservable(),
 			password: passwordTextField.rx.text.orEmpty.asObservable(),
