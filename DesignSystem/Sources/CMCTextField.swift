@@ -108,7 +108,7 @@ public final class CMCTextField: UIView{
 	///   - keyboardType: 키보드 타입
 	/// - Parameters (Optional):
 	/// - Parameters (Accessable):
-	///   - rxType: GalapagosTextField의 타입변환 조종값
+	///   - rxType: CMCTextField의 타입변환 조종값
 	///   - accessoryState: 우측 악세서리 버튼의 상태 (이미지 일 경우만)
 	///   - isSecureTextEntry: 텍스트필드의 secureTextEntry 상태
 	// MARK: - Initializers
