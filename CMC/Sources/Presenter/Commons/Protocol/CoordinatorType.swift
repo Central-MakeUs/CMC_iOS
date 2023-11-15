@@ -31,8 +31,8 @@ protocol CoordinatorType: AnyObject{
 	func popViewController()
 	
 	// MARK: Modal 동작
-	func presentViewController(viewController vc: UIViewController )
-	func dismissViewController()
+	func presentViewController(viewController vc: UIViewController, style: UIModalPresentationStyle )
+	func dismissViewController(completion: (() -> Void)?)
 	
 }
 
@@ -53,12 +53,13 @@ extension CoordinatorType{
 		self.navigationController.popViewController(animated: true)
 	}
 	
-	func presentViewController(viewController vc: UIViewController){
+	func presentViewController(viewController vc: UIViewController, style: UIModalPresentationStyle){
+		vc.modalPresentationStyle = style
 		self.navigationController.present(vc, animated: true)
 	}
 	
-	func dismissViewController() {
-		navigationController.dismiss(animated: true)
+	func dismissViewController(completion: (() -> Void)?) {
+		navigationController.dismiss(animated: true, completion: completion)
 	}
 	
 }

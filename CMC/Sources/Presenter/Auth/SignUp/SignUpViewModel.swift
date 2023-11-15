@@ -107,16 +107,23 @@ class SignUpViewModel: ViewModelType{
 					.asObservable()
 			}
 			.observe(on: MainScheduler.instance)
-			.subscribe(onNext: { [weak self] result in
+			.withUnretained(self)
+			.subscribe(onNext: { owner, result in
 				switch result {
 				case .success(let model):
+					//MARK: - 흠,,, 회원 수락을 직접 해주는거면, 이 친구들 저장 할 필요가 없지않나,,,?
+					/*
 					UserDefaultManager.shared.save(model.accessToken, for: .accessToken)
 					UserDefaultManager.shared.save(model.refreshToken, for: .refreshToken)
-					print("🍎 발급받은 악세스토큰: \(model.accessToken) 🍎")
-					self?.coordinator?.finish()
+					 */
+					let signUpCompletedViewController = SignUpCompletedViewController(
+						viewModel: SignUpCompletedViewModel(
+							coordinator: owner.coordinator
+						)
+					)
+					owner.coordinator?.presentViewController(viewController: signUpCompletedViewController, style: .overFullScreen)
 				case .failure(let error):
-					print("🍎 발생한 에러: \(error) 🍎")
-					CMCToastManager.shared.addToast(message: "😵‍💫 로그인에 실패했습니다 ㅜ..ㅜ 😵‍💫")
+					CMCToastManager.shared.addToast(message: "회원가입에 실패했습니다: \(error.localizedDescription)")
 				}
 			})
 			.disposed(by: disposeBag)

@@ -70,12 +70,11 @@ class AppCoordinator: CoordinatorType {
 
 extension AppCoordinator: CoordinatorDelegate{
 	func didFinish(childCoordinator: CoordinatorType) {
-//		self.navigationController.popViewController(animated: true)
-//		if childCoordinator is AuthCoordinator {
-//			self.userActionState.accept(.tabBar)
-//		} else {
-//			self.userActionState.accept(.auth)
-//		}
-		// 여기는 회원가입까지 끝나고 ㅎ
+		self.navigationController.popViewController(animated: true)
+		if childCoordinator is AuthCoordinator {
+			self.userActionState.accept(.tabBar)
+		} else {
+			self.userActionState.accept(.auth)
+		}
 	}
 }
