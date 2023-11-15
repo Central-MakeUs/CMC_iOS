@@ -63,12 +63,32 @@ class SignInViewModel: ViewModelType{
 				case .success(let model):
 					UserDefaultManager.shared.save(model.accessToken, for: .accessToken)
 					UserDefaultManager.shared.save(model.refreshToken, for: .refreshToken)
-					print("🍎 발급받은 악세스토큰: \(model.accessToken) 🍎")
 					self?.coordinator?.finish()
-				case .failure(let error):
-					print("🍎 발생한 에러: \(error) 🍎")
-					CMCToastManager.shared.addToast(message: "😵‍💫 로그인에 실패했습니다 ㅜ..ㅜ 😵‍💫")
+				case .failure(_):
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "존재하지 않는 계정이에요",
+						body: "아이디 또는 비밀번호를 확인해주세요!",
+						buttonTitle: "확인"
+					)
 				}
+			})
+			.disposed(by: disposeBag)
+		
+		input.goSignUpButtonTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.userActionState.accept(.signUp)
+			})
+			.disposed(by: disposeBag)
+		
+		input.forgetIDBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				CMCBottomSheetManager.shared.showBottomSheet(
+					title: "아이디 찾기는\n운영진에게 문의해주세요 :)",
+					body: nil,
+					buttonTitle: "확인"
+				)
 			})
 			.disposed(by: disposeBag)
 		

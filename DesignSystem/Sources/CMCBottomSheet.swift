@@ -22,8 +22,16 @@ public final class CMCBottomSheet: UIView{
 		let label = UILabel()
 		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 18)
 		label.textColor = DesignSystemAsset.gray50.color
-		label.text = title
 		label.numberOfLines = 0
+		let paragraphStyle = NSMutableParagraphStyle()
+		paragraphStyle.lineSpacing = 10
+		let attributedString = NSAttributedString(
+				string: title,
+				attributes: [
+						.paragraphStyle: paragraphStyle,
+				]
+		)
+		label.attributedText = attributedString
 		label.textAlignment = .center
 		return label
 	}()

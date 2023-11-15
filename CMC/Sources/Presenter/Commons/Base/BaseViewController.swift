@@ -28,6 +28,7 @@ class BaseViewController: UIViewController {
 		setAttribute()
 		setConstraint()
 		bind()
+		CMCIndecatorManager.shared.hide()
 	}
 	
 	func setAddSubView() {}

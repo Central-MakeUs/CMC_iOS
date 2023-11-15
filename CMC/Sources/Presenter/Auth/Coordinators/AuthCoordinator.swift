@@ -39,8 +39,10 @@ class AuthCoordinator: CoordinatorType {
 	
 	func setState() {
 		self.userActionState
+			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { [weak self] state in
 				guard let self = self else {return}
+				CMCIndecatorManager.shared.show()
 				switch state{
 				case .main:
 					let mainAuthViewController = MainAuthViewController(
@@ -52,6 +54,7 @@ class AuthCoordinator: CoordinatorType {
 						self.navigationController.popViewController(animated: true)
 					}else {
 						self.pushViewController(viewController: mainAuthViewController)
+						CMCIndecatorManager.shared.hide()
 					}
 				case .signUp:
 					let signUpViewController = SignUpViewController(
@@ -62,11 +65,10 @@ class AuthCoordinator: CoordinatorType {
 							)
 						)
 					)
-					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
+					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
 						self.navigationController.popViewController(animated: true)
-					}else {
-						self.pushViewController(viewController: signUpViewController)
 					}
+					self.pushViewController(viewController: signUpViewController)
 				case .signIn:
 					let signInViewController = SignInViewController(
 						viewModel: SignInViewModel(
@@ -76,11 +78,11 @@ class AuthCoordinator: CoordinatorType {
 							)
 						)
 					)
-					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
+					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
 						self.navigationController.popViewController(animated: true)
-					}else {
-						self.pushViewController(viewController: signInViewController)
 					}
+					self.pushViewController(viewController: signInViewController)
+					CMCIndecatorManager.shared.hide()
 				}
 			}).disposed(by: disposeBag)
 	}

@@ -31,7 +31,7 @@ class CMCIndecatorManager {
 	}
 	
 	// MARK: - Methods
-	func setup() {
+	private func setup() {
 		
 		let scenes = UIApplication.shared.connectedScenes
 		let windowScene = scenes.first as? UIWindowScene

@@ -39,16 +39,16 @@ class AppCoordinator: CoordinatorType {
 	
 	func setState(){
 		self.userActionState
-			.subscribe(onNext: { [weak self] state in
-				guard let self = self else {return}
+			.withUnretained(self)
+			.subscribe(onNext: { owner, state in
 				switch state{
 				case .auth:
 					let authCoordinator = AuthCoordinator(
-						navigationController: self.navigationController
+						navigationController: owner.navigationController
 					)
-					authCoordinator.delegate = self
+					authCoordinator.delegate = owner
 					authCoordinator.start()
-					self.childCoordinators.append(authCoordinator)
+					owner.childCoordinators.append(authCoordinator)
 				case .tabBar:
 					print("🍎 여기 들어가면, 메인 탭 화면으로~ 🍎")
 				}
