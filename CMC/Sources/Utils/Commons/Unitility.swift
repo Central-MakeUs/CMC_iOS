@@ -37,6 +37,13 @@ class Utility {
 		}
 	}
 	
+	static func checkEmailValidation(email: Observable<String>, validate: EmailValidate) -> Observable<Bool> {
+		let emailTest = NSPredicate(format: "SELF MATCHES %@", validate.validate)
+		return email.map { email in
+			return emailTest.evaluate(with: email)
+		}
+	}
+	
 	static func checkPasswordValidation(password: Observable<String>, validate: PasswordValidate) -> Observable<Bool> {
 		let passwordTest = NSPredicate(format: "SELF MATCHES %@", validate.validate)
 		return password.map { password in

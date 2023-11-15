@@ -40,7 +40,7 @@ class SignUpViewController: BaseViewController {
 		let view = MainSignUpView(
 			viewModel: MainSignUpViewModel(
 				authUsecase: DefaultAuthUsecase(
-					authRepository: FakeAuthRepository()
+					authRepository: DefaultAuthRepository()
 				)
 			),
 			parentViewModel: viewModel

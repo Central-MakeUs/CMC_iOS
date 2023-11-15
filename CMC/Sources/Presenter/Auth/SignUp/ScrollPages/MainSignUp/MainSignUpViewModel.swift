@@ -24,6 +24,7 @@ final class MainSignUpViewModel: ViewModelType {
 	}
 	
 	struct Output {
+		let emailValidation: Observable<Bool>
 		let emailDuplicate: Observable<(Bool, String)>
 		let passwordValidations: [Observable<Bool>]
 		let passwordConfirmRegex: Observable<Bool>
@@ -44,21 +45,7 @@ final class MainSignUpViewModel: ViewModelType {
 	
 	func transform(input: Input) -> Output {
 		
-		input.emailDupTapped
-			.withLatestFrom(input.email)
-			.withUnretained(self)
-			.flatMap { owner, email -> Observable<(Bool, String)> in
-				let query = EmailDupQuery(email: email)
-				return owner.authUsecase.emailDup(query: query)
-					.asObservable()
-					.map { (true, $0.message) }
-					.catch { error -> Observable<(Bool, String)> in
-						guard let customError = (error as? NetworkError)?.errorDescription else { return .empty() }
-						return .just((false, customError))
-					}
-			}
-			.bind(to: emailDupResult)
-			.disposed(by: disposeBag)
+		let emailValidation: Observable<Bool> = Utility.checkEmailValidation(email: input.email, validate: .emailRegex)
 		
 		let passwordValidations: [Observable<Bool>] = [
 			.englishRegex,
@@ -85,7 +72,25 @@ final class MainSignUpViewModel: ViewModelType {
 		)
 			.map { $0.0 && $1 && $2 && $3 }
 		
+		input.emailDupTapped
+			.withLatestFrom(input.email)
+			.withUnretained(self)
+			.flatMap { owner, email -> Observable<(Bool, String)> in
+				let query = EmailDupQuery(email: email)
+				return owner.authUsecase.emailDup(query: query)
+					.asObservable()
+					.map { (true, $0.message) }
+					.catch { error -> Observable<(Bool, String)> in
+						let customError = (error as! NetworkError).errorDescription
+						return .just((false, customError))
+					}
+			}
+			.bind(to: emailDupResult)
+			.disposed(by: disposeBag)
+		
+		
 		return Output(
+			emailValidation: emailValidation,
 			emailDuplicate: emailDupResult.asObservable(),
 			passwordValidations: passwordValidations,
 			passwordConfirmRegex: passwordConfirmRegex,

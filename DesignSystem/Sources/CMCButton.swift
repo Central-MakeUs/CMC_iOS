@@ -111,6 +111,7 @@ public final class CMCButton: UIView{
 		
 		rxType
 			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, type in
 				owner.configureUISet(type: type)
 			})

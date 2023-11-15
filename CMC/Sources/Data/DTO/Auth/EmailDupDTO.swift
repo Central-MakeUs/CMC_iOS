@@ -12,15 +12,11 @@ import Foundation
 struct EmailDupDTO: Codable {
 	let isSuccess: Bool
 	let code, message: String
-	let result: EmailDupResponse
-	
-	struct EmailDupResponse: Codable {
-		let message: String
-	}
+	let result: String
 	
 	func toDomain() -> EmailDupModel {
 		return EmailDupModel(
-			message: result.message
+			message: result
 		)
 	}
 }

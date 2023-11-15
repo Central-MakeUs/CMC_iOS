@@ -32,6 +32,7 @@ final class DefaultAuthUsecase: AuthUsecase {
 	}
 	
 	func emailDup(query: EmailDupQuery) -> Single<EmailDupModel> {
+		
 		return authRepository.emailDup(query: query)
 			.map { dto in
 				return dto.toDomain()

@@ -8,6 +8,18 @@
 
 import Foundation
 
+enum EmailValidate {
+	
+	case emailRegex
+	
+	var validate: String {
+		switch self {
+		case .emailRegex:
+			return "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+		}
+	}
+}
+
 enum PasswordValidate {
 	
 	case englishRegex

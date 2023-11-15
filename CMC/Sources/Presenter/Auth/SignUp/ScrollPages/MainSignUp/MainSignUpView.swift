@@ -203,6 +203,15 @@ final class MainSignUpView: BaseView {
 	
 	override func bind() {
 		
+		emailTextField.rxType
+			.withUnretained(self)
+			.subscribe(onNext: { owner, type in
+				if type == .focus {
+					owner.emailErrorCell.reset()
+				}
+			})
+			.disposed(by: disposeBag)
+		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
@@ -215,7 +224,7 @@ final class MainSignUpView: BaseView {
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, state in
-				owner.passwordTextField.isSecureTextEntry = !state
+				owner.confirmPasswordTextField.isSecureTextEntry = !state
 			})
 			.disposed(by: disposeBag)
 
@@ -244,15 +253,24 @@ final class MainSignUpView: BaseView {
 		
 		let output = viewModel.transform(input: input)
 		
+		output.emailValidation
+			.withUnretained(self)
+			.subscribe(onNext: { owner, active in
+				let buttonType: CMCButton.CMCButtonType = active ? .login(.inactive) : .login(.disabled)
+				owner.emailTextField.accessoryCMCButton.rxType.accept(buttonType)
+			})
+			.disposed(by: disposeBag)
+		
 		output.emailDuplicate
 			.withUnretained(self)
 			.subscribe(onNext: { owner, result in
 				let (notDuplicate, message) = result
-				let type: CMCErrorMessage.CMCErrorMessageType = notDuplicate ? .success : .disabled
+				let type: CMCErrorMessage.CMCErrorMessageType = notDuplicate ? .none : .error
 				let emailType: CMCTextField.TextFieldType = notDuplicate ? .disabled : .error
+				let errorMessage: String = notDuplicate ? "" : message
 				owner.emailErrorCell.rxType.accept(type)
-				owner.emailErrorCell.setErrorMessage(message: message)
 				owner.emailTextField.rxType.accept(emailType)
+				owner.emailErrorCell.setErrorMessage(message: errorMessage)
 			})
 			.disposed(by: disposeBag)
 		

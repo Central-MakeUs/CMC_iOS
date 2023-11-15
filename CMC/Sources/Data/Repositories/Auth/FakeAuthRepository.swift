@@ -44,7 +44,7 @@ final class FakeAuthRepository: AuthRepository {
 			isSuccess: true,
 			code: "200",
 			message: "성공",
-			result: .init(message: "이메일 인증에 성공했어요~!")
+			result: "사용 가능한 이메일입니다."
 		)
 		return Single.just(fakeEmailDupDTO)
 	}
