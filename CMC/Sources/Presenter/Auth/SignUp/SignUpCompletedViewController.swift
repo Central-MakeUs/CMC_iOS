@@ -87,10 +87,9 @@ class SignUpCompletedViewController: BaseViewController {
 		}
 		
 		self.signUpCompletedImageView.snp.makeConstraints { make in
-			make.top.equalTo(self.signUpCompletedSubLabel.snp.bottom).offset(40)
-			make.centerX.equalToSuperview()
-			make.width.equalTo(200)
-			make.height.equalTo(200)
+			make.centerX.centerY.equalToSuperview()
+			make.width.equalTo(435)
+			make.height.equalTo(435)
 		}
 		
 		self.completedButton.snp.makeConstraints { make in
