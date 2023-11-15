@@ -199,7 +199,7 @@ final class SignInViewController: BaseViewController {
 		}
 		
 		signInButton.snp.makeConstraints { make in
-			make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+			make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-20)
 			make.leading.equalToSuperview().offset(24)
 			make.trailing.equalToSuperview().offset(-24)
 			make.height.equalTo(56)
@@ -208,18 +208,28 @@ final class SignInViewController: BaseViewController {
 	
 	override func bind() {
 		
-		NotificationManager.shared.keyboardHeightSubject
+//		NotificationManager.shared.keyboardHeightSubject
+//			.withUnretained(self)
+//			.subscribe(onNext: { owner, keyboardHeight in
+//				let realHeight = keyboardHeight > 0 ? keyboardHeight - 30 : 0
+//				owner.signInButton.snp.updateConstraints { make in
+//					make.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-20 - realHeight)
+//				}
+//				UIView.animate(withDuration: 0.3) {
+//					owner.view.layoutIfNeeded()
+//				}
+//			})
+//			.disposed(by: disposeBag)
+		
+		self.view.rx.tapGesture()
+			.debug()
+			.when(.recognized)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, keyboardHeight in
-				let realHeight = keyboardHeight > 0 ? keyboardHeight - 30 : 0
-				owner.signInButton.snp.updateConstraints { make in
-					make.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-20 - realHeight)
-				}
-				UIView.animate(withDuration: 0.3) {
-					owner.view.layoutIfNeeded()
-				}
+			.subscribe(onNext: { owner, _ in
+				owner.view.endEditing(true)
 			})
 			.disposed(by: disposeBag)
+		
 		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)
@@ -252,12 +262,4 @@ final class SignInViewController: BaseViewController {
 		
 	}
 	
-}
-
-
-// MARK: - Extension
-extension SignInViewController {
-	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		self.view.endEditing(true)
-	}
 }

@@ -152,7 +152,6 @@ final class MainSignUpView: BaseView {
 		mainContentView.snp.makeConstraints { make in
 			make.edges.equalTo(scrollView.contentLayoutGuide)
 			make.width.equalTo(scrollView.frameLayoutGuide.snp.width)
-//			make.height.greaterThanOrEqualTo(500)
 		}
 		
 		emailTextField.snp.makeConstraints{ make in
@@ -242,6 +241,16 @@ final class MainSignUpView: BaseView {
 		})
 		.disposed(by: disposeBag)
 		
+		self.rx.tapGesture()
+			.when(.recognized)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, gesture in
+				let location = gesture.location(in: owner.scrollView)
+				if !owner.isPointInsideTextField(location) {
+					owner.endEditing(true)
+				}
+			})
+			.disposed(by: disposeBag)
 		
 		let input = MainSignUpViewModel.Input(
 			email: emailTextField.rx.text.orEmpty.asObservable(),
@@ -301,4 +310,14 @@ final class MainSignUpView: BaseView {
 			.disposed(by: disposeBag)
 	}
 	
+}
+
+
+// MARK: - Extension
+extension MainSignUpView {
+	fileprivate func isPointInsideTextField(_ point: CGPoint) -> Bool {
+			// 모든 텍스트 필드를 순회하면서 탭된 위치가 텍스트 필드 내부인지 확인합니다.
+			let textFields = [emailTextField, passwordTextField, confirmPasswordTextField, nameTextField]
+			return textFields.contains(where: { $0.frame.contains(point) })
+	}
 }
