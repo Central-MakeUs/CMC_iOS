@@ -42,7 +42,7 @@ public final class CMCTextField: UIView{
 	private lazy var textFieldTitle: UILabel = {
 		let label = UILabel()
 		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 14)
-		label.textColor = DesignSystemAsset.gray200.color
+		label.textColor = DesignSystemAsset.gray500.color
 		label.text = textFieldSubTitle
 		return label
 	}()

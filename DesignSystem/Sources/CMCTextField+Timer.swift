@@ -37,7 +37,7 @@ public final class CMCTextField_Timer: UIView {
 	private lazy var textFieldTitle: UILabel = {
 		let label = UILabel()
 		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 14)
-		label.textColor = DesignSystemAsset.gray200.color
+		label.textColor = DesignSystemAsset.gray500.color
 		label.text = textFieldSubTitle
 		return label
 	}()
@@ -84,7 +84,7 @@ public final class CMCTextField_Timer: UIView {
 	private var keyboardType: UIKeyboardType
 	
 	private var timerCountRelay = BehaviorRelay<Int>(value: 180)
-	public var rxType = BehaviorRelay<TextFieldWithTimerType>(value: .disabled)
+	public var rxType = BehaviorRelay<TextFieldWithTimerType>(value: .def)
 	public var resetTimerSubject = PublishSubject<Void>()
 	
 	/// - Parameters:
@@ -154,14 +154,13 @@ public final class CMCTextField_Timer: UIView {
 			$0.height.equalTo(34)
 			$0.width.equalTo(76)
 			$0.trailing.equalToSuperview().offset(-18)
-			$0.centerY.equalToSuperview()
+			$0.top.equalToSuperview().offset(26)
 		}
 		
 		timerLabel.snp.makeConstraints {
-			$0.centerY.equalTo(textField)
+			$0.centerY.equalTo(accessoryCMCButton)
 			$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-16)
 			$0.height.equalTo(18)
-			$0.width.equalTo(30)
 		}
 		
 	}
@@ -180,8 +179,6 @@ public final class CMCTextField_Timer: UIView {
 			.asDriver(onErrorJustReturn: .def)
 			.drive(onNext: { [weak self] type in
 				guard let self = self else { return }
-				let isTimerOn = (type != .error && type != .disabled)
-				self.controlTimer(isOn: isTimerOn)
 				self.configureColorSet(colorSet: type.colorSet)
 			})
 			.disposed(by: disposeBag)
@@ -222,12 +219,12 @@ public final class CMCTextField_Timer: UIView {
 			.disposed(by: timerDisposeBag)
 	}
 	
-	private func resetTimer() {
+	public func resetTimer() {
 		timerCountRelay.accept(180)  // 초기 시간을 180초로 설정
 		startTimer()                 // 타이머 다시 시작
 	}
 	
-	private func controlTimer(isOn: Bool) {
+	public func controlTimer(isOn: Bool) {
 		if isOn {
 			startTimer()
 		} else {
