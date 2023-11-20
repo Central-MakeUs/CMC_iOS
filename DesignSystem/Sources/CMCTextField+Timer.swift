@@ -85,7 +85,6 @@ public final class CMCTextField_Timer: UIView {
 	
 	private var timerCountRelay = BehaviorRelay<Int>(value: 180)
 	public var rxType = BehaviorRelay<TextFieldWithTimerType>(value: .def)
-	public var resetTimerSubject = PublishSubject<Void>()
 	
 	/// - Parameters:
 	///   - placeHolder : placeHolder로 들어갈 텍스트
@@ -136,7 +135,7 @@ public final class CMCTextField_Timer: UIView {
 		bottomBoarder.snp.makeConstraints {
 			$0.height.equalTo(1)
 			$0.leading.bottom.equalToSuperview()
-			$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-8)
+			$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-16)
 		}
 		
 		textField.snp.makeConstraints {
@@ -154,11 +153,11 @@ public final class CMCTextField_Timer: UIView {
 			$0.height.equalTo(34)
 			$0.width.equalTo(76)
 			$0.trailing.equalToSuperview().offset(-18)
-			$0.top.equalToSuperview().offset(26)
+			$0.bottom.equalTo(bottomBoarder.snp.top).offset(-10)
 		}
 		
 		timerLabel.snp.makeConstraints {
-			$0.centerY.equalTo(accessoryCMCButton)
+			$0.centerY.equalTo(textField).offset(15)
 			$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-16)
 			$0.height.equalTo(18)
 		}
@@ -167,10 +166,12 @@ public final class CMCTextField_Timer: UIView {
 	
 	private func bind() {
 		
-		resetTimerSubject
-			.subscribe(onNext: { [weak self] in
-				guard let self = self else { return }
-				self.resetTimer()
+		timerCountRelay
+			.withUnretained(self)
+			.subscribe(onNext: { owner, second in
+				if second == 0 {
+					owner.timerDisposeBag = DisposeBag() // 타이머 구독 해제
+				}
 			})
 			.disposed(by: disposeBag)
 		
@@ -199,8 +200,6 @@ public final class CMCTextField_Timer: UIView {
 	}
 	
 	private func startTimer() {
-		timerDisposeBag = DisposeBag() // 이전 타이머 구독 해제
-		
 		Observable<Int>
 			.timer(.seconds(0), period: .seconds(1), scheduler: MainScheduler.instance)
 			.withLatestFrom(timerCountRelay.asObservable()) { _, count in count }
@@ -223,15 +222,6 @@ public final class CMCTextField_Timer: UIView {
 		timerCountRelay.accept(180)  // 초기 시간을 180초로 설정
 		startTimer()                 // 타이머 다시 시작
 	}
-	
-	public func controlTimer(isOn: Bool) {
-		if isOn {
-			startTimer()
-		} else {
-			timerDisposeBag = DisposeBag() // 타이머 구독 해제
-		}
-	}
-	
 	
 }
 
