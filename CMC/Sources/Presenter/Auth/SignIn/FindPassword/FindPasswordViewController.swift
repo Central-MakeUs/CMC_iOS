@@ -29,15 +29,6 @@ class FindPasswordViewController: BaseViewController {
 		return navigationBar
 	}()
 	
-	private lazy var titleLabel: UILabel = {
-		let label = UILabel()
-		label.text = "비밀번호 재설정"
-		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 26)
-		label.textColor = DesignSystemAsset.gray50.color
-		label.translatesAutoresizingMaskIntoConstraints = false
-		return label
-	}()
-	
 	private lazy var emailView: SendCertifyCodeView = {
 		let view = SendCertifyCodeView(
 			viewModel: SendCertifyCodeViewModel(),
@@ -52,17 +43,19 @@ class FindPasswordViewController: BaseViewController {
 			viewModel: ConfirmCertifyCodeViewModel(
 				usecase: DefaultAuthUsecase(
 					authRepository: DefaultAuthRepository()
-				),
-				parentViewModel: viewModel
-			)
+				)
+			),
+			parentViewModel: viewModel
 		)
 		view.translatesAutoresizingMaskIntoConstraints = false
 		return view
 	}()
 	
-	private lazy var resettingPasswordView: UIView = {
-		let view = UIView()
-		view.backgroundColor = .yellow
+	private lazy var resettingPasswordView: ResettingPasswordView = {
+		let view = ResettingPasswordView(
+			viewModel: ResettingPasswordViewModel(),
+			parentViewModel: viewModel
+		)
 		view.translatesAutoresizingMaskIntoConstraints = false
 		return view
 	}()
@@ -114,7 +107,7 @@ class FindPasswordViewController: BaseViewController {
 		for (index, page) in [emailView, certifyNumberView, resettingPasswordView].enumerated() {
 			reSettingPasswordPager.addSubview(page)
 			page.snp.makeConstraints { make in
-				make.top.equalTo(titleLabel.snp.bottom).offset(14)
+				make.top.equalTo(navigationBar.snp.bottom)
 				make.bottom.equalTo(nextButton.snp.top).offset(-12)
 				make.width.equalTo(self.view.frame.size.width)
 				make.leading.equalToSuperview().offset(CGFloat(index) * self.view.frame.size.width)
@@ -130,7 +123,6 @@ class FindPasswordViewController: BaseViewController {
 	
 	override func setAddSubView() {
 		self.view.addSubview(navigationBar)
-		self.view.addSubview(titleLabel)
 		self.view.addSubview(reSettingPasswordPager)
 		self.view.addSubview(nextButton)
 		
@@ -143,11 +135,6 @@ class FindPasswordViewController: BaseViewController {
 			navigationBar.height.equalTo(68)
 		}
 		
-		titleLabel.snp.makeConstraints{ titleLabel in
-			titleLabel.top.equalTo(navigationBar.snp.bottom).offset(30)
-			titleLabel.leading.equalToSuperview().offset(24)
-		}
-		
 		nextButton.snp.makeConstraints{ nextButton in
 			nextButton.leading.trailing.equalToSuperview().inset(20)
 			nextButton.bottom.equalTo(self.view.keyboardLayoutGuide.snp.top).offset(-20)
@@ -155,7 +142,7 @@ class FindPasswordViewController: BaseViewController {
 		}
 		
 		reSettingPasswordPager.snp.makeConstraints{ cmcPager in
-			cmcPager.top.equalTo(titleLabel.snp.bottom).offset(14)
+			cmcPager.top.equalTo(navigationBar.snp.bottom)
 			cmcPager.leading.trailing.equalToSuperview()
 			cmcPager.bottom.equalTo(nextButton.snp.top).offset(-12)
 		}
@@ -180,7 +167,7 @@ class FindPasswordViewController: BaseViewController {
 				self.reSettingPasswordPager.setContentOffset(
 					CGPoint(x: xOffset, y: 0), animated: true
 				)
-				let title = self.nextButtonTitles[page]
+				let title = self.nextButtonTitles[page - 1]
 				self.nextButton.setTitle(title: title)
 			})
 			.disposed(by: disposeBag)

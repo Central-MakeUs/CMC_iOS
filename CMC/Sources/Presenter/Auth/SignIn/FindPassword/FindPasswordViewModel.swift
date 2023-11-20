@@ -35,6 +35,8 @@ class FindPasswordViewModel: ViewModelType{
 	weak var coordinator: AuthCoordinator?
 	
 	let readyForNextButton = BehaviorRelay<Bool>(value: true)
+	let pageAppeared = BehaviorRelay<Int>(value: 1)
+	
 	let email = BehaviorRelay<String>(value: "")
 	
 	// MARK: - Initializers
@@ -61,6 +63,13 @@ class FindPasswordViewModel: ViewModelType{
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
 				owner.coordinator?.popViewController()
+			})
+			.disposed(by: disposeBag)
+		
+		input.nowPage
+			.withUnretained(self)
+			.subscribe(onNext: { owner, nowPage in
+				owner.pageAppeared.accept(nowPage)
 			})
 			.disposed(by: disposeBag)
 		
