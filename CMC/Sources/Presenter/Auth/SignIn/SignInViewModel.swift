@@ -100,6 +100,19 @@ class SignInViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
+		input.forgetPasswordBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				let findPasswordViewController = FindPasswordViewController(
+					viewModel: FindPasswordViewModel(
+						coordinator: owner.coordinator,
+						authUsecase: owner.authUsecase
+					)
+				)
+				owner.coordinator?.pushViewController(viewController: findPasswordViewController)
+			})
+			.disposed(by: disposeBag)
+		
 		return Output(
 			signInBtnEnable: signInBtnEnable
 		)
