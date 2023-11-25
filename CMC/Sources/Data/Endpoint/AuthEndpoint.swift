@@ -42,9 +42,9 @@ enum AuthEndpoint: Endpoint {
 	var path: String {
 		switch self {
 		case .signUp:
-			return "/signUp"
+			return "/sign-up"
 		case .signIn:
-			return "/signIn"
+			return "/log-in"
 		case .emailDup:
 			return "/email"
 		case .sendCertifyCode, .confirmCertifyCode, .resettingPassword:
