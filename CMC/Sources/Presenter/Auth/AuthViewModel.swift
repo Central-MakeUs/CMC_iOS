@@ -1,5 +1,5 @@
 //
-//  MainAuthViewModel.swift
+//  AuthViewModel.swift
 //  CMC
 //
 //  Created by Siri on 10/25/23.
@@ -11,7 +11,7 @@ import Foundation
 import RxCocoa
 import RxSwift
 
-class MainAuthViewModel: ViewModelType{
+class AuthViewModel: ViewModelType{
 	
 	struct Input {
 		let signInBtnTapped: Observable<Void>

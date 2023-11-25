@@ -1,5 +1,5 @@
 //
-//  MainAuthViewController.swift
+//  AuthViewController.swift
 //  CMC
 //
 //  Created by Siri on 10/25/23.
@@ -16,7 +16,7 @@ import SnapKit
 
 import UIKit
 
-class MainAuthViewController: BaseViewController {
+class AuthViewController: BaseViewController {
 	
 	// MARK: - UI
 	
@@ -57,11 +57,11 @@ class MainAuthViewController: BaseViewController {
 	}()
 	
 	// MARK: - Properties
-	private let viewModel: MainAuthViewModel
+	private let viewModel: AuthViewModel
 	
 	// MARK: - Initializers
 	init(
-		viewModel: MainAuthViewModel
+		viewModel: AuthViewModel
 	) {
 		self.viewModel = viewModel
 		super.init()
@@ -116,7 +116,7 @@ class MainAuthViewController: BaseViewController {
 	}
 	
 	override func bind() {
-		let input = MainAuthViewModel.Input(
+		let input = AuthViewModel.Input(
 			signInBtnTapped: signInButton.rx.tap.asObservable(),
 			signUpBtnTapped: signUpButton.rx.tap.asObservable()
 		)

@@ -70,12 +70,12 @@ class AuthCoordinator: CoordinatorType {
 	}
 	
 	func start() {
-		let mainViewController = MainAuthViewController(
-			viewModel: MainAuthViewModel(
+		let authViewController = AuthViewController(
+			viewModel: AuthViewModel(
 				coordinator: self
 			)
 		)
-		self.baseViewController = mainViewController
-		self.pushViewController(viewController: mainViewController, animated: false)
+		self.baseViewController = authViewController
+		self.pushViewController(viewController: authViewController, animated: false)
 	}
 }

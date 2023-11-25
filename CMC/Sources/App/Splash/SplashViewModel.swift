@@ -47,7 +47,7 @@ class SplashViewModel: ViewModelType{
 	
 	private func checkAutoSignIn(){
 		if let _: String = UserDefaultManager.shared.load(for: .accessToken) {
-			self.coordinator?.userActionState.accept(.tabBar)
+			self.coordinator?.userActionState.accept(.home)
 		} else {
 			self.coordinator?.userActionState.accept(.auth)
 		}

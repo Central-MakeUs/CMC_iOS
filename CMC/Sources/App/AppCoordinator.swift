@@ -16,7 +16,7 @@ class AppCoordinator: CoordinatorType {
 	// MARK: - Navigation DEPTH 0 -
 	enum AppCoordinatorChild{
 		case auth
-		case tabBar
+		case home
 	}
 	
 	// MARK: - Need To Initializing
@@ -43,14 +43,21 @@ class AppCoordinator: CoordinatorType {
 			.subscribe(onNext: { owner, state in
 				switch state{
 				case .auth:
+					CMCIndecatorManager.shared.show()
 					let authCoordinator = AuthCoordinator(
 						navigationController: owner.navigationController
 					)
 					authCoordinator.delegate = owner
 					authCoordinator.start()
 					owner.childCoordinators.append(authCoordinator)
-				case .tabBar:
-					print("🍎 여기 들어가면, 메인 탭 화면으로~ 🍎")
+				case .home:
+					CMCIndecatorManager.shared.show()
+					let homeCoordinator = HomeCoordinator(
+						navigationController: owner.navigationController
+					)
+					homeCoordinator.delegate = owner
+					homeCoordinator.start()
+					owner.childCoordinators.append(homeCoordinator)
 				}
 			}).disposed(by: disposeBag)
 	}
@@ -71,9 +78,10 @@ class AppCoordinator: CoordinatorType {
 
 extension AppCoordinator: CoordinatorDelegate{
 	func didFinish(childCoordinator: CoordinatorType) {
+		self.popToRootViewController(animated: true)
 		self.childCoordinators.removeAll()
 		if childCoordinator is AuthCoordinator {
-			self.userActionState.accept(.tabBar)
+			self.userActionState.accept(.home)
 		} else {
 			self.userActionState.accept(.auth)
 		}
