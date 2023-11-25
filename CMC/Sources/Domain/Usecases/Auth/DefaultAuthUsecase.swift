@@ -44,4 +44,18 @@ final class DefaultAuthUsecase: AuthUsecase {
 				return dto.toDomain()
 			}
 	}
+	
+	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeModel> {
+		return authRepository.confirmCertifyCode(body: body)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
+	
+	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordModel> {
+		return authRepository.reSettingPassword(body: body)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
 }

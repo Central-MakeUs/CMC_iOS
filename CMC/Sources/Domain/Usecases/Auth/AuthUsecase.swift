@@ -13,5 +13,6 @@ protocol AuthUsecase {
 	func signUp(body: SignUpBody) -> Single<SignUpModel>
 	func signIn(body: SignInBody) -> Single<SignInModel>
 	func emailDup(query: EmailDupQuery) -> Single<EmailDupModel>
-	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeModel>
+	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeModel>
+	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordModel>
 }
