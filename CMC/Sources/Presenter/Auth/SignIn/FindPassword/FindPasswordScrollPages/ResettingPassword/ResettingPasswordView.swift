@@ -224,12 +224,6 @@ final class ResettingPasswordView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
-		output.nextAvailable
-			.withUnretained(self)
-			.subscribe(onNext: { owner, moveNext in
-				owner.parentViewModel.readyForNextButton.accept(moveNext)
-			})
-			.disposed(by: disposeBag)
 	}
 	
 }

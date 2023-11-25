@@ -31,7 +31,11 @@ class FindPasswordViewController: BaseViewController {
 	
 	private lazy var emailView: SendCertifyCodeView = {
 		let view = SendCertifyCodeView(
-			viewModel: SendCertifyCodeViewModel(),
+			viewModel: SendCertifyCodeViewModel(
+				usecase: DefaultAuthUsecase(
+					authRepository: DefaultAuthRepository()
+				)
+			),
 			parentViewModel: viewModel
 		)
 		view.translatesAutoresizingMaskIntoConstraints = false
@@ -92,7 +96,7 @@ class FindPasswordViewController: BaseViewController {
 			reSettingPasswordPager.addSubview(page)
 			page.snp.makeConstraints { make in
 				make.top.equalTo(navigationBar.snp.bottom)
-				make.bottom.equalToSuperview()
+				make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
 				make.width.equalTo(self.view.frame.size.width)
 				make.leading.equalToSuperview().offset(CGFloat(index) * self.view.frame.size.width)
 			}
@@ -121,14 +125,22 @@ class FindPasswordViewController: BaseViewController {
 		reSettingPasswordPager.snp.makeConstraints{ cmcPager in
 			cmcPager.top.equalTo(navigationBar.snp.bottom)
 			cmcPager.leading.trailing.equalToSuperview()
-			cmcPager.bottom.equalToSuperview()
+			cmcPager.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
 		}
 		
 	}
 	
 	override func bind() {
 		
-		nowPage.asObservable()
+		
+		let input = FindPasswordViewModel.Input(
+			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable()
+		)
+		
+		let output = viewModel.transform(input: input)
+		
+		
+		output.afterPage
 			.subscribe(onNext: { [weak self] page in
 				guard let self = self else { return }
 				let xOffset = CGFloat(page - 1) * CGFloat(self.view.frame.width)
@@ -137,13 +149,6 @@ class FindPasswordViewController: BaseViewController {
 				)
 			})
 			.disposed(by: disposeBag)
-		
-		let input = FindPasswordViewModel.Input(
-			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
-			nowPage: nowPage.asObservable()
-		)
-		
-		let output = viewModel.transform(input: input)
 		
 	}
 	

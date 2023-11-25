@@ -20,11 +20,10 @@ class FindPasswordViewModel: ViewModelType{
 	
 	struct Input {
 		let backButtonTapped: Observable<Void>
-		let nowPage: Observable<Int>
 	}
 	
 	struct Output {
-		
+		let afterPage: Observable<Int>
 	}
 	
 	// MARK: - Properties
@@ -34,7 +33,7 @@ class FindPasswordViewModel: ViewModelType{
 	weak var coordinator: AuthCoordinator?
 	
 	let email = BehaviorRelay<String>(value: "")
-	let nowPage = BehaviorRelay<Int>(value: 0)
+	let nowPage = BehaviorRelay<Int>(value: 1)
 	
 	// MARK: - Initializers
 	init(
@@ -56,13 +55,8 @@ class FindPasswordViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
-		input.nowPage
-			.withUnretained(self)
-			.subscribe(onNext: { owner, page in
-				owner.nowPage.accept(page)
-			})
-			.disposed(by: disposeBag)
-		
-		return Output()
+		return Output(
+			afterPage: nowPage.asObservable()
+		)
 	}
 }

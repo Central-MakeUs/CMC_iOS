@@ -117,7 +117,7 @@ final class ConfirmCertifyCodeView: BaseView {
 		
 		
 		let input = ConfirmCertifyCodeViewModel.Input(
-			nowPage: parentViewModel.pageAppeared.asObservable(),
+			nowPage: parentViewModel.nowPage.asObservable(),
 			certifiedCode: certifyCodeTextField.rx.text.orEmpty.asObservable(),
 			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable()
 		)
