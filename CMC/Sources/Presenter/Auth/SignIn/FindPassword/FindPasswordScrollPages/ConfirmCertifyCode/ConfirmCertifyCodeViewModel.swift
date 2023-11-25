@@ -19,17 +19,17 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 		let email: Observable<String>
 		let certifiedCode: Observable<String>
 		let reSendButtonTapped: Observable<Void>
+		let certifyCodeTapped: Observable<Void>
 	}
 	
 	struct Output {
-		let sendCertifyResult: Observable<Bool>
-		let nextAvailable: Observable<Bool>
+		let resendCertifyCode: Observable<Bool>
+		let certifyCodeResult: Observable<Bool>
+		let codeValidation: Observable<Bool>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
 	private let usecase: AuthUsecase
-	
-	private let nextAvailable = BehaviorRelay<Bool>(value: false)
 	
 	init(
 		usecase: AuthUsecase
@@ -40,15 +40,7 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 	
 	func transform(input: Input) -> Output {
 		
-		input.certifiedCode
-			.withUnretained(self)
-			.subscribe(onNext: { owner, code in
-				code.count >= 6 ? owner.nextAvailable.accept(true) : owner.nextAvailable.accept(false)
-			})
-			.disposed(by: disposeBag)
-		
-		
-		let sendCertifyResult = input.reSendButtonTapped
+		let resendCertifyCode = input.reSendButtonTapped
 			.withLatestFrom(input.email)
 			.withUnretained(self)
 			.flatMapLatest { owner, email -> Observable<Bool> in
@@ -62,10 +54,31 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 			}
 			.share()
 		
+		let certifyCodeResult = input.certifyCodeTapped
+			.withLatestFrom(Observable.combineLatest(input.certifiedCode, input.email))
+			.withUnretained(self)
+			.flatMapLatest { owner, result -> Observable<Bool> in
+				let (code, email) = result
+				let body = ConfirmCertifyCodeBody(email: email, code: code)
+				return owner.usecase.confirmCertifyCode(body: body)
+					.asObservable()
+					.map { _ in true}
+					.catch { _ in
+						return .just(false)
+					}
+			}
+			.share()
+											 
+		let codeValidation = input.certifiedCode
+			.map { code -> Bool in
+				return code.count >= 6
+			}
+			.asObservable()
 		
 		return Output(
-			sendCertifyResult: sendCertifyResult,
-			nextAvailable: nextAvailable.asObservable()
+			resendCertifyCode: resendCertifyCode,
+			certifyCodeResult: certifyCodeResult,
+			codeValidation: codeValidation
 		)
 		
 	}

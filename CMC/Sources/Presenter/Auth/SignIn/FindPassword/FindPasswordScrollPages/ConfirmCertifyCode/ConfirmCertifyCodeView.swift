@@ -124,13 +124,9 @@ final class ConfirmCertifyCodeView: BaseView {
 			.when(.recognized)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, gesture in
-				let location = gesture.location(in: owner)
-				if !owner.isPointInsideTextField(location) {
-					owner.endEditing(true)
-				}
+				owner.endEditing(true)
 			})
 			.disposed(by: disposeBag)
-		
 		
 		parentViewModel.timerStart
 			.withUnretained(self)
@@ -142,17 +138,33 @@ final class ConfirmCertifyCodeView: BaseView {
 		let input = ConfirmCertifyCodeViewModel.Input(
 			email: parentViewModel.email.asObservable(),
 			certifiedCode: certifyCodeTextField.rx.text.orEmpty.asObservable(),
-			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable()
+			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable(),
+			certifyCodeTapped: confirmCertifyCodeButton.rx.tap.asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
 		
-		output.sendCertifyResult
+		output.certifyCodeResult
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { [weak self] isSuccessed in
 				guard let ss = self else { return }
 				if isSuccessed {
-					ss.parentViewModel.nowPage.accept(2)
+					ss.parentViewModel.nowPage.accept(3)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "올바르지 않은 인증번호에요",
+						body: "인증번호를 확인해주세요 :(",
+						buttonTitle: "확인"
+					)
+				}
+			})
+			.disposed(by: disposeBag)
+		
+		output.resendCertifyCode
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
 					ss.parentViewModel.timerStart.accept(())
 					CMCBottomSheetManager.shared.showBottomSheet(
 						title: "인증번호를 전송했어요",
@@ -166,6 +178,16 @@ final class ConfirmCertifyCodeView: BaseView {
 						buttonTitle: "확인"
 					)
 				}
+			})
+			.disposed(by: disposeBag)
+		
+		output.codeValidation
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isValid in
+				guard let ss = self else { return }
+				isValid
+				? ss.confirmCertifyCodeButton.rxType.accept(.login(.inactive))
+				: ss.confirmCertifyCodeButton.rxType.accept(.login(.disabled))
 			})
 			.disposed(by: disposeBag)
 		
