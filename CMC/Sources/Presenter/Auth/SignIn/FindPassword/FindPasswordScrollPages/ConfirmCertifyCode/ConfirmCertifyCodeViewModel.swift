@@ -16,20 +16,19 @@ import RxSwift
 final class ConfirmCertifyCodeViewModel: ViewModelType {
 	
 	struct Input {
-		let nowPage: Observable<Int>
+		let email: Observable<String>
 		let certifiedCode: Observable<String>
 		let reSendButtonTapped: Observable<Void>
 	}
 	
 	struct Output {
-		let startTimer: Observable<Bool>
+		let sendCertifyResult: Observable<Bool>
 		let nextAvailable: Observable<Bool>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
 	private let usecase: AuthUsecase
 	
-	private let startTimer = BehaviorRelay<Bool>(value: false)
 	private let nextAvailable = BehaviorRelay<Bool>(value: false)
 	
 	init(
@@ -41,15 +40,6 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 	
 	func transform(input: Input) -> Output {
 		
-		input.nowPage
-			.withUnretained(self)
-			.subscribe(onNext: { owner, page in
-				if page == 2 {
-					owner.startTimer.accept(true)
-				}
-			})
-			.disposed(by: disposeBag)
-		
 		input.certifiedCode
 			.withUnretained(self)
 			.subscribe(onNext: { owner, code in
@@ -57,8 +47,24 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 			})
 			.disposed(by: disposeBag)
 		
+		
+		let sendCertifyResult = input.reSendButtonTapped
+			.withLatestFrom(input.email)
+			.withUnretained(self)
+			.flatMapLatest { owner, email -> Observable<Bool> in
+				let query = SendCertifyCodeQuery(email: email)
+				return owner.usecase.sendCertifyCode(query: query)
+					.asObservable()
+					.map { _ in true}
+					.catch { _ in
+						return .just(false)
+					}
+			}
+			.share()
+		
+		
 		return Output(
-			startTimer: startTimer.asObservable(),
+			sendCertifyResult: sendCertifyResult,
 			nextAvailable: nextAvailable.asObservable()
 		)
 		

@@ -131,6 +131,10 @@ final class SendCertifyCodeView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
+		self.emailTextField.rx.text.orEmpty
+			.bind(to: parentViewModel.email)
+			.disposed(by: disposeBag)
+		
 		let input = SendCertifyCodeViewModel.Input(
 			email: emailTextField.rx.text.orEmpty.asObservable(),
 			receiveCertifyTapped: receiveCertiftyButton.rx.tap.asObservable()
@@ -153,6 +157,7 @@ final class SendCertifyCodeView: BaseView {
 				guard let ss = self else { return }
 				if isSuccessed {
 					ss.parentViewModel.nowPage.accept(2)
+					ss.parentViewModel.timerStart.accept(())
 					CMCBottomSheetManager.shared.showBottomSheet(
 						title: "인증번호를 전송했어요",
 						body: "3분 내 인증번호를 입력해주세요 :)",

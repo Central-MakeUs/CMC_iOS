@@ -51,6 +51,16 @@ final class ConfirmCertifyCodeView: BaseView {
 		return textField
 	}()
 	
+	private lazy var confirmCertifyCodeButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "인증번호 확인"
+		)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		return button
+	}()
 	
 	// MARK: - Properties
 	private var viewModel: ConfirmCertifyCodeViewModel
@@ -79,6 +89,7 @@ final class ConfirmCertifyCodeView: BaseView {
 		addSubview(titleLabel)
 		addSubview(subTitle)
 		addSubview(certifyCodeTextField)
+		addSubview(confirmCertifyCodeButton)
 	}
 	
 	override func setConstraint() {
@@ -100,6 +111,11 @@ final class ConfirmCertifyCodeView: BaseView {
 			$0.height.equalTo(74)
 		}
 		
+		confirmCertifyCodeButton.snp.makeConstraints{ confirmCertifyCodeButton in
+			confirmCertifyCodeButton.leading.trailing.equalToSuperview().inset(20)
+			confirmCertifyCodeButton.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-20)
+			confirmCertifyCodeButton.height.equalTo(56)
+		}
 	}
 	
 	override func bind() {
@@ -116,19 +132,39 @@ final class ConfirmCertifyCodeView: BaseView {
 			.disposed(by: disposeBag)
 		
 		
+		parentViewModel.timerStart
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.certifyCodeTextField.resetTimer()
+			})
+			.disposed(by: disposeBag)
+		
 		let input = ConfirmCertifyCodeViewModel.Input(
-			nowPage: parentViewModel.nowPage.asObservable(),
+			email: parentViewModel.email.asObservable(),
 			certifiedCode: certifyCodeTextField.rx.text.orEmpty.asObservable(),
 			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
 		
-		output.startTimer
-			.withUnretained(self)
-			.subscribe(onNext: { owner, isStart in
-				if isStart {
-					owner.certifyCodeTextField.resetTimer()
+		output.sendCertifyResult
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
+					ss.parentViewModel.nowPage.accept(2)
+					ss.parentViewModel.timerStart.accept(())
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "인증번호를 전송했어요",
+						body: "3분 내 인증번호를 입력해주세요 :)",
+						buttonTitle: "확인"
+					)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "존재하지 않는 계정이에요",
+						body: "아이디 찾기는 운영진에게 문의해주세요 :)",
+						buttonTitle: "확인"
+					)
 				}
 			})
 			.disposed(by: disposeBag)

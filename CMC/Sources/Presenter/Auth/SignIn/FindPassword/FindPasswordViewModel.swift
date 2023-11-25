@@ -34,6 +34,7 @@ class FindPasswordViewModel: ViewModelType{
 	
 	let email = BehaviorRelay<String>(value: "")
 	let nowPage = BehaviorRelay<Int>(value: 1)
+	let timerStart = PublishRelay<Void>()
 	
 	// MARK: - Initializers
 	init(
