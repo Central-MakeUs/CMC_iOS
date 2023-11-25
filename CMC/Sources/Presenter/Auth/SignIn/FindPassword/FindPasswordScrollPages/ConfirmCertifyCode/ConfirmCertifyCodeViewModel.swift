@@ -31,12 +31,12 @@ final class ConfirmCertifyCodeViewModel: ViewModelType {
 	var disposeBag: DisposeBag = DisposeBag()
 	private let usecase: AuthUsecase
 	
+	// MARK: - Initializers
 	init(
 		usecase: AuthUsecase
 	) {
 		self.usecase = usecase
 	}
-	
 	
 	func transform(input: Input) -> Output {
 		

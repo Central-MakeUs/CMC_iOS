@@ -57,7 +57,11 @@ class FindPasswordViewController: BaseViewController {
 	
 	private lazy var resettingPasswordView: ResettingPasswordView = {
 		let view = ResettingPasswordView(
-			viewModel: ResettingPasswordViewModel(),
+			viewModel: ResettingPasswordViewModel(
+				usecase: DefaultAuthUsecase(
+					authRepository: DefaultAuthRepository()
+				)
+			),
 			parentViewModel: viewModel
 		)
 		view.translatesAutoresizingMaskIntoConstraints = false

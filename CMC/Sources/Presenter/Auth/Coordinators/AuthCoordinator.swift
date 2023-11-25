@@ -45,31 +45,34 @@ class AuthCoordinator: CoordinatorType {
 				CMCIndecatorManager.shared.show()
 				switch state{
 				case .main:
+					if self.navigationController.viewControllers.contains(where: {$0 is MainAuthViewController}) {
+						self.navigationController.popToRootViewController(animated: true)
+					}
 					let mainAuthViewController = MainAuthViewController(
 						viewModel: MainAuthViewModel(
-							coordinator: self
-						)
-					)
-					if self.navigationController.viewControllers.contains(where: {$0 is MainAuthViewController}) {
-						self.navigationController.popViewController(animated: true)
-					}else {
-						self.pushViewController(viewController: mainAuthViewController)
-						CMCIndecatorManager.shared.hide()
-					}
+							 coordinator: self
+						 )
+					 )
+					 self.pushViewController(viewController: mainAuthViewController)
+					CMCIndecatorManager.shared.hide()
 				case .signUp:
+					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
+						self.navigationController.popToRootViewController(animated: true)
+					}
 					let signUpViewController = SignUpViewController(
 						viewModel: SignUpViewModel(
-							coordinator: self,
-							authUsecase: DefaultAuthUsecase(
-								authRepository: DefaultAuthRepository()
-							)
-						)
-					)
-					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
-						self.navigationController.popViewController(animated: true)
-					}
-					self.pushViewController(viewController: signUpViewController)
+							 coordinator: self,
+							 authUsecase: DefaultAuthUsecase(
+								 authRepository: DefaultAuthRepository()
+							 )
+						 )
+					 )
+					 self.pushViewController(viewController: signUpViewController)
+					CMCIndecatorManager.shared.hide()
 				case .signIn:
+					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
+						self.navigationController.popToRootViewController(animated: true)
+					}
 					let signInViewController = SignInViewController(
 						viewModel: SignInViewModel(
 							coordinator: self,
@@ -78,9 +81,6 @@ class AuthCoordinator: CoordinatorType {
 							)
 						)
 					)
-					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
-						self.navigationController.popViewController(animated: true)
-					}
 					self.pushViewController(viewController: signInViewController)
 					CMCIndecatorManager.shared.hide()
 				}

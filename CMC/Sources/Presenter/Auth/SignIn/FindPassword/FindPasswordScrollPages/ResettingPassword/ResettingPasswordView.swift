@@ -89,6 +89,19 @@ final class ResettingPasswordView: BaseView {
 		return errorCell
 	}()
 	
+	
+	private lazy var reSettingPasswordButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "비밀번호 변경하기"
+		)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		return button
+	}()
+	
+	
 	// MARK: - Properties
 	private var viewModel: ResettingPasswordViewModel
 	private var parentViewModel: FindPasswordViewModel
@@ -123,12 +136,14 @@ final class ResettingPasswordView: BaseView {
 		mainContentView.addSubview(passwordErrorStackView)
 		mainContentView.addSubview(confirmPasswordTextField)
 		mainContentView.addSubview(passwordCheckErrorCell)
+		self.addSubview(reSettingPasswordButton)
 	}
 	
 	override func setConstraint() {
 		
 		scrollView.snp.makeConstraints { make in
-			make.top.leading.trailing.bottom.equalToSuperview()
+			make.top.leading.trailing.equalToSuperview()
+			make.bottom.equalTo(reSettingPasswordButton.snp.top)
 		}
 		
 		mainContentView.snp.makeConstraints { make in
@@ -166,6 +181,11 @@ final class ResettingPasswordView: BaseView {
 			make.bottom.equalToSuperview().offset(-24)
 		}
 		
+		reSettingPasswordButton.snp.makeConstraints{ reSettingPasswordButton in
+			reSettingPasswordButton.leading.trailing.equalToSuperview().inset(20)
+			reSettingPasswordButton.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-20)
+			reSettingPasswordButton.height.equalTo(56)
+		}
 	}
 	
 	override func bind() {
@@ -180,7 +200,6 @@ final class ResettingPasswordView: BaseView {
 				}
 			})
 			.disposed(by: disposeBag)
-		
 		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)
@@ -199,8 +218,11 @@ final class ResettingPasswordView: BaseView {
 			.disposed(by: disposeBag)
 		
 		let input = ResettingPasswordViewModel.Input(
+			email: parentViewModel.email.asObservable(),
 			password: passwordTextField.rx.text.orEmpty.asObservable(),
-			rePassword: confirmPasswordTextField.rx.text.orEmpty.asObservable()
+			rePassword: confirmPasswordTextField.rx.text.orEmpty.asObservable(),
+			reSettingPasswordTapped: reSettingPasswordButton.rx.tap.asObservable()
+			
 		)
 		
 		let output = viewModel.transform(input: input)
@@ -224,6 +246,35 @@ final class ResettingPasswordView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
+		output.reSettingButtonActive
+		.withUnretained(self)
+		.subscribe(onNext: { owner, isEnable in
+			isEnable == true
+			? owner.reSettingPasswordButton.rxType.accept(.login(.inactive))
+			: owner.reSettingPasswordButton.rxType.accept(.login(.disabled))
+		})
+		.disposed(by: disposeBag)
+		
+		output.reSettingPasswordResult
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "비밀번호가 변경되었습니다\n다시 로그인해주세요 :)",
+						body: nil,
+						buttonTitle: "확인"
+					)
+					ss.parentViewModel.coordinator?.userActionState.accept(.main)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "비밀번호 변경에 실패하였습니다.",
+						body: "다시 시도해주세요 :(",
+						buttonTitle: "확인"
+					)
+				}
+			})
+			.disposed(by: disposeBag)
 	}
 	
 }
