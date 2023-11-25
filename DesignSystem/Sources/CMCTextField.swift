@@ -167,7 +167,7 @@ public final class CMCTextField: UIView{
 			bottomBoarder.snp.makeConstraints {
 				$0.height.equalTo(1)
 				$0.leading.bottom.equalToSuperview()
-				$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-8)
+				$0.trailing.equalTo(accessoryCMCButton.snp.leading).offset(-16)
 			}
 			
 			textField.snp.makeConstraints {
@@ -203,8 +203,8 @@ public final class CMCTextField: UIView{
 		accessoryCMCButton.snp.makeConstraints {
 			$0.height.equalTo(34)
 			$0.width.equalTo(76)
-			$0.trailing.equalToSuperview().offset(-18)
-			$0.centerY.equalToSuperview()
+			$0.trailing.equalToSuperview()
+			$0.bottom.equalTo(bottomBoarder.snp.top).offset(-10)
 		}
 		
 		
