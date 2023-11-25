@@ -64,13 +64,13 @@ class AppCoordinator: CoordinatorType {
 				)
 			)
 		)
-		self.navigationController.pushViewController(splashViewController, animated: false)
+		self.pushViewController(viewController: splashViewController)
 	}
 }
 
 extension AppCoordinator: CoordinatorDelegate{
 	func didFinish(childCoordinator: CoordinatorType) {
-		self.navigationController.popViewController(animated: true)
+		self.navigationController.popToRootViewController(animated: true)
 		if childCoordinator is AuthCoordinator {
 			self.userActionState.accept(.tabBar)
 		} else {

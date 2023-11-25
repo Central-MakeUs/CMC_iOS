@@ -13,7 +13,6 @@ import UIKit
 class AuthCoordinator: CoordinatorType {
 	// MARK: - Navigation DEPTH 1 -
 	enum AuthCoordinatorChild{
-		case main
 		case signUp
 		case signIn
 		/// SignIn이 AuthHome의 역할
@@ -27,7 +26,7 @@ class AuthCoordinator: CoordinatorType {
 	var childCoordinators: [CoordinatorType] = []
 	var delegate: CoordinatorDelegate?
 	var userActionState: PublishRelay<AuthCoordinatorChild> = PublishRelay()
-	/// init에서만 호출하고, stream을 유지하기위해 BehaviorSubject 사용
+	weak var baseViewController: MainAuthViewController?
 	
 	init(
 		navigationController: UINavigationController
@@ -44,20 +43,9 @@ class AuthCoordinator: CoordinatorType {
 				guard let self = self else {return}
 				CMCIndecatorManager.shared.show()
 				switch state{
-				case .main:
-					if self.navigationController.viewControllers.contains(where: {$0 is MainAuthViewController}) {
-						self.navigationController.popToRootViewController(animated: true)
-					}
-					let mainAuthViewController = MainAuthViewController(
-						viewModel: MainAuthViewModel(
-							 coordinator: self
-						 )
-					 )
-					 self.pushViewController(viewController: mainAuthViewController)
-					CMCIndecatorManager.shared.hide()
 				case .signUp:
 					if self.navigationController.viewControllers.contains(where: {$0 is SignUpViewController}) {
-						self.navigationController.popToRootViewController(animated: true)
+						self.popToRootViewController()
 					}
 					let signUpViewController = SignUpViewController(
 						viewModel: SignUpViewModel(
@@ -71,7 +59,7 @@ class AuthCoordinator: CoordinatorType {
 					CMCIndecatorManager.shared.hide()
 				case .signIn:
 					if self.navigationController.viewControllers.contains(where: {$0 is SignInViewController}) {
-						self.navigationController.popToRootViewController(animated: true)
+						popToRootViewController()
 					}
 					let signInViewController = SignInViewController(
 						viewModel: SignInViewModel(
@@ -88,7 +76,18 @@ class AuthCoordinator: CoordinatorType {
 	}
 	
 	func start() {
-		self.userActionState.accept(.main)
+		let mainViewController = MainAuthViewController(
+			viewModel: MainAuthViewModel(
+				coordinator: self
+			)
+		)
+		self.baseViewController = mainViewController
+		self.pushViewController(viewController: mainViewController)
 	}
 	
+	func popToRootViewController() {
+		if let rootViewController = self.baseViewController {
+			navigationController.popToViewController(rootViewController, animated: true)
+		}
+	}
 }
