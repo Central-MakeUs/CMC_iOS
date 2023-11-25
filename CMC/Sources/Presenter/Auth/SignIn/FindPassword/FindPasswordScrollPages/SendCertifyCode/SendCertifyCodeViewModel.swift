@@ -17,29 +17,46 @@ final class SendCertifyCodeViewModel: ViewModelType {
 	
 	struct Input {
 		let email: Observable<String>
+		let receiveCertifyTapped: Observable<Void>
 	}
 	
 	struct Output {
-		let certifyEmail: Observable<Bool>
+		let sendCertifyResult: Observable<Bool>
 		let emailValidation: Observable<Bool>
 	}
 	
+	// MARK: - Properties
 	var disposeBag: DisposeBag = DisposeBag()
+	private let usecase: AuthUsecase
+	
+	// MARK: - Initializers
+	init(
+		usecase: AuthUsecase
+	) {
+		self.usecase = usecase
+	}
 	
 	private var allcertifyEmailRelay = BehaviorRelay<Bool>(value: false)
 	
 	func transform(input: Input) -> Output {
 		let emailValidation: Observable<Bool> = Utility.checkEmailValidation(email: input.email, validate: .emailRegex)
 		
-		input.email
+		let sendCertifyResult = input.receiveCertifyTapped
+			.withLatestFrom(input.email)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, email in
-				owner.allcertifyEmailRelay.accept(!email.isEmpty)
-			})
-			.disposed(by: disposeBag)
+			.flatMapLatest { owner, email -> Observable<Bool> in
+				let query = SendCertifyCodeQuery(email: email)
+				return owner.usecase.sendCertifyCode(query: query)
+					.asObservable()
+					.map { _ in true}
+					.catch { _ in
+						return .just(false)
+					}
+			}
+			.share()
 		
 		return Output(
-			certifyEmail: allcertifyEmailRelay.asObservable(),
+			sendCertifyResult: sendCertifyResult,
 			emailValidation: emailValidation
 		)
 	}

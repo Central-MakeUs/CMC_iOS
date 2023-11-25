@@ -50,4 +50,38 @@ final class DefaultAuthRepository: AuthRepository {
 			}
 	}
 	
+	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeDTO> {
+		let endpoint = AuthEndpoint.sendCertifyCode(query: query)
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(SendCertifyCodeDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
+	
+	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeDTO> {
+		let endpoint = AuthEndpoint.confirmCertifyCode(body: body)
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(ConfirmCertifyCodeDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
+	
+	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordDTO> {
+		let endpoint = AuthEndpoint.resettingPassword(body: body)
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(ResettingPasswordDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
+	
+	
 }

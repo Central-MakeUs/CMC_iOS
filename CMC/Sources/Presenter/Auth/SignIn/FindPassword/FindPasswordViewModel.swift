@@ -20,12 +20,10 @@ class FindPasswordViewModel: ViewModelType{
 	
 	struct Input {
 		let backButtonTapped: Observable<Void>
-		let nextButtonTapped: Observable<Void>
-		let nowPage: Observable<Int>
 	}
 	
 	struct Output {
-		let readyForNextButton: Observable<Bool>
+		let afterPage: Observable<Int>
 	}
 	
 	// MARK: - Properties
@@ -34,10 +32,9 @@ class FindPasswordViewModel: ViewModelType{
 	var disposeBag: DisposeBag = DisposeBag()
 	weak var coordinator: AuthCoordinator?
 	
-	let readyForNextButton = BehaviorRelay<Bool>(value: true)
-	let pageAppeared = BehaviorRelay<Int>(value: 1)
-	
 	let email = BehaviorRelay<String>(value: "")
+	let nowPage = BehaviorRelay<Int>(value: 1)
+	let timerStart = PublishRelay<Void>()
 	
 	// MARK: - Initializers
 	init(
@@ -50,13 +47,6 @@ class FindPasswordViewModel: ViewModelType{
 	
 	// MARK: - Methods
 	func transform(input: Input) -> Output {
-		
-		input.nextButtonTapped
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.readyForNextButton.accept(false)
-			})
-			.disposed(by: disposeBag)
 
 		input.backButtonTapped
 			.withUnretained(self)
@@ -66,15 +56,8 @@ class FindPasswordViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
-		input.nowPage
-			.withUnretained(self)
-			.subscribe(onNext: { owner, nowPage in
-				owner.pageAppeared.accept(nowPage)
-			})
-			.disposed(by: disposeBag)
-		
 		return Output(
-			readyForNextButton: readyForNextButton.asObservable()
+			afterPage: nowPage.asObservable()
 		)
 	}
 }

@@ -64,7 +64,7 @@ class AppCoordinator: CoordinatorType {
 				)
 			)
 		)
-		self.pushViewController(viewController: splashViewController)
+		self.navigationController.pushViewController(splashViewController, animated: false)
 	}
 }
 

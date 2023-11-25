@@ -219,6 +219,7 @@ public final class CMCTextField_Timer: UIView {
 	}
 	
 	public func resetTimer() {
+		timerDisposeBag = DisposeBag() // 타이머 구독 해제
 		timerCountRelay.accept(180)  // 초기 시간을 180초로 설정
 		startTimer()                 // 타이머 다시 시작
 	}

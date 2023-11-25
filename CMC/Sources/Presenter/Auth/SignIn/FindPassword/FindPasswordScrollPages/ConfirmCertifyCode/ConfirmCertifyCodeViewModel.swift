@@ -16,50 +16,69 @@ import RxSwift
 final class ConfirmCertifyCodeViewModel: ViewModelType {
 	
 	struct Input {
-		let nowPage: Observable<Int>
+		let email: Observable<String>
 		let certifiedCode: Observable<String>
 		let reSendButtonTapped: Observable<Void>
+		let certifyCodeTapped: Observable<Void>
 	}
 	
 	struct Output {
-		let startTimer: Observable<Bool>
-		let nextAvailable: Observable<Bool>
+		let resendCertifyCode: Observable<Bool>
+		let certifyCodeResult: Observable<Bool>
+		let codeValidation: Observable<Bool>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
 	private let usecase: AuthUsecase
 	
-	private let startTimer = BehaviorRelay<Bool>(value: false)
-	private let nextAvailable = BehaviorRelay<Bool>(value: false)
-	
+	// MARK: - Initializers
 	init(
 		usecase: AuthUsecase
 	) {
 		self.usecase = usecase
 	}
 	
-	
 	func transform(input: Input) -> Output {
 		
-		input.nowPage
+		let resendCertifyCode = input.reSendButtonTapped
+			.withLatestFrom(input.email)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, page in
-				if page == 2 {
-					owner.startTimer.accept(true)
-				}
-			})
-			.disposed(by: disposeBag)
+			.flatMapLatest { owner, email -> Observable<Bool> in
+				let query = SendCertifyCodeQuery(email: email)
+				return owner.usecase.sendCertifyCode(query: query)
+					.asObservable()
+					.map { _ in true}
+					.catch { _ in
+						return .just(false)
+					}
+			}
+			.share()
 		
-		input.certifiedCode
+		let certifyCodeResult = input.certifyCodeTapped
+			.withLatestFrom(Observable.combineLatest(input.certifiedCode, input.email))
 			.withUnretained(self)
-			.subscribe(onNext: { owner, code in
-				code.count >= 6 ? owner.nextAvailable.accept(true) : owner.nextAvailable.accept(false)
-			})
-			.disposed(by: disposeBag)
+			.flatMapLatest { owner, result -> Observable<Bool> in
+				let (code, email) = result
+				let body = ConfirmCertifyCodeBody(email: email, code: code)
+				return owner.usecase.confirmCertifyCode(body: body)
+					.asObservable()
+					.map { _ in true}
+					.catch { _ in
+						return .just(false)
+					}
+			}
+			.share()
+											 
+		let codeValidation = input.certifiedCode
+			.map { code -> Bool in
+				return code.count >= 6
+			}
+			.asObservable()
 		
 		return Output(
-			startTimer: startTimer.asObservable(),
-			nextAvailable: nextAvailable.asObservable()
+			resendCertifyCode: resendCertifyCode,
+			certifyCodeResult: certifyCodeResult,
+			codeValidation: codeValidation
 		)
 		
 	}

@@ -48,5 +48,34 @@ final class FakeAuthRepository: AuthRepository {
 		)
 		return Single.just(fakeEmailDupDTO)
 	}
+		
+	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeDTO> {
+		let fakeSendCertifyCodeDTO = SendCertifyCodeDTO(
+			isSuccess: true,
+			code: "200",
+			message: "성공",
+			result: "인증번호가 발송되었습니다."
+		)
+		return Single.just(fakeSendCertifyCodeDTO)
+	}
 	
+	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeDTO> {
+		let fakeConfirmCertifyCodeDTO = ConfirmCertifyCodeDTO(
+			isSuccess: true,
+			code: "200",
+			message: "성공",
+			result: "인증번호가 발송되었습니다."
+		)
+		return Single.just(fakeConfirmCertifyCodeDTO)
+	}
+	
+	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordDTO> {
+		let fakeResettingPasswordDTO = ResettingPasswordDTO(
+			isSuccess: true,
+			code: "200",
+			message: "성공",
+			result: "인증번호가 발송되었습니다."
+		)
+		return Single.just(fakeResettingPasswordDTO)
+	}
 }

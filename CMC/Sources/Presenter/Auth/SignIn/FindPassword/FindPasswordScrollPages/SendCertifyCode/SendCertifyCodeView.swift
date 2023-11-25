@@ -51,6 +51,16 @@ final class SendCertifyCodeView: BaseView {
 		return textField
 	}()
 	
+	private lazy var receiveCertiftyButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "인증번호 받기"
+		)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		return button
+	}()
 	
 	// MARK: - Properties
 	private var viewModel: SendCertifyCodeViewModel
@@ -79,6 +89,7 @@ final class SendCertifyCodeView: BaseView {
 		addSubview(titleLabel)
 		addSubview(subTitle)
 		addSubview(emailTextField)
+		addSubview(receiveCertiftyButton)
 	}
 	
 	override func setConstraint() {
@@ -100,6 +111,11 @@ final class SendCertifyCodeView: BaseView {
 			$0.height.equalTo(74)
 		}
 		
+		receiveCertiftyButton.snp.makeConstraints{ receiveCertiftyButton in
+			receiveCertiftyButton.leading.trailing.equalToSuperview().inset(20)
+			receiveCertiftyButton.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-20)
+			receiveCertiftyButton.height.equalTo(56)
+		}
 	}
 	
 	override func bind() {
@@ -115,22 +131,47 @@ final class SendCertifyCodeView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
+		self.emailTextField.rx.text.orEmpty
+			.bind(to: parentViewModel.email)
+			.disposed(by: disposeBag)
+		
 		let input = SendCertifyCodeViewModel.Input(
-			email: emailTextField.rx.text.orEmpty.asObservable()
+			email: emailTextField.rx.text.orEmpty.asObservable(),
+			receiveCertifyTapped: receiveCertiftyButton.rx.tap.asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
 		
-		Observable.combineLatest(
-			output.certifyEmail,
-			output.emailValidation
-		)
+		output.emailValidation
 		.withUnretained(self)
 		.subscribe(onNext: { owner, isEnable in
-			let (certifyEmail, emailValidation) = isEnable
-			owner.parentViewModel.readyForNextButton.accept(certifyEmail && emailValidation)
+			isEnable == true
+			? owner.receiveCertiftyButton.rxType.accept(.login(.inactive))
+			: owner.receiveCertiftyButton.rxType.accept(.login(.disabled))
 		})
 		.disposed(by: disposeBag)
+		
+		output.sendCertifyResult
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
+					ss.parentViewModel.nowPage.accept(2)
+					ss.parentViewModel.timerStart.accept(())
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "인증번호를 전송했어요",
+						body: "3분 내 인증번호를 입력해주세요 :)",
+						buttonTitle: "확인"
+					)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "존재하지 않는 계정이에요",
+						body: "아이디 찾기는 운영진에게 문의해주세요 :)",
+						buttonTitle: "확인"
+					)
+				}
+			})
+			.disposed(by: disposeBag)
 		
 	}
 }

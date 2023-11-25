@@ -32,11 +32,30 @@ final class DefaultAuthUsecase: AuthUsecase {
 	}
 	
 	func emailDup(query: EmailDupQuery) -> Single<EmailDupModel> {
-		
 		return authRepository.emailDup(query: query)
 			.map { dto in
 				return dto.toDomain()
 			}
 	}
 	
+	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeModel> {
+		return authRepository.sendCertifyCode(query: query)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
+	
+	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeModel> {
+		return authRepository.confirmCertifyCode(body: body)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
+	
+	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordModel> {
+		return authRepository.reSettingPassword(body: body)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
 }

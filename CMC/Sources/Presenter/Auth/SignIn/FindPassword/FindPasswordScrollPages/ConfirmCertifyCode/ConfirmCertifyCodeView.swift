@@ -51,6 +51,16 @@ final class ConfirmCertifyCodeView: BaseView {
 		return textField
 	}()
 	
+	private lazy var confirmCertifyCodeButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "인증번호 확인"
+		)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		return button
+	}()
 	
 	// MARK: - Properties
 	private var viewModel: ConfirmCertifyCodeViewModel
@@ -79,6 +89,7 @@ final class ConfirmCertifyCodeView: BaseView {
 		addSubview(titleLabel)
 		addSubview(subTitle)
 		addSubview(certifyCodeTextField)
+		addSubview(confirmCertifyCodeButton)
 	}
 	
 	override func setConstraint() {
@@ -100,6 +111,11 @@ final class ConfirmCertifyCodeView: BaseView {
 			$0.height.equalTo(74)
 		}
 		
+		confirmCertifyCodeButton.snp.makeConstraints{ confirmCertifyCodeButton in
+			confirmCertifyCodeButton.leading.trailing.equalToSuperview().inset(20)
+			confirmCertifyCodeButton.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-20)
+			confirmCertifyCodeButton.height.equalTo(56)
+		}
 	}
 	
 	override func bind() {
@@ -108,37 +124,73 @@ final class ConfirmCertifyCodeView: BaseView {
 			.when(.recognized)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, gesture in
-				let location = gesture.location(in: owner)
-				if !owner.isPointInsideTextField(location) {
-					owner.endEditing(true)
-				}
+				owner.endEditing(true)
 			})
 			.disposed(by: disposeBag)
 		
+		parentViewModel.timerStart
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.certifyCodeTextField.resetTimer()
+			})
+			.disposed(by: disposeBag)
 		
 		let input = ConfirmCertifyCodeViewModel.Input(
-			nowPage: parentViewModel.pageAppeared.asObservable(),
+			email: parentViewModel.email.asObservable(),
 			certifiedCode: certifyCodeTextField.rx.text.orEmpty.asObservable(),
-			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable()
+			reSendButtonTapped: certifyCodeTextField.accessoryCMCButton.rx.tap.asObservable(),
+			certifyCodeTapped: confirmCertifyCodeButton.rx.tap.asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
 		
-		output.startTimer
-			.withUnretained(self)
-			.subscribe(onNext: { owner, isStart in
-				if isStart {
-					owner.certifyCodeTextField.resetTimer()
+		output.certifyCodeResult
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
+					ss.parentViewModel.nowPage.accept(3)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "올바르지 않은 인증번호에요",
+						body: "인증번호를 확인해주세요 :(",
+						buttonTitle: "확인"
+					)
 				}
 			})
 			.disposed(by: disposeBag)
 		
-		output.nextAvailable
-			.withUnretained(self)
-			.subscribe(onNext: { owner, isAvailable in
-				owner.parentViewModel.readyForNextButton.accept(isAvailable)
+		output.resendCertifyCode
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isSuccessed in
+				guard let ss = self else { return }
+				if isSuccessed {
+					ss.parentViewModel.timerStart.accept(())
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "인증번호를 전송했어요",
+						body: "3분 내 인증번호를 입력해주세요 :)",
+						buttonTitle: "확인"
+					)
+				} else {
+					CMCBottomSheetManager.shared.showBottomSheet(
+						title: "존재하지 않는 계정이에요",
+						body: "아이디 찾기는 운영진에게 문의해주세요 :)",
+						buttonTitle: "확인"
+					)
+				}
 			})
 			.disposed(by: disposeBag)
+		
+		output.codeValidation
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] isValid in
+				guard let ss = self else { return }
+				isValid
+				? ss.confirmCertifyCodeButton.rxType.accept(.login(.inactive))
+				: ss.confirmCertifyCodeButton.rxType.accept(.login(.disabled))
+			})
+			.disposed(by: disposeBag)
+		
 	}
 }
 

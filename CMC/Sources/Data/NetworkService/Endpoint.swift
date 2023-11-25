@@ -9,7 +9,7 @@
 import Foundation
 
 enum HTTPMethod: String {
-	case GET, POST, DELETE, FETCH
+	case GET, POST, DELETE, PATCH
 }
 
 typealias HTTPHeaders = [String: String]
