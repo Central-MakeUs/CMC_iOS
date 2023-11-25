@@ -265,7 +265,7 @@ final class ResettingPasswordView: BaseView {
 						body: nil,
 						buttonTitle: "확인"
 					)
-					ss.parentViewModel.coordinator?.popToRootViewController()
+					ss.parentViewModel.coordinator?.popToRootViewController(animated: true)
 				} else {
 					CMCBottomSheetManager.shared.showBottomSheet(
 						title: "비밀번호 변경에 실패하였습니다.",

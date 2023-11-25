@@ -208,19 +208,6 @@ final class SignInViewController: BaseViewController {
 	
 	override func bind() {
 		
-//		NotificationManager.shared.keyboardHeightSubject
-//			.withUnretained(self)
-//			.subscribe(onNext: { owner, keyboardHeight in
-//				let realHeight = keyboardHeight > 0 ? keyboardHeight - 30 : 0
-//				owner.signInButton.snp.updateConstraints { make in
-//					make.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-20 - realHeight)
-//				}
-//				UIView.animate(withDuration: 0.3) {
-//					owner.view.layoutIfNeeded()
-//				}
-//			})
-//			.disposed(by: disposeBag)
-		
 		self.view.rx.tapGesture()
 			.debug()
 			.when(.recognized)

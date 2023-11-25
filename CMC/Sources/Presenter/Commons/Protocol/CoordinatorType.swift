@@ -11,7 +11,6 @@ import RxSwift
 import UIKit
 
 protocol CoordinatorDelegate: AnyObject {
-	/// navigator가 back될 때, childCoordinator들을 모두 지워주기 위함이다.
 	func didFinish(childCoordinator: CoordinatorType)
 }
 
@@ -21,14 +20,16 @@ protocol CoordinatorType: AnyObject{
 	
 	var childCoordinators: [CoordinatorType] {get set}
 	var delegate: CoordinatorDelegate? {get set}
+	var baseViewController: UIViewController? { get set }
 	
 	func setState()
 	func start()
 	func finish()
+	func popToRootViewController(animated: Bool)
 	
 	// MARK: Navigation 동작
-	func pushViewController(viewController vc: UIViewController )
-	func popViewController()
+	func pushViewController(viewController vc: UIViewController, animated: Bool )
+	func popViewController(animated: Bool)
 	
 	// MARK: Modal 동작
 	func presentViewController(viewController vc: UIViewController, style: UIModalPresentationStyle )
@@ -44,13 +45,13 @@ extension CoordinatorType{
 		delegate?.didFinish(childCoordinator: self)
 	}
 	
-	func pushViewController(viewController vc: UIViewController ){
+	func pushViewController(viewController vc: UIViewController, animated: Bool ){
 		self.navigationController.setNavigationBarHidden(true, animated: false)
-		self.navigationController.pushViewController(vc, animated: true)
+		self.navigationController.pushViewController(vc, animated: animated)
 	}
 	
-	func popViewController() {
-		self.navigationController.popViewController(animated: true)
+	func popViewController(animated: Bool) {
+		self.navigationController.popViewController(animated: animated)
 	}
 	
 	func presentViewController(viewController vc: UIViewController, style: UIModalPresentationStyle){
@@ -60,6 +61,13 @@ extension CoordinatorType{
 	
 	func dismissViewController(completion: (() -> Void)?) {
 		navigationController.dismiss(animated: true, completion: completion)
+	}
+	
+	func popToRootViewController(animated: Bool) {
+		if let rootViewController = self.baseViewController {
+			navigationController.popToViewController(rootViewController, animated: animated)
+			CMCIndecatorManager.shared.show()
+		}
 	}
 	
 }

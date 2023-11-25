@@ -96,7 +96,7 @@ class SignInViewModel: ViewModelType{
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.popViewController()
+				owner.coordinator?.popViewController(animated: true)
 			})
 			.disposed(by: disposeBag)
 		
@@ -109,7 +109,7 @@ class SignInViewModel: ViewModelType{
 						authUsecase: owner.authUsecase
 					)
 				)
-				owner.coordinator?.pushViewController(viewController: findPasswordViewController)
+				owner.coordinator?.pushViewController(viewController: findPasswordViewController, animated: true)
 			})
 			.disposed(by: disposeBag)
 		

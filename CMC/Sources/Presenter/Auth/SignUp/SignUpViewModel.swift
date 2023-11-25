@@ -68,7 +68,7 @@ class SignUpViewModel: ViewModelType{
 		input.backButtonTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.popViewController()
+				owner.coordinator?.popViewController(animated: true)
 			})
 			.disposed(by: disposeBag)
 		

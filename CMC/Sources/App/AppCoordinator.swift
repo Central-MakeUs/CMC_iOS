@@ -21,13 +21,13 @@ class AppCoordinator: CoordinatorType {
 	
 	// MARK: - Need To Initializing
 	var disposeBag: DisposeBag
-	var userActionState: PublishRelay<AppCoordinatorChild> = PublishRelay()
-	/// init에서만 호출하고, stream을 유지하기위해 BehaviorSubject 사용
 	var navigationController: UINavigationController
 	
 	// MARK: - Don't Need To Initializing
 	var childCoordinators: [CoordinatorType] = []
 	var delegate: CoordinatorDelegate?
+	var userActionState: PublishRelay<AppCoordinatorChild> = PublishRelay()
+	weak var baseViewController: UIViewController?
 	
 	init(
 		navigationController: UINavigationController
@@ -64,13 +64,14 @@ class AppCoordinator: CoordinatorType {
 				)
 			)
 		)
-		self.pushViewController(viewController: splashViewController)
+		self.baseViewController = splashViewController
+		self.pushViewController(viewController: splashViewController, animated: false)
 	}
 }
 
 extension AppCoordinator: CoordinatorDelegate{
 	func didFinish(childCoordinator: CoordinatorType) {
-		self.navigationController.popToRootViewController(animated: true)
+		self.childCoordinators.removeAll()
 		if childCoordinator is AuthCoordinator {
 			self.userActionState.accept(.tabBar)
 		} else {

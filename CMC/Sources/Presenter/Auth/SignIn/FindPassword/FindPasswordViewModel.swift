@@ -52,7 +52,7 @@ class FindPasswordViewModel: ViewModelType{
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.popViewController()
+				owner.coordinator?.popViewController(animated: true)
 			})
 			.disposed(by: disposeBag)
 		
