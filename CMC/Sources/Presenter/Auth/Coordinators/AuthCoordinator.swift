@@ -42,6 +42,7 @@ class AuthCoordinator: CoordinatorType {
 				guard let self = self else {return}
 				switch state{
 				case .signUp:
+					CMCIndecatorManager.shared.show()
 					self.popToRootViewController(animated: true)
 					let signUpViewController = SignUpViewController(
 						viewModel: SignUpViewModel(
@@ -53,6 +54,7 @@ class AuthCoordinator: CoordinatorType {
 					)
 					self.pushViewController(viewController: signUpViewController, animated: true)
 				case .signIn:
+					CMCIndecatorManager.shared.show()
 					self.popToRootViewController(animated: true)
 					let signInViewController = SignInViewController(
 						viewModel: SignInViewModel(

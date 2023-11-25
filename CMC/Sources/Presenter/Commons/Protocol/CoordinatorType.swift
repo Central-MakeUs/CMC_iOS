@@ -66,7 +66,6 @@ extension CoordinatorType{
 	func popToRootViewController(animated: Bool) {
 		if let rootViewController = self.baseViewController {
 			navigationController.popToViewController(rootViewController, animated: animated)
-			CMCIndecatorManager.shared.show()
 		}
 	}
 	
