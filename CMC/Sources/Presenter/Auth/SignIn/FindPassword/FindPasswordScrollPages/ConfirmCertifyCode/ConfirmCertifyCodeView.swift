@@ -133,12 +133,6 @@ final class ConfirmCertifyCodeView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
-		output.nextAvailable
-			.withUnretained(self)
-			.subscribe(onNext: { owner, isAvailable in
-				owner.parentViewModel.readyForNextButton.accept(isAvailable)
-			})
-			.disposed(by: disposeBag)
 	}
 }
 

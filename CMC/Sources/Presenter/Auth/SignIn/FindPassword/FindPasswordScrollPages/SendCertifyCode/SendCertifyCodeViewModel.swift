@@ -17,6 +17,7 @@ final class SendCertifyCodeViewModel: ViewModelType {
 	
 	struct Input {
 		let email: Observable<String>
+		let receiveCertifyTapped: Observable<Void>
 	}
 	
 	struct Output {
@@ -31,12 +32,6 @@ final class SendCertifyCodeViewModel: ViewModelType {
 	func transform(input: Input) -> Output {
 		let emailValidation: Observable<Bool> = Utility.checkEmailValidation(email: input.email, validate: .emailRegex)
 		
-		input.email
-			.withUnretained(self)
-			.subscribe(onNext: { owner, email in
-				owner.allcertifyEmailRelay.accept(!email.isEmpty)
-			})
-			.disposed(by: disposeBag)
 		
 		return Output(
 			certifyEmail: allcertifyEmailRelay.asObservable(),

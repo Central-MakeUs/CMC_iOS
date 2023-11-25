@@ -51,6 +51,16 @@ final class SendCertifyCodeView: BaseView {
 		return textField
 	}()
 	
+	private lazy var receiveCertiftyButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.disabled),
+			title: "인증번호 받기"
+		)
+		button.translatesAutoresizingMaskIntoConstraints = false
+		return button
+	}()
 	
 	// MARK: - Properties
 	private var viewModel: SendCertifyCodeViewModel
@@ -100,6 +110,11 @@ final class SendCertifyCodeView: BaseView {
 			$0.height.equalTo(74)
 		}
 		
+		receiveCertiftyButton.snp.makeConstraints{ receiveCertiftyButton in
+			receiveCertiftyButton.leading.trailing.equalToSuperview().inset(20)
+			receiveCertiftyButton.bottom.equalTo(self.keyboardLayoutGuide.snp.top).offset(-20)
+			receiveCertiftyButton.height.equalTo(56)
+		}
 	}
 	
 	override func bind() {
@@ -116,7 +131,8 @@ final class SendCertifyCodeView: BaseView {
 			.disposed(by: disposeBag)
 		
 		let input = SendCertifyCodeViewModel.Input(
-			email: emailTextField.rx.text.orEmpty.asObservable()
+			email: emailTextField.rx.text.orEmpty.asObservable(),
+			receiveCertifyTapped: receiveCertiftyButton.rx.tap.asObservable()
 		)
 		
 		let output = viewModel.transform(input: input)
@@ -128,7 +144,9 @@ final class SendCertifyCodeView: BaseView {
 		.withUnretained(self)
 		.subscribe(onNext: { owner, isEnable in
 			let (certifyEmail, emailValidation) = isEnable
-			owner.parentViewModel.readyForNextButton.accept(certifyEmail && emailValidation)
+			certifyEmail && emailValidation
+			? owner.receiveCertiftyButton.rxType.accept(.login(.inactive))
+			: owner.receiveCertiftyButton.rxType.accept(.login(.disabled))
 		})
 		.disposed(by: disposeBag)
 		

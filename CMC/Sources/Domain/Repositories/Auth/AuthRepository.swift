@@ -13,4 +13,5 @@ protocol AuthRepository {
 	func signUp(body: SignUpBody) -> Single<SignUpDTO>
 	func signIn(body: SignInBody) -> Single<SignInDTO>
 	func emailDup(query: EmailDupQuery) -> Single<EmailDupDTO>
+	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeDTO>
 }

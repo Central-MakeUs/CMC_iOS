@@ -13,6 +13,7 @@ enum AuthEndpoint: Endpoint {
 	case signIn(body: SignInBody)
 	case signUp(body: SignUpBody)
 	case emailDup(query: EmailDupQuery)
+	case sendCertifyCode(query: SendCertifyCodeQuery)
 	
 	var baseURL: URL? {
 		return URL(string: Xcconfig.BASE_URL + "/auth")
@@ -22,7 +23,7 @@ enum AuthEndpoint: Endpoint {
 		switch self {
 		case .signUp, .signIn:
 			return .POST
-		case .emailDup:
+		case .emailDup, .sendCertifyCode:
 			return .GET
 		}
 	}
@@ -42,6 +43,8 @@ enum AuthEndpoint: Endpoint {
 			return "/signIn"
 		case .emailDup:
 			return "/email"
+		case .sendCertifyCode:
+			return "/password/email"
 		}
 		
 	}
@@ -56,6 +59,11 @@ enum AuthEndpoint: Endpoint {
 			return .query([
 				"email": query.email
 			])
+		case .sendCertifyCode(let query):
+			return .query([
+				"email": query.email
+			])
+		
 		}
 	}
 	
