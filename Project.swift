@@ -105,7 +105,9 @@ class BaseProjectProfile: ProjectProfile{
 				infoPlist: .extendingDefault(with: infoPlist),
 				sources: ["\(projectName)/Sources/**"],
 				resources: "\(projectName)/Resources/**",
-				dependencies: generateDependencies(targetName: .App),
+				dependencies: [
+					.target(name: "DesignSystem")
+				],
 				settings: generateAppConfigurations()
 			),
 			Target(
@@ -150,12 +152,17 @@ let project: Project = .init(
 
 extension BaseProjectProfile {
 	fileprivate func commonDependencies() -> [TargetDependency] {
-			return [
-				.package(product: "RxSwift"),
-				.package(product: "RxCocoa"),
-				.package(product: "RxRelay"),
-				.package(product: "RxGesture"),
-				.package(product: "SnapKit")
-			]
+		return [
+			.package(product: "RxSwift",
+							 type: .runtime),
+			.package(product: "RxCocoa",
+							 type: .runtime),
+			.package(product: "RxRelay",
+							 type: .runtime),
+			.package(product: "RxGesture",
+							 type: .runtime),
+			.package(product: "SnapKit",
+							 type: .runtime)
+		]
 	}
 }
