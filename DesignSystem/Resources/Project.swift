@@ -129,22 +129,29 @@ let profile = BaseProjectProfile()
 let project: Project = .init(
 	name: profile.projectName,
 	organizationName: "com.softsquared.cmc",
-//	settings: .settings(configurations: [
-//		.debug(name: "DEV"),
-//		.release(name: "Release")
-//	]),
+	packages: [
+		.remote(
+			url: "https://github.com/ReactiveX/RxSwift",
+			requirement: .upToNextMajor(from: "6.5.0")),
+		.remote(
+			url: "https://github.com/RxSwiftCommunity/RxGesture",
+			requirement: .upToNextMajor(from: "4.0.0")),
+		.remote(
+			url: "https://github.com/SnapKit/SnapKit",
+			requirement: .upToNextMajor(from: "5.0.0"))
+	],
 	targets: profile.generateTarget()
 )
 
 
 extension BaseProjectProfile {
 	fileprivate func commonDependencies() -> [TargetDependency] {
-			return [
-					.external(name: "RxSwift"),
-					.external(name: "RxCocoa"),
-					.external(name: "RxRelay"),
-					.external(name: "RxGesture"),
-					.external(name: "SnapKit")
-			]
+		return [
+			.package(product: "RxSwift"),
+			.package(product: "RxCocoa"),
+			.package(product: "RxRelay"),
+			.package(product: "RxGesture"),
+			.package(product: "SnapKit")
+		]
 	}
 }
