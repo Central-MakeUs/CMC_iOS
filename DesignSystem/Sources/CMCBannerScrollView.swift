@@ -15,7 +15,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-final class CMCBannerScrollView: UIView {
+public final class CMCBannerScrollView: UIView {
 	
 	//MARK: - UI
 	private lazy var scrollView: UIScrollView = {
@@ -34,7 +34,7 @@ final class CMCBannerScrollView: UIView {
 	private var autoScrollTimer: Disposable?
 	
 	//MARK: - Initializer
-	init(
+	public init(
 		banners: [UIView]
 	) {
 		self.banners = banners
@@ -46,6 +46,7 @@ final class CMCBannerScrollView: UIView {
 		//3. constraints 추가
 		self.setAddConstraints()
 		//4. 바인딩
+		self.bind()
 	}
 	
 	required init?(coder: NSCoder) {
@@ -108,7 +109,7 @@ final class CMCBannerScrollView: UIView {
 
 extension CMCBannerScrollView: UIScrollViewDelegate {
 	
-	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
 		let nowOffset = CGFloat(scrollView.contentOffset.x / self.bounds.width)
 		let realBannerCount = CGFloat(banners.count - 2)
 		
@@ -121,15 +122,16 @@ extension CMCBannerScrollView: UIScrollViewDelegate {
 		currentPage.accept(now)
 	}
 	
-	func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+	public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
 		autoScrollTimer?.dispose()
 	}
 	
-	func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
 		bind()
 	}
 }
 
+//MARK: - 이거 나중에 뷰 복사하는거 만들어야댐
 extension UIView {
 		func clone() -> UIView {
 				let clonedBanner = UIView()
