@@ -53,6 +53,11 @@ public final class CMCBannerScrollView: UIView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	public override func layoutSubviews() {
+		super.layoutSubviews()
+		self.setAfterAddConstraints()
+	}
+	
 	private func replaceBanners() {
 		var newBanners: [UIView] = []
 		let first = self.banners.first!.clone()
@@ -74,6 +79,9 @@ public final class CMCBannerScrollView: UIView {
 		scrollView.snp.makeConstraints { make in
 			make.edges.equalToSuperview()
 		}
+	}
+	
+	private func setAfterAddConstraints() {
 		var x: CGFloat = 0
 		for banner in banners {
 			banner.frame = CGRect(
