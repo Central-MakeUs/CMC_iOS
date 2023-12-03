@@ -6,6 +6,7 @@
 //  Copyright © 2023 com.softsquared.cmc. All rights reserved.
 //
 
+import SafariServices
 import Foundation
 
 import RxCocoa
@@ -86,7 +87,7 @@ class HomeViewController: BaseViewController {
 			logoImage: CMCAsset._24x24pushPin.image,
 			title: "첫번째",
 			subTitle: "우선 해커톤공지",
-			bannerUrl: "banner_one"
+			bannerUrl: "https://www.naver.com"
 		)
 		return bannerView
 	}()
@@ -96,7 +97,7 @@ class HomeViewController: BaseViewController {
 			logoImage: CMCAsset._24x24pushPin.image,
 			title: "두번째",
 			subTitle: "맘대로 넣쟈",
-			bannerUrl: "banner_two"
+			bannerUrl: "https://www.naver.com"
 		)
 		return bannerView
 	}()
@@ -106,7 +107,7 @@ class HomeViewController: BaseViewController {
 			logoImage: CMCAsset._24x24pushPin.image,
 			title: "세번째",
 			subTitle: "여기까지만하자",
-			bannerUrl: "banner_three"
+			bannerUrl: "https://www.naver.com"
 		)
 		return bannerView
 	}()
@@ -246,6 +247,7 @@ class HomeViewController: BaseViewController {
 		let label = UILabel()
 		label.text = "CMC\n공식 홈페이지"
 		label.textColor = CMCAsset.gray700.color
+		label.textAlignment = .center
 		label.numberOfLines = 0
 		label.font = CMCFontFamily.Pretendard.medium.font(size: 15)
 		return label
@@ -442,6 +444,56 @@ class HomeViewController: BaseViewController {
 	}
 	
 	override func bind() {
+		
+		bannerView.getBannerUrl
+			.withUnretained(self)
+			.subscribe(onNext: { owner, url in
+				guard let url = URL(string: url) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		allNoticeView.rx.tapGesture()
+			.when(.recognized)
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, _ in
+				let allNoticeURL = "https://makeus-challenge.notion.site/2591216dc54f4928a0ebfce2d6ec4cfe?pvs=4"
+				guard let url = URL(string: allNoticeURL) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		toContactView.rx.tapGesture()
+			.when(.recognized)
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, _ in
+				let toConactURL = "https://pf.kakao.com/_xcwDJT/chat"
+				guard let url = URL(string: toConactURL) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		officialHomePageView.rx.tapGesture()
+			.when(.recognized)
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, _ in
+				let officialHomePageURL = "https://cmc.makeus.in"
+				guard let url = URL(string: officialHomePageURL) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
 		
 	}
 }

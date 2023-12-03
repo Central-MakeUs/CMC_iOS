@@ -47,7 +47,7 @@ final class TermsAndConditionsView: BaseView {
 	}()
 	
 	private lazy var accessoryDetailButton : [CMCTouchArea] = {
-		let image = CMCAsset._16x16arrowLeft.image
+		let image = CMCAsset._24x24arrowRight.image
 		let buttons = [
 			CMCTouchArea(image: image),
 			CMCTouchArea(image: image),
@@ -101,6 +101,15 @@ final class TermsAndConditionsView: BaseView {
 	// MARK: - Properties
 	private var viewModel: TermsAndConditionsViewModel
 	private var parentViewModel: SignUpViewModel
+	
+	private let urls: [String] = [
+		"https://makeus-challenge.notion.site/ce8e31baeee9444382e69a87bae418f2?pvs=4",
+		"https://makeus-challenge.notion.site/be7d5901cf834befafe088e03e362c96?pvs=4",
+		"https://makeus-challenge.notion.site/28a562a7a37c4962b50f45a0ce59d9b2?pvs=4",
+		"https://makeus-challenge.notion.site/1096cea2c98e4f07b8211f95cf4ab93c?pvs=4",
+	]
+	
+	public var termsAndCondUrls = PublishSubject<String>()
 	
 	// MARK: - Initializers
 	init(
@@ -178,6 +187,15 @@ final class TermsAndConditionsView: BaseView {
 	}
 	
 	override func bind() {
+		
+		accessoryDetailButton.enumerated().forEach { idx, button in
+			button.rx.tapped()
+				.withUnretained(self)
+				.subscribe(onNext: { owner, _ in
+					owner.termsAndCondUrls.onNext(owner.urls[idx])
+				})
+				.disposed(by: disposeBag)
+		}
 		
 		let input = TermsAndConditionsViewModel.Input(
 			allAgreeBtnTapped: buttons[0].rx.tapped().asObservable(),
