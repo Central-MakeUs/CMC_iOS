@@ -6,6 +6,7 @@
 //  Copyright © 2023 com.centralMakeusChallenge. All rights reserved.
 //
 
+import SafariServices
 import Foundation
 
 import RxCocoa
@@ -127,18 +128,16 @@ class SignUpViewController: BaseViewController {
 	
 	override func bind() {
 		
-//		NotificationManager.shared.keyboardHeightSubject
-//			.withUnretained(self)
-//			.subscribe(onNext: { owner, keyboardHeight in
-//				let realHeight = keyboardHeight > 0 ? keyboardHeight : 20
-//				owner.nextButton.snp.updateConstraints { make in
-//					make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-realHeight)
-//				}
-//				UIView.animate(withDuration: 0.3) {
-//					owner.view.layoutIfNeeded()
-//				}
-//			})
-//			.disposed(by: disposeBag)
+		termsAndConditionsView.termsAndCondUrls
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, url in
+				guard let url = URL(string: url) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
 		
 		nextButton.rx.tap
 			.withLatestFrom(cmcPager.getCurrentPage())
@@ -150,14 +149,6 @@ class SignUpViewController: BaseViewController {
 				owner.view.endEditing(true)
 			})
 			.disposed(by: disposeBag)
-		
-//		self.view.rx.tapGesture()
-//			.when(.recognized)
-//			.withUnretained(self)
-//			.subscribe(onNext: { owner, _ in
-//				owner.view.endEditing(true)
-//			})
-//			.disposed(by: disposeBag)
 		
 		let input = SignUpViewModel.Input(
 			backButtonTapped: navigationBar.backButton.rx.tapped().asObservable(),
