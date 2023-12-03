@@ -16,6 +16,7 @@ enum AuthEndpoint: Endpoint {
 	case sendCertifyCode(query: SendCertifyCodeQuery)
 	case confirmCertifyCode(body: ConfirmCertifyCodeBody)
 	case resettingPassword(body: ResettingPasswordBody)
+	case refresh
 	
 	var baseURL: URL? {
 		return URL(string: Xcconfig.BASE_URL + "/auth")
@@ -25,7 +26,7 @@ enum AuthEndpoint: Endpoint {
 		switch self {
 		case .signUp, .signIn, .confirmCertifyCode:
 			return .POST
-		case .emailDup, .sendCertifyCode:
+		case .emailDup, .sendCertifyCode, .refresh:
 			return .GET
 		case .resettingPassword:
 			return .PATCH
@@ -33,10 +34,27 @@ enum AuthEndpoint: Endpoint {
 	}
 	
 	var headers: HTTPHeaders {
-		return [
-			"Content-Type": "application/json;charset=UTF-8",
-			"accept": "application/json;charset=UTF-8"
-		]
+		switch self {
+		case .refresh:
+			if let X_REFRESH_TOKEN: String = UserDefaultManager.shared.load(for: .refreshToken) {
+				return [
+					"Content-Type": "application/json;charset=UTF-8",
+					"accept": "application/json;charset=UTF-8",
+					"X-REFRESH-TOKEN": X_REFRESH_TOKEN
+				]
+			} else {
+				return [
+					"Content-Type": "application/json;charset=UTF-8",
+					"accept": "application/json;charset=UTF-8"
+				]
+			}
+		default:
+			return [
+				"Content-Type": "application/json;charset=UTF-8",
+				"accept": "application/json;charset=UTF-8"
+			]
+		}
+		
 	}
 	
 	var path: String {
@@ -49,6 +67,8 @@ enum AuthEndpoint: Endpoint {
 			return "/email"
 		case .sendCertifyCode, .confirmCertifyCode, .resettingPassword:
 			return "/password"
+		case .refresh:
+			return "/refresh"
 		}
 		
 	}
@@ -71,6 +91,8 @@ enum AuthEndpoint: Endpoint {
 			return .body(body)
 		case .resettingPassword(let body):
 			return .body(body)
+		case .refresh:
+			return .none
 		}
 	}
 	
