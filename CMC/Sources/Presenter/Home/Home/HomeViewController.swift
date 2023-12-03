@@ -76,24 +76,39 @@ class HomeViewController: BaseViewController {
 				banner_three
 			]
 		)
+		view.layer.masksToBounds = true
+		view.layer.cornerRadius = 10
 		return view
 	}()
 	
-	private lazy var banner_one: UIView = {
-		let view = UIView()
-		view.backgroundColor = .yellow
-		return view
-	}()
-	private lazy var banner_two: UIView = {
-		let view = UIView()
-		view.backgroundColor = .green
-		return view
+	private lazy var banner_one: CMCBannerView = {
+		let bannerView = CMCBannerView(
+			logoImage: CMCAsset._24x24pushPin.image,
+			title: "첫번째",
+			subTitle: "우선 해커톤공지",
+			bannerUrl: "banner_one"
+		)
+		return bannerView
 	}()
 	
-	private lazy var banner_three: UIView = {
-		let view = UIView()
-		view.backgroundColor = .red
-		return view
+	private lazy var banner_two: CMCBannerView = {
+		let bannerView = CMCBannerView(
+			logoImage: CMCAsset._24x24pushPin.image,
+			title: "두번째",
+			subTitle: "맘대로 넣쟈",
+			bannerUrl: "banner_two"
+		)
+		return bannerView
+	}()
+	
+	private lazy var banner_three: CMCBannerView = {
+		let bannerView = CMCBannerView(
+			logoImage: CMCAsset._24x24pushPin.image,
+			title: "세번째",
+			subTitle: "여기까지만하자",
+			bannerUrl: "banner_three"
+		)
+		return bannerView
 	}()
 	
 	private lazy var attendanceView: UIView = {

@@ -27,25 +27,23 @@ public final class CMCBannerScrollView: UIView {
 	}()
 	
 	//MARK: - Properties
-	private var banners: [UIView] // 실제 배너 뷰들 -> 우선 UIView로 해두자
+	private var banners: [CMCBannerView] // 실제 배너 뷰들 -> 우선 UIView로 해두자
 	private let disposeBag = DisposeBag()
 	
 	private let currentPage = BehaviorRelay<Int>(value: 1)
 	private var autoScrollTimer: Disposable?
 	
+	public let getBannerUrl = PublishRelay<String>()
+	
 	//MARK: - Initializer
 	public init(
-		banners: [UIView]
+		banners: [CMCBannerView]
 	) {
 		self.banners = banners
 		super.init(frame: .zero)
-		//1. 먼저, banners 재구성
 		self.replaceBanners()
-		//2. view 추가
 		self.setAddSubViews()
-		//3. constraints 추가
 		self.setAddConstraints()
-		//4. 바인딩
 		self.bind()
 	}
 	
@@ -59,7 +57,7 @@ public final class CMCBannerScrollView: UIView {
 	}
 	
 	private func replaceBanners() {
-		var newBanners: [UIView] = []
+		var newBanners: [CMCBannerView] = []
 		let first = self.banners.first!.clone()
 		let last = self.banners.last!.clone()
 		newBanners.append(last)
@@ -94,7 +92,7 @@ public final class CMCBannerScrollView: UIView {
 		}
 		/// 실제 스크롤뷰 content size 지정
 		scrollView.contentSize.width = x
-		scrollView.contentSize.height = self.bounds.width
+		scrollView.contentSize.height = self.bounds.height
 		/// 시작위치 1번 인덱스로 이동
 		scrollView.contentOffset.x = self.bounds.width
 	}
@@ -106,6 +104,16 @@ public final class CMCBannerScrollView: UIView {
 				let newOffset = CGPoint(x: ss.scrollView.contentOffset.x + ss.bounds.width, y: 0)
 				ss.scrollView.setContentOffset(newOffset, animated: true)
 			})
+		
+		banners.forEach { banner in
+			banner.rx.tapGesture()
+				.when(.recognized)
+				.subscribe(onNext: { [weak self] _ in
+					guard let ss = self else { return }
+					ss.getBannerUrl.accept(banner.getUrl())
+				})
+				.disposed(by: disposeBag)
+		}
 		
 		autoScrollTimer?.disposed(by: disposeBag)
 	}
@@ -137,12 +145,4 @@ extension CMCBannerScrollView: UIScrollViewDelegate {
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
 		bind()
 	}
-}
-
-//MARK: - 이거 나중에 뷰 복사하는거 만들어야댐
-extension UIView {
-		func clone() -> UIView {
-				let clonedBanner = UIView()
-				return clonedBanner
-		}
 }
