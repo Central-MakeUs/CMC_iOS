@@ -26,11 +26,29 @@ class AuthViewController: BaseViewController {
 		return imageView
 	}()
 	
-	private lazy var mainTitle: UIImageView = {
-		let label = UIImageView()
-		label.image = CMCAsset.splashTitle.image
-		return label
-	}()
+	private lazy var mainTitle: UILabel = {
+			let gradientLabel = GradientLabel()
+			let text = "수익형 앱 런칭을 위한 최고의\nIT 연합 동아리"
+			var paragraphStyle = NSMutableParagraphStyle()
+			paragraphStyle.lineHeightMultiple = 1.26
+			let attributeString = NSMutableAttributedString(
+				string: text,
+				attributes: [
+					NSAttributedString.Key.paragraphStyle: paragraphStyle
+				]
+			)
+			gradientLabel.attributedText = attributeString
+			gradientLabel.gradientColors = [
+					UIColor(hex: 0x615DFF).cgColor,
+					UIColor(hex: 0xFFFFFF).cgColor
+			]
+			gradientLabel.numberOfLines = 0
+			gradientLabel.textAlignment = .center
+			gradientLabel.font = CMCFontFamily.Pretendard.bold.font(size: 24)
+			gradientLabel.translatesAutoresizingMaskIntoConstraints = false
+			return gradientLabel
+		}()
+
 	
 	private lazy var mainLogo: UIImageView = {
 		let imageView = UIImageView()
