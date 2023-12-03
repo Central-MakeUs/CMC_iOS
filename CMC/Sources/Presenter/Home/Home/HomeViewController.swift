@@ -39,13 +39,6 @@ class HomeViewController: BaseViewController {
 		return imageView
 	}()
 	
-	private lazy var scrollView: UIScrollView = {
-		let scrollView = UIScrollView()
-		scrollView.backgroundColor = .clear
-		scrollView.showsVerticalScrollIndicator = false
-		return scrollView
-	}()
-	
 	private lazy var contentView: UIView = {
 		let view = UIView()
 		view.backgroundColor = .clear
@@ -265,8 +258,7 @@ class HomeViewController: BaseViewController {
 	
 	override func setAddSubView() {
 		
-		self.view.addSubview(scrollView)
-		scrollView.addSubview(contentView)
+		self.view.addSubview(contentView)
 		
 		contentView.addSubview(appBar)
 		appBar.addSubview(mainLogoImageView)
@@ -302,16 +294,10 @@ class HomeViewController: BaseViewController {
 	
 	override func setConstraint() {
 		
-		scrollView.snp.makeConstraints {
+		contentView.snp.makeConstraints {
 			$0.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
 			$0.bottom.equalToSuperview()
 			$0.leading.trailing.equalToSuperview().inset(24)
-		}
-		
-		contentView.snp.makeConstraints {
-			$0.edges.equalToSuperview()
-			$0.width.equalToSuperview()
-			$0.height.equalToSuperview().priority(.low)
 		}
 		
 		appBar.snp.makeConstraints {
