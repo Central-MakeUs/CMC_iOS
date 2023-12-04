@@ -30,7 +30,7 @@ struct NotificationsDTO: Codable {
 		}
 	}
 	
-	func toModel() -> NotificationsModel {
+	func toDomain() -> NotificationsModel {
 		var contents: [NotificationsModel.NotificationsContentModel] = []
 		for content in self.result.contents {
 			contents.append(
