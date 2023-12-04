@@ -53,6 +53,6 @@ class SplashViewController: BaseViewController {
 	
 	override func bind() {
 		let input = SplashViewModel.Input()
-		let output = viewModel.transform(input: input)
+		let _ = viewModel.transform(input: input)
 	}
 }

@@ -47,24 +47,30 @@ class SplashViewModel: ViewModelType{
 		let accssToken = authUsecase.refresh()
 			.asObservable()
 			.map { result -> Bool in
+				
 				UserDefaultManager.shared.save(result.accessToken, for: .accessToken)
 				return true
 			}
 			.catchAndReturn(false)
 		
-		
 		Observable.zip(
 			apiCheck.asObservable(),
 			accssToken.asObservable()
 		)
-		.subscribe(onNext: { apiCheckResult, _ in
+		.observe(on: MainScheduler.instance)
+		.subscribe(onNext: { apiCheckResult, accessTokenResult in
+			
 			if apiCheckResult {
-				self.coordinator?.userActionState.accept(.home)
+				if accessTokenResult {
+					self.coordinator?.userActionState.accept(.home)
+				} else {
+					self.coordinator?.userActionState.accept(.auth)
+				}
 			} else {
 				self.coordinator?.userActionState.accept(.auth)
 				CMCBottomSheetManager.shared.showBottomSheet(
-					title: "자동 로그인에 실패하였습니다.",
-					body: "다시 로그인을 시도해주세요.",
+					title: "현재 서버가 점검중입니다.",
+					body: "잠시후 다시 접속해주세요.",
 					buttonTitle: "확인"
 				)
 			}
