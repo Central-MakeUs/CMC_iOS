@@ -16,4 +16,5 @@ protocol AuthRepository {
 	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeDTO>
 	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeDTO>
 	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordDTO>
+	func refresh() -> Single<RefreshDTO>
 }

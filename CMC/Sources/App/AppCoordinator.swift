@@ -68,6 +68,12 @@ class AppCoordinator: CoordinatorType {
 				coordinator: self,
 				launchUsecase: DefaultLaunchUsecase(
 					launchRepository: DefaultLaunchRepository()
+				),
+				authUsecase: DefaultAuthUsecase(
+					authRepository: DefaultAuthRepository()
+				),
+				userUsecase: DefaultUserUsecase(
+					userRepository: DefaultUserRepository()
 				)
 			)
 		)

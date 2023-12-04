@@ -58,4 +58,11 @@ final class DefaultAuthUsecase: AuthUsecase {
 				return dto.toDomain()
 			}
 	}
+	
+	func refresh() -> Single<RefreshModel> {
+		return authRepository.refresh()
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
 }

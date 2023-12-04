@@ -16,4 +16,5 @@ protocol AuthUsecase {
 	func sendCertifyCode(query: SendCertifyCodeQuery) -> Single<SendCertifyCodeModel>
 	func confirmCertifyCode(body: ConfirmCertifyCodeBody) -> Single<ConfirmCertifyCodeModel>
 	func reSettingPassword(body: ResettingPasswordBody) -> Single<ResettingPasswordModel>
+	func refresh() -> Single<RefreshModel>
 }

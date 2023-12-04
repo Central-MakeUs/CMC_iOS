@@ -83,5 +83,16 @@ final class DefaultAuthRepository: AuthRepository {
 			}
 	}
 	
+	func refresh() -> Single<RefreshDTO> {
+		let endpoint = AuthEndpoint.refresh
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(RefreshDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
+	
 	
 }

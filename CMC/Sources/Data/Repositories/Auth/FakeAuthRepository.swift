@@ -78,4 +78,16 @@ final class FakeAuthRepository: AuthRepository {
 		)
 		return Single.just(fakeResettingPasswordDTO)
 	}
+	
+	func refresh() -> Single<RefreshDTO> {
+		let fakeRefreshDTO = RefreshDTO(
+			isSuccess: true,
+			code: "200",
+			message: "성공",
+			result: .init(
+				accessToken: "eyJ0eXBlIjoiand0IiwiYWxnIjoiSFMzODQifQ.eyJ1c2VySWQiOjEsImlhdCI6MTY5OTM1NTk2MiwiZXhwIjozMzIzNTM1NTk2Mn0.Ss8FNWSD1kVbETnFD4C6d9jQYt2c_vdhUwRL84uQA1aW06csWw6Je7bcge22KY_B"
+			)
+		)
+		return Single.just(fakeRefreshDTO)
+	}
 }
