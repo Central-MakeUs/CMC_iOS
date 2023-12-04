@@ -53,18 +53,25 @@ class HomeViewController: BaseViewController {
 	
 	private lazy var mainInfoLabel: UILabel = {
 		let label = UILabel()
-		let text = "{--}는\nCMC {--}기 {---}로\n참여중이에요"
+		guard let nickname: String = UserDefaultManager.shared.load(for: .nickname) else { return label}
+		guard let gen: Int = UserDefaultManager.shared.load(for: .generation) else { return label}
+		guard let part: String = UserDefaultManager.shared.load(for: .part) else { return label}
+		let text = "\(nickname)는\nCMC \(gen)기 \(part)로\n참여중이에요"
+		let attributedString = NSMutableAttributedString(string: text)
+		let whiteAttributes: [NSAttributedString.Key: Any] =
+		[.foregroundColor: CMCAsset.gray50.color]
+		let mainAttributes: [NSAttributedString.Key: Any] =
+		[.foregroundColor: CMCAsset.main1.color]
+		let pragraphStyle = NSMutableParagraphStyle()
+		pragraphStyle.lineHeightMultiple = 1.26
+		let lineHeight: [NSAttributedString.Key: Any] = [.paragraphStyle: pragraphStyle]
+		let partRange = (text as NSString).range(of: part)
+		attributedString.addAttributes(whiteAttributes, range: NSRange(location: 0, length: text.count))
+		attributedString.addAttributes(mainAttributes, range: partRange)
+		attributedString.addAttributes(lineHeight, range: NSRange(location: 0, length: text.count))
 		label.numberOfLines = 0
 		label.lineBreakMode = .byWordWrapping
-		var paragraphStyle = NSMutableParagraphStyle()
-		paragraphStyle.lineHeightMultiple = 1.26
-		label.attributedText = NSMutableAttributedString(
-			string: text,
-			attributes: [
-				NSAttributedString.Key.paragraphStyle: paragraphStyle
-			]
-		)
-		label.textColor = CMCAsset.gray50.color
+		label.attributedText = attributedString
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 24)
 		return label
 	}()

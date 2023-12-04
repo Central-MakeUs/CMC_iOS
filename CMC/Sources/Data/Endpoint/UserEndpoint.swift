@@ -14,7 +14,7 @@ enum UserEndpoint: Endpoint {
 	case deleteUser
 	
 	var baseURL: URL? {
-		return URL(string: Xcconfig.BASE_URL + "/users")
+		return URL(string: Xcconfig.BASE_URL)
 	}
 	
 	var method: HTTPMethod {
@@ -29,7 +29,6 @@ enum UserEndpoint: Endpoint {
 	var headers: HTTPHeaders {
 		if let X_AUTH_TOKEN: String = UserDefaultManager.shared.load(for: .accessToken) {
 			return [
-				"Content-Type": "application/json;charset=UTF-8",
 				"accept": "application/json;charset=UTF-8",
 				"X-AUTH-TOKEN": X_AUTH_TOKEN
 			]
@@ -42,7 +41,7 @@ enum UserEndpoint: Endpoint {
 	}
 	
 	var path: String {
-		return ""
+		return "/users"
 	}
 	
 	var parameters: HTTPRequestParameterType? {

@@ -209,7 +209,6 @@ final class SignInViewController: BaseViewController {
 	override func bind() {
 		
 		self.view.rx.tapGesture()
-			.debug()
 			.when(.recognized)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in

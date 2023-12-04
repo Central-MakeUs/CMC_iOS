@@ -30,13 +30,16 @@ class SignInViewModel: ViewModelType{
 	var disposeBag: DisposeBag = DisposeBag()
 	weak var coordinator: AuthCoordinator?
 	private let authUsecase: AuthUsecase
+	private let userUsecase: UserUsecase
 	
 	init(
 		coordinator: AuthCoordinator,
-		authUsecase: AuthUsecase
+		authUsecase: AuthUsecase,
+		userUsecase: UserUsecase
 	) {
 		self.coordinator = coordinator
 		self.authUsecase = authUsecase
+		self.userUsecase = userUsecase
 	}
 	
 	func transform(input: Input) -> Output {
@@ -45,32 +48,57 @@ class SignInViewModel: ViewModelType{
 				return !email.isEmpty && !password.isEmpty
 			}
 		
-		input.goSignInButtonTapped
+		let loginObservable = input.goSignInButtonTapped
 			.withLatestFrom(Observable.combineLatest(input.email, input.password))
-			.flatMapLatest { [weak self] email, password -> Observable<Result<SignInModel, Error>> in
-				guard let self = self else { return .empty() }
-				let body = SignInBody(email: email, password: password)
-				return self.authUsecase.signIn(body: body)
-					.map { Result.success($0) }
-					.catch { error in
-						return .just(Result.failure(error))
-					}
+			.flatMapLatest { [weak self] email, password -> Observable<SignInModel> in
+				guard let self = self else { return Observable.error(NetworkError.customError(code: "404", message: "Strong Self")) }
+				let signInBody = SignInBody(email: email, password: password)
+				return self.authUsecase.signIn(body: signInBody)
+					.observe(on: MainScheduler.instance)
 					.asObservable()
+					.catch { error in
+						CMCBottomSheetManager.shared.showBottomSheet(
+							title: "존재하지 않는 계정이에요",
+							body: "아이디 또는 비밀번호를 확인해주세요!",
+							buttonTitle: "확인"
+						)
+						return Observable.error(error)
+					}
 			}
+		
+		// 로그인 성공 후 사용자 정보 처리
+		loginObservable
+			.withUnretained(self)
+			.flatMapLatest { owner, signInModel -> Observable<GetUserModel> in
+				UserDefaultManager.shared.save(signInModel.accessToken, for: .accessToken)
+				UserDefaultManager.shared.save(signInModel.refreshToken, for: .refreshToken)
+				return owner.userUsecase.getUser()
+					.asObservable()
+					.observe(on: MainScheduler.instance)
+					.catch { error in
+						CMCBottomSheetManager.shared.showBottomSheet(
+							title: "사용자 정보를 불러오는데 실패하였습니다.",
+							body: "\(error.localizedDescription)",
+							buttonTitle: "확인"
+						)
+						return Observable.error(error)
+					}
+			}
+			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
-			.subscribe(onNext: { [weak self] result in
-				switch result {
-				case .success(let model):
-					UserDefaultManager.shared.save(model.accessToken, for: .accessToken)
-					UserDefaultManager.shared.save(model.refreshToken, for: .refreshToken)
-					self?.coordinator?.finish()
-				case .failure(_):
-					CMCBottomSheetManager.shared.showBottomSheet(
-						title: "존재하지 않는 계정이에요",
-						body: "아이디 또는 비밀번호를 확인해주세요!",
-						buttonTitle: "확인"
-					)
-				}
+			.subscribe(onNext: { owner, userModel in
+				UserDefaultManager.shared.save(userModel.email, for: .email)
+				UserDefaultManager.shared.save(userModel.generation, for: .generation)
+				UserDefaultManager.shared.save(userModel.name, for: .name)
+				UserDefaultManager.shared.save(userModel.nickname, for: .nickname)
+				UserDefaultManager.shared.save(userModel.part, for: .part)
+				owner.coordinator?.finish()
+			}, onError: { error in
+				UserDefaultManager.shared.save("--", for: .email)
+				UserDefaultManager.shared.save("--", for: .generation)
+				UserDefaultManager.shared.save(0, for: .name)
+				UserDefaultManager.shared.save("--", for: .nickname)
+				UserDefaultManager.shared.save("--", for: .part)
 			})
 			.disposed(by: disposeBag)
 		

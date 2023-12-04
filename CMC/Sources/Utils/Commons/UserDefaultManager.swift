@@ -17,6 +17,11 @@ class UserDefaultManager {
 	enum Key: String {
 		case accessToken
 		case refreshToken
+		case name
+		case email
+		case nickname
+		case generation
+		case part
 	}
 	
 	func save<T>(_ value: T, for key: Key) {

@@ -19,7 +19,7 @@ struct GetUsersDTO: Codable {
 		let email: String
 		let nickname: String
 		let generation: Int
-		let part: String
+		let part: PartModel
 	}
 	
 	func toDomain() -> GetUserModel {
@@ -28,7 +28,7 @@ struct GetUsersDTO: Codable {
 			email: self.result.email,
 			nickname: self.result.nickname,
 			generation: self.result.generation,
-			part: self.result.part
+			part: self.result.part.revertPart()
 		)
 	}
 	

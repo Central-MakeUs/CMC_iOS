@@ -61,6 +61,9 @@ class AuthCoordinator: CoordinatorType {
 							coordinator: self,
 							authUsecase: DefaultAuthUsecase(
 								authRepository: DefaultAuthRepository()
+							),
+							userUsecase: DefaultUserUsecase(
+								userRepository: DefaultUserRepository()
 							)
 						)
 					)
