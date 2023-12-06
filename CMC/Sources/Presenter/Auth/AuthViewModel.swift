@@ -35,13 +35,13 @@ class AuthViewModel: ViewModelType{
 		input.signInBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.userActionState.accept(.signIn)
+				owner.coordinator?.destination.accept(.signIn)
 		}).disposed(by: disposeBag)
 		
 		input.signUpBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.userActionState.accept(.signUp)
+				owner.coordinator?.destination.accept(.signUp)
 		}).disposed(by: disposeBag)
 		
 		return Output()

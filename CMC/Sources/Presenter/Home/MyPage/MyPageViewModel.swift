@@ -7,3 +7,43 @@
 //
 
 import Foundation
+
+import RxCocoa
+import RxSwift
+
+class MyPageViewModel: ViewModelType{
+	
+	struct Input {
+		let backBtnTapped: Observable<Void>
+	}
+	
+	struct Output {
+
+	}
+	
+	var disposeBag: DisposeBag = DisposeBag()
+	
+	weak var coordinator: HomeCoordinator?
+	
+	init(
+		coordinator: HomeCoordinator
+	) {
+		self.coordinator = coordinator
+	}
+	
+	
+	func transform(input: Input) -> Output {
+		
+		input.backBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.popToRootViewController(animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		return Output(
+			
+		)
+	}
+	
+}

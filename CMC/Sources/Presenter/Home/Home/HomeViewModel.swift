@@ -14,7 +14,7 @@ import RxSwift
 class HomeViewModel: ViewModelType{
 	
 	struct Input {
-		
+		let settingButtonTapped: Observable<Void>
 	}
 	
 	struct Output {
@@ -38,6 +38,14 @@ class HomeViewModel: ViewModelType{
 	
 	
 	func transform(input: Input) -> Output {
+		
+		input.settingButtonTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.destination.accept(.Mypage)
+			})
+			.disposed(by: disposeBag)
+		
 		let notificationsObservable = notificationsUsecase.getLatestNotifications()
 			.asObservable() // Convert Single to Observable
 			.do(onNext: { [weak self] notifications in

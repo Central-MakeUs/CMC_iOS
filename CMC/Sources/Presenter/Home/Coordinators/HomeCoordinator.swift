@@ -25,7 +25,7 @@ class HomeCoordinator: CoordinatorType {
 	// MARK: - Don't Need To Initializing
 	var childCoordinators: [CoordinatorType] = []
 	var delegate: CoordinatorDelegate?
-	var userActionState: PublishRelay<HomeCoordinatorChild> = PublishRelay()
+	var destination: PublishRelay<HomeCoordinatorChild> = PublishRelay()
 	weak var baseViewController: UIViewController?
 	
 	init(
@@ -37,7 +37,7 @@ class HomeCoordinator: CoordinatorType {
 	}
 	
 	func setState() {
-		self.userActionState
+		self.destination
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { [weak self] state in
 				guard let self = self else {return}
@@ -47,6 +47,14 @@ class HomeCoordinator: CoordinatorType {
 				case .checkMyAttendance:
 					print("🍎 여기는 출석 확인하기여~ 🍎")
 				case .Mypage:
+					CMCIndecatorManager.shared.show()
+					self.popToRootViewController(animated: true)
+					let myPageViewController = MyPageViewController(
+						viewModel: MyPageViewModel(
+							coordinator: self
+						)
+					)
+					self.pushViewController(viewController: myPageViewController, animated: true)
 					print("🍎 여기는 마이페이지여~ 🍎")
 				}
 			}).disposed(by: disposeBag)

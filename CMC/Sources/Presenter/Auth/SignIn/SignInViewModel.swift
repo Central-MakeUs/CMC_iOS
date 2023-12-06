@@ -102,7 +102,7 @@ class SignInViewModel: ViewModelType{
 		input.goSignUpButtonTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.userActionState.accept(.signUp)
+				owner.coordinator?.destination.accept(.signUp)
 			})
 			.disposed(by: disposeBag)
 		

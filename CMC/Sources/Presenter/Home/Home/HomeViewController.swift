@@ -33,9 +33,10 @@ class HomeViewController: BaseViewController {
 		return imageView
 	}()
 	
-	private lazy var settingButton: UIImageView = {
-		let imageView = UIImageView()
-		imageView.image = CMCAsset._48x48setting.image
+	private lazy var settingButton: CMCTouchArea = {
+		let imageView = CMCTouchArea(
+			image: CMCAsset._48x48setting.image
+		)
 		imageView.contentMode = .scaleAspectFit
 		return imageView
 	}()
@@ -507,7 +508,9 @@ class HomeViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
-		let input = HomeViewModel.Input()
+		let input = HomeViewModel.Input(
+			settingButtonTapped: settingButton.rx.tapped().asObservable()
+		)
 		let output = viewModel.transform(input: input)
 		
 		output.notificationsForBanner

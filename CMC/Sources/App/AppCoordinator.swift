@@ -26,7 +26,7 @@ class AppCoordinator: CoordinatorType {
 	// MARK: - Don't Need To Initializing
 	var childCoordinators: [CoordinatorType] = []
 	var delegate: CoordinatorDelegate?
-	var userActionState: PublishRelay<AppCoordinatorChild> = PublishRelay()
+	var destination: PublishRelay<AppCoordinatorChild> = PublishRelay()
 	weak var baseViewController: UIViewController?
 	
 	init(
@@ -38,7 +38,7 @@ class AppCoordinator: CoordinatorType {
 	}
 	
 	func setState(){
-		self.userActionState
+		self.destination
 			.withUnretained(self)
 			.subscribe(onNext: { owner, state in
 				switch state{
@@ -87,9 +87,9 @@ extension AppCoordinator: CoordinatorDelegate{
 		self.popToRootViewController(animated: true)
 		self.childCoordinators.removeAll()
 		if childCoordinator is AuthCoordinator {
-			self.userActionState.accept(.home)
+			self.destination.accept(.home)
 		} else {
-			self.userActionState.accept(.auth)
+			self.destination.accept(.auth)
 		}
 	}
 }

@@ -62,12 +62,12 @@ class SplashViewModel: ViewModelType{
 			
 			if apiCheckResult {
 				if accessTokenResult {
-					self.coordinator?.userActionState.accept(.home)
+					self.coordinator?.destination.accept(.home)
 				} else {
-					self.coordinator?.userActionState.accept(.auth)
+					self.coordinator?.destination.accept(.auth)
 				}
 			} else {
-				self.coordinator?.userActionState.accept(.auth)
+				self.coordinator?.destination.accept(.auth)
 				CMCBottomSheetManager.shared.showBottomSheet(
 					title: "현재 서버가 점검중입니다.",
 					body: "잠시후 다시 접속해주세요.",
@@ -75,7 +75,7 @@ class SplashViewModel: ViewModelType{
 				)
 			}
 		}, onError: { error in
-			self.coordinator?.userActionState.accept(.auth)
+			self.coordinator?.destination.accept(.auth)
 			CMCBottomSheetManager.shared.showBottomSheet(
 				title: "오류가 발생하였습니다.",
 				body: "\(error.localizedDescription)",

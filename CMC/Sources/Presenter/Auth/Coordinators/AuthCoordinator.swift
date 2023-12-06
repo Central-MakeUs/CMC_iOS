@@ -24,7 +24,7 @@ class AuthCoordinator: CoordinatorType {
 	// MARK: - Don't Need To Initializing
 	var childCoordinators: [CoordinatorType] = []
 	var delegate: CoordinatorDelegate?
-	var userActionState: PublishRelay<AuthCoordinatorChild> = PublishRelay()
+	var destination: PublishRelay<AuthCoordinatorChild> = PublishRelay()
 	weak var baseViewController: UIViewController?
 	
 	init(
@@ -36,7 +36,7 @@ class AuthCoordinator: CoordinatorType {
 	}
 	
 	func setState() {
-		self.userActionState
+		self.destination
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { [weak self] state in
 				guard let self = self else {return}
