@@ -32,6 +32,10 @@ class SignInViewModel: ViewModelType{
 	private let authUsecase: AuthUsecase
 	private let userUsecase: UserUsecase
 	
+	private let userDataUsecase = DefaultUserDataUsecase()
+	private let notificationDataUsecase = DefaultNotificationsDataUsecase()
+	private let authDataUsecase = DefaultAuthDataUsecase()
+	
 	init(
 		coordinator: AuthCoordinator,
 		authUsecase: AuthUsecase,
@@ -70,8 +74,7 @@ class SignInViewModel: ViewModelType{
 		loginObservable
 			.withUnretained(self)
 			.flatMapLatest { owner, signInModel -> Observable<GetUserModel> in
-				UserDefaultManager.shared.save(signInModel.accessToken, for: .accessToken)
-				UserDefaultManager.shared.save(signInModel.refreshToken, for: .refreshToken)
+				owner.authDataUsecase.saveAuthData(signInModel: signInModel)
 				return owner.userUsecase.getUser()
 					.asObservable()
 					.observe(on: MainScheduler.instance)
@@ -87,20 +90,14 @@ class SignInViewModel: ViewModelType{
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, userModel in
-				UserDefaultManager.shared.save(userModel.email, for: .email)
-				UserDefaultManager.shared.save(userModel.generation, for: .generation)
-				UserDefaultManager.shared.save(userModel.name, for: .name)
-				UserDefaultManager.shared.save(userModel.nickname, for: .nickname)
-				UserDefaultManager.shared.save(userModel.part, for: .part)
+				owner.userDataUsecase.saveUserData(userData: userModel)
 				owner.coordinator?.finish()
-			}, onError: { error in
-				UserDefaultManager.shared.save("--", for: .email)
-				UserDefaultManager.shared.save("--", for: .generation)
-				UserDefaultManager.shared.save(0, for: .name)
-				UserDefaultManager.shared.save("--", for: .nickname)
-				UserDefaultManager.shared.save("--", for: .part)
+			}, onError: { [weak self] error in
+				self?.userDataUsecase.saveNoneUserData()
 			})
 			.disposed(by: disposeBag)
+		
+		
 		
 		input.goSignUpButtonTapped
 			.withUnretained(self)

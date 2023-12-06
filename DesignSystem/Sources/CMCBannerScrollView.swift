@@ -118,6 +118,46 @@ public final class CMCBannerScrollView: UIView {
 		autoScrollTimer?.disposed(by: disposeBag)
 	}
 	
+	private func startAutoScroll() {
+		// 기존 타이머가 있으면 중단
+		autoScrollTimer?.dispose()
+		
+		// 새 타이머 시작
+		autoScrollTimer = Observable<Int>.interval(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] _ in
+				guard let self = self else { return }
+				let newOffset = CGPoint(x: self.scrollView.contentOffset.x + self.bounds.width, y: 0)
+				self.scrollView.setContentOffset(newOffset, animated: true)
+			})
+		autoScrollTimer?.disposed(by: disposeBag)
+	}
+	
+	public func updateBanners(_ newBanners: [CMCBannerView]) {
+		/// 1. 기존 배너 제거
+		scrollView.subviews.forEach { $0.removeFromSuperview() }
+		
+		/// 2. 새 배너들 추가
+		self.banners = newBanners
+		self.replaceBanners()
+		
+		/// 3. 새 배너들에 대해 뷰와 제스처 바인딩 추가
+		banners.forEach { banner in
+			scrollView.addSubview(banner)
+			banner.rx.tapGesture()
+				.when(.recognized)
+				.subscribe(onNext: { [weak self] _ in
+					self?.getBannerUrl.accept(banner.getUrl())
+				})
+				.disposed(by: disposeBag)
+		}
+		
+		/// 4. 스크롤뷰와 배너 레이아웃 재설정
+		self.setAfterAddConstraints()
+		
+		/// 5. 오토 스크롤 재시작
+		self.startAutoScroll()
+	}
+	
 	deinit {
 		autoScrollTimer?.dispose()
 	}
@@ -143,6 +183,12 @@ extension CMCBannerScrollView: UIScrollViewDelegate {
 	}
 	
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-		bind()
+		Observable<Int>.interval(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] _ in
+				guard let ss = self else { return }
+				let newOffset = CGPoint(x: ss.scrollView.contentOffset.x + ss.bounds.width, y: 0)
+				ss.scrollView.setContentOffset(newOffset, animated: true)
+			})
+			.disposed(by: disposeBag)
 	}
 }

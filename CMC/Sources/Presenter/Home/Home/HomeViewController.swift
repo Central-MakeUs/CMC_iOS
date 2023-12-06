@@ -78,46 +78,42 @@ class HomeViewController: BaseViewController {
 	
 	private lazy var bannerView: CMCBannerScrollView = {
 		let view = CMCBannerScrollView(
-			banners: [
-				banner_one,
-				banner_two,
-				banner_three
-			]
+			banners: notifications
 		)
 		view.layer.masksToBounds = true
 		view.layer.cornerRadius = 10
 		return view
 	}()
 	
-	private lazy var banner_one: CMCBannerView = {
-		let bannerView = CMCBannerView(
-			logoImage: CMCAsset._24x24pushPin.image,
-			title: "첫번째",
-			subTitle: "우선 해커톤공지",
-			bannerUrl: "https://www.naver.com"
-		)
-		return bannerView
-	}()
-	
-	private lazy var banner_two: CMCBannerView = {
-		let bannerView = CMCBannerView(
-			logoImage: CMCAsset._24x24pushPin.image,
-			title: "두번째",
-			subTitle: "맘대로 넣쟈",
-			bannerUrl: "https://www.naver.com"
-		)
-		return bannerView
-	}()
-	
-	private lazy var banner_three: CMCBannerView = {
-		let bannerView = CMCBannerView(
-			logoImage: CMCAsset._24x24pushPin.image,
-			title: "세번째",
-			subTitle: "여기까지만하자",
-			bannerUrl: "https://www.naver.com"
-		)
-		return bannerView
-	}()
+//	private lazy var emptyBanner: CMCBannerView = {
+//		let bannerView = CMCBannerView(
+//			logoImage: CMCAsset._24x24pushPin.image,
+//			title: "--",
+//			subTitle: "등록된 배너가 없습니다.",
+//			bannerUrl: ""
+//		)
+//		return bannerView
+//	}()
+//
+//	private lazy var banner_two: CMCBannerView = {
+//		let bannerView = CMCBannerView(
+//			logoImage: CMCAsset._24x24pushPin.image,
+//			title: "두번째",
+//			subTitle: "맘대로 넣쟈",
+//			bannerUrl: "https://www.naver.com"
+//		)
+//		return bannerView
+//	}()
+//	
+//	private lazy var banner_three: CMCBannerView = {
+//		let bannerView = CMCBannerView(
+//			logoImage: CMCAsset._24x24pushPin.image,
+//			title: "세번째",
+//			subTitle: "여기까지만하자",
+//			bannerUrl: "https://www.naver.com"
+//		)
+//		return bannerView
+//	}()
 	
 	private lazy var attendanceView: UIView = {
 		let view = UIView()
@@ -261,12 +257,21 @@ class HomeViewController: BaseViewController {
 	}()
 	
 	// MARK: - Properties
-	
+	private let viewModel: HomeViewModel
+	var notifications: [CMCBannerView] = [
+		CMCBannerView(
+			logoImage: CMCAsset._24x24pushPin.image,
+			title: "--",
+			subTitle: "등록된 배너가 없습니다.",
+			bannerUrl: ""
+		)
+	]
 	
 	// MARK: - Initializers
-	override init(
-		
+	init(
+		viewModel: HomeViewModel
 	) {
+		self.viewModel = viewModel
 		super.init()
 	}
 	
@@ -455,7 +460,8 @@ class HomeViewController: BaseViewController {
 		bannerView.getBannerUrl
 			.withUnretained(self)
 			.subscribe(onNext: { owner, url in
-				guard let url = URL(string: url) else { return }
+				print("\(url)")
+				guard let url = URL(string: "https://" + url) else { return }
 				let sfVC = SFSafariViewController(url: url)
 				sfVC.modalPresentationStyle = .overFullScreen
 				owner.present(sfVC, animated: true)
@@ -498,6 +504,27 @@ class HomeViewController: BaseViewController {
 				let sfVC = SFSafariViewController(url: url)
 				sfVC.modalPresentationStyle = .overFullScreen
 				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		let input = HomeViewModel.Input()
+		let output = viewModel.transform(input: input)
+		
+		output.notificationsForBanner
+			.observe(on: MainScheduler.instance)
+			.withUnretained(self)
+			.subscribe(onNext: { owner, notifications in
+				owner.notifications.removeAll()
+				notifications.forEach { noti in
+					let bannerView = CMCBannerView(
+						logoImage: CMCAsset._24x24pushPin.image,
+						title: "\(noti.week)주차",
+						subTitle:	noti.title,
+						bannerUrl: noti.notionUrl
+					)
+					owner.notifications.append(bannerView)
+				}
+				owner.bannerView.updateBanners(owner.notifications)
 			})
 			.disposed(by: disposeBag)
 		

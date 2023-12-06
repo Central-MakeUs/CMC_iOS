@@ -53,7 +53,14 @@ class HomeCoordinator: CoordinatorType {
 	}
 	
 	func start() {
-		let homeViewController = HomeViewController()
+		let homeViewController = HomeViewController(
+			viewModel: HomeViewModel(
+				coordinator: self,
+				notificationsUsecase: DefaultNotificationsUsecase(
+					notificationsRepository: DefaultNotificationsRepository()
+				)
+			)
+		)
 		self.baseViewController = homeViewController
 		self.pushViewController(viewController: homeViewController, animated: true)
 	}
