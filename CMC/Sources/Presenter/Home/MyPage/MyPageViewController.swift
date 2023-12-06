@@ -20,7 +20,6 @@ import UIKit
 class MyPageViewController: BaseViewController {
 	
 	// MARK: - UI
-	
 	private lazy var navigationBar: CMCNavigationBar = {
 		let navigationBar = CMCNavigationBar(
 			accessoryLabelHidden: false

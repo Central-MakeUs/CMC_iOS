@@ -1,5 +1,5 @@
 //
-//  MyPageViewModel.swift
+//  MyInfoViewModel.swift
 //  CMC
 //
 //  Created by Siri on 12/6/23.
@@ -11,7 +11,7 @@ import Foundation
 import RxCocoa
 import RxSwift
 
-class MyPageViewModel: ViewModelType{
+class MyInfoViewModel: ViewModelType{
 	
 	struct Input {
 		let backBtnTapped: Observable<Void>
