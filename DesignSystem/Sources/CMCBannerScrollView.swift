@@ -183,12 +183,6 @@ extension CMCBannerScrollView: UIScrollViewDelegate {
 	}
 	
 	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-		Observable<Int>.interval(RxTimeInterval.seconds(3), scheduler: MainScheduler.instance)
-			.subscribe(onNext: { [weak self] _ in
-				guard let ss = self else { return }
-				let newOffset = CGPoint(x: ss.scrollView.contentOffset.x + ss.bounds.width, y: 0)
-				ss.scrollView.setContentOffset(newOffset, animated: true)
-			})
-			.disposed(by: disposeBag)
+		startAutoScroll()
 	}
 }

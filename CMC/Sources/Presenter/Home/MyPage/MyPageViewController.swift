@@ -6,6 +6,7 @@
 //  Copyright © 2023 com.softsquared.cmc. All rights reserved.
 //
 
+import SafariServices
 import Foundation
 
 import RxCocoa
@@ -181,6 +182,30 @@ class MyPageViewController: BaseViewController {
 	
 	override func bind() {
 		
+		
+		accessoryDetailButtons[1].rx.tapped()
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, _ in
+				let rullesURL = "https://makeus-challenge.notion.site/43da7aedefaf4eb5a227dd9a1c66be5b?pvs=4"
+				guard let url = URL(string: rullesURL) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		accessoryDetailButtons[2].rx.tapped()
+			.withUnretained(self)
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { owner, _ in
+				let handlePersonalInfoURL = "https://makeus-challenge.notion.site/be7d5901cf834befafe088e03e362c96?pvs=4"
+				guard let url = URL(string: handlePersonalInfoURL) else { return }
+				let sfVC = SFSafariViewController(url: url)
+				sfVC.modalPresentationStyle = .overFullScreen
+				owner.present(sfVC, animated: true)
+			})
+			.disposed(by: disposeBag)
 		
 		let input = MyPageViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable()
