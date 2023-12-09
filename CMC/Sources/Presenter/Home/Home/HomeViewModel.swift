@@ -15,6 +15,7 @@ class HomeViewModel: ViewModelType{
 	
 	struct Input {
 		let settingButtonTapped: Observable<Void>
+		let attendanceBtnTapped: Observable<Void>
 	}
 	
 	struct Output {
@@ -42,7 +43,14 @@ class HomeViewModel: ViewModelType{
 		input.settingButtonTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.destination.accept(.Mypage)
+				owner.coordinator?.destination.accept(.myPage)
+			})
+			.disposed(by: disposeBag)
+		
+		input.attendanceBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.destination.accept(.attendance)
 			})
 			.disposed(by: disposeBag)
 		
@@ -51,7 +59,7 @@ class HomeViewModel: ViewModelType{
 			.do(onNext: { [weak self] notifications in
 				self?.notificationsDataUsecase.saveNotificationsData(notifications: notifications)
 			}, onError: { error in
-				CMCBottomSheetManager.shared.showBottomSheet(
+				_ = CMCBottomSheetManager.shared.showBottomSheet(
 					title: "공지 내용을 불러오는데 실패하였습니다.",
 					body: "\(error.localizedDescription)",
 					buttonTitle: "확인"

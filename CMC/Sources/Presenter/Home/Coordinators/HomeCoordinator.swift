@@ -15,7 +15,7 @@ class HomeCoordinator: CoordinatorType {
 	enum HomeCoordinatorChild{
 		case attendance
 		case checkMyAttendance
-		case Mypage
+		case myPage
 	}
 	
 	// MARK: - Need To Initializing
@@ -43,10 +43,18 @@ class HomeCoordinator: CoordinatorType {
 				guard let self = self else {return}
 				switch state{
 				case .attendance:
-					print("🍎 여기는 출석하기여~ 🍎")
+					CMCIndecatorManager.shared.show()
+					self.popToRootViewController(animated: true)
+					let attendanceViewController = AttendanceViewController(
+						viewModel: AttendanceViewModel(
+							coordinator: self
+						)
+					)
+					self.pushViewController(viewController: attendanceViewController, animated: true)
+					print("🍎 여기는 출석QR이요~ 🍎")
 				case .checkMyAttendance:
 					print("🍎 여기는 출석 확인하기여~ 🍎")
-				case .Mypage:
+				case .myPage:
 					CMCIndecatorManager.shared.show()
 					self.popToRootViewController(animated: true)
 					let myPageViewController = MyPageViewController(
@@ -55,7 +63,6 @@ class HomeCoordinator: CoordinatorType {
 						)
 					)
 					self.pushViewController(viewController: myPageViewController, animated: true)
-					print("🍎 여기는 마이페이지여~ 🍎")
 				}
 			}).disposed(by: disposeBag)
 	}

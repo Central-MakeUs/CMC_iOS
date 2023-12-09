@@ -86,36 +86,6 @@ class HomeViewController: BaseViewController {
 		return view
 	}()
 	
-//	private lazy var emptyBanner: CMCBannerView = {
-//		let bannerView = CMCBannerView(
-//			logoImage: CMCAsset._24x24pushPin.image,
-//			title: "--",
-//			subTitle: "등록된 배너가 없습니다.",
-//			bannerUrl: ""
-//		)
-//		return bannerView
-//	}()
-//
-//	private lazy var banner_two: CMCBannerView = {
-//		let bannerView = CMCBannerView(
-//			logoImage: CMCAsset._24x24pushPin.image,
-//			title: "두번째",
-//			subTitle: "맘대로 넣쟈",
-//			bannerUrl: "https://www.naver.com"
-//		)
-//		return bannerView
-//	}()
-//	
-//	private lazy var banner_three: CMCBannerView = {
-//		let bannerView = CMCBannerView(
-//			logoImage: CMCAsset._24x24pushPin.image,
-//			title: "세번째",
-//			subTitle: "여기까지만하자",
-//			bannerUrl: "https://www.naver.com"
-//		)
-//		return bannerView
-//	}()
-	
 	private lazy var attendanceView: UIView = {
 		let view = UIView()
 		view.backgroundColor = CMCAsset.gray800.color
@@ -274,14 +244,6 @@ class HomeViewController: BaseViewController {
 	) {
 		self.viewModel = viewModel
 		super.init()
-	}
-	
-	// MARK: - LifeCycle
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		
-		setAddSubView()
-		setConstraint()
 	}
 	
 	// MARK: - Methods
@@ -509,7 +471,8 @@ class HomeViewController: BaseViewController {
 			.disposed(by: disposeBag)
 		
 		let input = HomeViewModel.Input(
-			settingButtonTapped: settingButton.rx.tapped().asObservable()
+			settingButtonTapped: settingButton.rx.tapped().asObservable(),
+			attendanceBtnTapped: attendanceView.rx.tapped().asObservable()
 		)
 		let output = viewModel.transform(input: input)
 		
