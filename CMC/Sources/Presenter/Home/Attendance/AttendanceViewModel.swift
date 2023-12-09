@@ -16,9 +16,11 @@ class AttendanceViewModel: ViewModelType{
 	struct Input {
 		let backBtnTapped: Observable<Void>
 		let qrScanResult: Observable<QRCodeState>
+		
 	}
 	
 	struct Output {
+		let qrCode: Observable<String>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
@@ -34,20 +36,32 @@ class AttendanceViewModel: ViewModelType{
 	
 	func transform(input: Input) -> Output {
 		
-		input.qrScanResult
+		
+		let qrCode = input.qrScanResult
 			.withUnretained(self)
-			.take(1)
-			.subscribe(onNext: { owner, result in
+			.flatMap { owner, result -> Observable<String> in
 				switch result {
 				case .success(let qr):
-					CMCBottomSheetManager.shared.showBottomSheet(
-						title: "출석 확인",
-						body: qr,
-						buttonTitle: "테스트임"
-					)
+					return .just(qr)
 				case .fail:
-					print("실패")
+					return .error(NetworkError.customError(code: "404", message: "카메라 인식에 실패하였습니다."))
 				}
+			}
+			.asObservable()
+		
+		qrCode
+			.withUnretained(self)
+			.subscribe(onNext: { owner, qrcode in
+				print("성공한 qrCode: \(qrcode)")
+				let attendanceCompletedViewController = AttendanceCompletedViewController(
+					viewModel: AttendanceCompletedViewModel(
+						coordinator: owner.coordinator
+					)
+				)
+				owner.coordinator?.presentViewController(
+					viewController: attendanceCompletedViewController,
+					style: .overFullScreen
+				)
 			})
 			.disposed(by: disposeBag)
 		
@@ -61,6 +75,7 @@ class AttendanceViewModel: ViewModelType{
 		
 		
 		return Output(
+			qrCode: qrCode
 		)
 	}
 	

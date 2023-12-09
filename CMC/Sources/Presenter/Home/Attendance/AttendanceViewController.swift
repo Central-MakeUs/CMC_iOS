@@ -77,6 +77,18 @@ final class AttendanceViewController: UIViewController {
 		)
 		
 		let output = viewModel.transform(input: input)
+		
+		output.qrCode
+			.withUnretained(self)
+			.subscribe(onError: { error in
+				guard let error = error as? NetworkError else { return }
+				CMCBottomSheetManager.shared.showBottomSheet(
+					title: error.errorDescription,
+					body: "하단의 토스트 메세지를 터치하여, 코드를 직접 입력해주세요!",
+					buttonTitle: "확인"
+				)
+			})
+			.disposed(by: disposeBag)
 	}
 	
 	private func handleScannedCode(_ code: String) {
