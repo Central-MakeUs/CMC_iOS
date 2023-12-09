@@ -29,6 +29,7 @@ enum AttendancesEndpoint: Endpoint {
 	var headers: HTTPHeaders {
 		if let X_AUTH_TOKEN: String = UserDefaultManager.shared.load(for: .accessToken) {
 			return [
+				"Content-Type": "application/json;charset=UTF-8",
 				"accept": "application/json;charset=UTF-8",
 				"X-AUTH-TOKEN": X_AUTH_TOKEN
 			]

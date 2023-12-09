@@ -29,7 +29,7 @@ final class DefaultAttendancesRepository: AttendancesRepository {
 	}
 	
 	func postAttendances(body: PostAttendancesBody) -> Single<PostAttendancesDTO> {
-		let endpoint = AttendancesEndpoint.getAttendances
+		let endpoint = AttendancesEndpoint.postAttendances(body: body)
 		return networkService.request(endpoint)
 			.flatMap { data in
 				guard let dto = Utility.decode(PostAttendancesDTO.self, from: data) else {
