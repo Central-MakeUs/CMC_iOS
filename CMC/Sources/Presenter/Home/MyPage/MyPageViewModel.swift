@@ -17,6 +17,7 @@ class MyPageViewModel: ViewModelType{
 		let backBtnTapped: Observable<Void>
 		let myInfoBtnTapped: Observable<Void>
 		let isLogoutTapped: Observable<Bool>
+		let isAuthOutTapped: Observable<Bool>
 	}
 	
 	struct Output {
@@ -65,6 +66,18 @@ class MyPageViewModel: ViewModelType{
 				}
 			})
 			.disposed(by: disposeBag)
+		
+		input.isAuthOutTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, isAuthOut in
+				if isAuthOut {
+					CMCToastManager.shared.addToast(message: "테스트용: - 회원탈퇴 성공")
+				} else {
+					CMCToastManager.shared.addToast(message: "테스트용: - 회원탈퇴 실패")
+				}
+			})
+			.disposed(by: disposeBag)
+		
 		
 		return Output(
 			

@@ -92,6 +92,21 @@ class MyPageViewController: BaseViewController {
 		return views
 	}()
 	
+	private lazy var authOutLabel: UILabel = {
+		let label = UILabel()
+		let text = "회원탈퇴"
+		let attributedString = NSMutableAttributedString(string: text)
+		let underLineAttributes: [NSAttributedString.Key: Any] = [
+			.underlineStyle: NSUnderlineStyle.single.rawValue,
+			.baselineOffset : NSNumber(value: 4)
+		]
+		attributedString.addAttributes(underLineAttributes, range: NSRange(location: 0, length: text.count))
+		label.attributedText = attributedString
+		label.font = CMCFontFamily.Pretendard.bold.font(size: 13)
+		label.textColor = CMCAsset.gray700.color
+		return label
+	}()
+	
 	// MARK: - Properties
 	private let viewModel: MyPageViewModel
 	
@@ -113,6 +128,7 @@ class MyPageViewController: BaseViewController {
 			cell.addSubview(accessoryDetailButtons[idx])
 			cell.addSubview(separeteBars[idx])
 		}
+		view.addSubview(authOutLabel)
 	}
 	
 	override func setConstraint() {
@@ -177,6 +193,11 @@ class MyPageViewController: BaseViewController {
 			}
 		}
 		
+		authOutLabel.snp.makeConstraints{ label in
+			label.top.equalTo(MyPageCells[4].snp.bottom).offset(12)
+			label.leading.equalToSuperview().offset(24)
+		}
+		
 	}
 	
 	override func bind() {
@@ -216,10 +237,22 @@ class MyPageViewController: BaseViewController {
 				)
 			}
 		
+		let isAuthOutTapped = authOutLabel.rx.tapGesture().when(.recognized)
+			.asObservable()
+			.flatMapLatest { _ -> Observable<Bool> in
+				return CMCBottomSheetManager.shared.showBottomSheet(
+					title: "정말 탈퇴하시겠어요?",
+					body: "현 기수 CMC활동중이라면, 불이익이 발생할 수 있습니다.",
+					buttonTitle: "돌아가기",
+					actionTitle: "로그아웃"
+				)
+			}
+		
 		let input = MyPageViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
 			myInfoBtnTapped: accessoryDetailButtons[0].rx.tapped().asObservable(),
-			isLogoutTapped: isLogoutTapped
+			isLogoutTapped: isLogoutTapped,
+			isAuthOutTapped: isAuthOutTapped
 		)
 		
 		let _ = viewModel.transform(input: input)
