@@ -229,7 +229,7 @@ class MyPageViewController: BaseViewController {
 		let isLogoutTapped = accessoryDetailButtons[4].rx.tapped()
 			.asObservable()
 			.flatMapLatest { _ -> Observable<Bool> in
-				return CMCBottomSheetManager.shared.showBottomSheet(
+				return CMCBottomSheetWithActionManager.shared.showBottomSheet(
 					title: "정말 로그아웃 하시겠어요?",
 					body: nil,
 					buttonTitle: "돌아가기",
@@ -240,7 +240,7 @@ class MyPageViewController: BaseViewController {
 		let isAuthOutTapped = authOutLabel.rx.tapGesture().when(.recognized)
 			.asObservable()
 			.flatMapLatest { _ -> Observable<Bool> in
-				return CMCBottomSheetManager.shared.showBottomSheet(
+				return CMCBottomSheetWithActionManager.shared.showBottomSheet(
 					title: "정말 탈퇴하시겠어요?",
 					body: "현 기수 CMC활동중이라면, 불이익이 발생할 수 있습니다.",
 					buttonTitle: "돌아가기",
