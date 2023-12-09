@@ -99,7 +99,7 @@ public final class CMCTouchArea: UIView{
 }
 
 // MARK: - CMCTouchArea+RxSwift
-extension Reactive where Base: CMCTouchArea {
+extension Reactive where Base: UIView {
 	public func tapped() -> ControlEvent<Void> {
 		let source = self.base.rx.tapGesture().when(.recognized).map { _ in }
 		return ControlEvent(events: source)
