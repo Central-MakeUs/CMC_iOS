@@ -93,15 +93,39 @@ final class AttendanceViewController: UIViewController {
 		output.needToRestartQRScan
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.readerView.start()
+				owner.resetReaderView()
 			})
 			.disposed(by: disposeBag)
 	}
 	
-	private func handleScannedCode(_ code: String) {
-		print("🍎 코드 확인좀여: \(code) 🍎")
-		// 여기에 스캔된 QR 코드를 처리하는 로직을 구현합니다.
-		// 예를 들어, 웹뷰를 열거나, 특정 데이터를 화면에 표시하는 등의 작업을 할 수 있습니다.
+	private func resetReaderView() {
+		// 기존 ReaderView 제거
+		readerView?.removeFromSuperview()
+		backButton.removeFromSuperview()
+		readerView = nil
+		
+		DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+			guard let owner = self else { return }
+			// 새로운 ReaderView 생성 및 설정
+			let newReaderView = ReaderView(frame: owner.view.bounds)
+			owner.view.addSubview(newReaderView)
+			owner.view.addSubview(owner.backButton)
+			
+			owner.backButton.snp.makeConstraints {
+				$0.top.equalTo(owner.view.safeAreaLayoutGuide.snp.top).offset(16)
+				$0.leading.equalToSuperview().offset(16)
+				$0.width.height.equalTo(48)
+			}
+			
+			newReaderView.snp.makeConstraints {
+				$0.edges.equalToSuperview()
+			}
+			// 참조 업데이트
+			owner.readerView = newReaderView
+			owner.bind()
+			
+		}
 	}
+	
 	
 }

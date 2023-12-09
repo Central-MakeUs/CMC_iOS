@@ -56,14 +56,22 @@ class AttendanceViewModel: ViewModelType{
 		qrCode
 			.withUnretained(self)
 			.flatMapLatest { owner, qrcode -> Single<AttendanceResultModel> in
-				print("성공한 qrCode: \(qrcode)")
 				let body = PostAttendancesBody(code: qrcode)
 				return owner.attendanceUsecase.postAttendances(body: body)
 			}
 			.asObservable()
 			.observe(on: MainScheduler.instance)
-			.subscribe(onNext: { result in
-				print("출석 성공: \(result)")
+			.withUnretained(self)
+			.subscribe(onNext: { owner, result in
+				let attendanceCompletedViewController = AttendanceCompletedViewController(
+					viewModel: AttendanceCompletedViewModel(
+						coordinator: owner.coordinator
+					)
+				)
+				owner.coordinator?.presentViewController(
+					viewController: attendanceCompletedViewController,
+					style: .overFullScreen
+				)
 			}, onError: { error in
 				guard let error = error as? NetworkError else { return }
 				CMCToastManager.shared.addToast(message: error.errorDescription)
@@ -74,20 +82,12 @@ class AttendanceViewModel: ViewModelType{
 		input.backBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.popViewController(animated: true)
+				owner.coordinator?.popToRootViewController(animated: true)
 			})
 			.disposed(by: disposeBag)
 		
 		
-//		let attendanceCompletedViewController = AttendanceCompletedViewController(
-//			viewModel: AttendanceCompletedViewModel(
-//				coordinator: owner.coordinator
-//			)
-//		)
-//		owner.coordinator?.presentViewController(
-//			viewController: attendanceCompletedViewController,
-//			style: .overFullScreen
-//		)
+		
 		return Output(
 			qrCode: qrCode,
 			needToRestartQRScan: needToRestartQRScan.asObservable()

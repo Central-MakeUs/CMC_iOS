@@ -253,6 +253,7 @@ extension ReaderView {
 	
 	func found(code: String) {
 		self.scanResultSubject.onNext(.success(code: code))
+		print("ReaderView - found")
 		self.captureSession?.stopRunning()
 	}
 }
