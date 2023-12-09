@@ -11,4 +11,5 @@ import RxSwift
 
 protocol AttendancesUsecase {
 	func getAttendances() -> Single<(AttendanceStatusModel,[AttendanceDetailsModel])>
+	func postAttendances(body: PostAttendancesBody) -> Single<AttendanceResultModel>
 }

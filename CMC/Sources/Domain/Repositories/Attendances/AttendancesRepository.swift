@@ -10,5 +10,6 @@ import Foundation
 import RxSwift
 
 protocol AttendancesRepository {
-	func getAttendances() -> Single<AttendancesDTO>
+	func getAttendances() -> Single<GetAttendancesDTO>
+	func postAttendances(body: PostAttendancesBody) -> Single<PostAttendancesDTO>
 }

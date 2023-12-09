@@ -1,5 +1,5 @@
 //
-//  AttendancesDTO.swift
+//  GetAttendancesDTO.swift
 //  CMC
 //
 //  Created by Siri on 12/9/23.
@@ -9,11 +9,11 @@
 import Foundation
 
 // MARK: - AttendancesDTO
-struct AttendancesDTO: Codable {
+struct GetAttendancesDTO: Codable {
 	let isSuccess: Bool
 	let code:String
 	let message: String
-	let result: AttendancesResult
+	let result: GetAttendancesResult
 	
 	func toDomain() -> (AttendanceStatusModel, [AttendanceDetailsModel]) {
 		let attendanceStatusModel = AttendanceStatusModel(
@@ -35,8 +35,8 @@ struct AttendancesDTO: Codable {
 	}
 }
 
-// MARK: - AttendancesResult
-struct AttendancesResult: Codable {
+// MARK: - GetAttendancesResult
+struct GetAttendancesResult: Codable {
 		let attendanceStatus: AttendanceStatus
 		let attandances: [Attandance]
 }

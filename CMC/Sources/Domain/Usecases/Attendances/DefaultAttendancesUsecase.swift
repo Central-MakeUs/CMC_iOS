@@ -24,4 +24,11 @@ final class DefaultAttendancesUsecase: AttendancesUsecase {
 			}
 	}
 	
+	func postAttendances(body: PostAttendancesBody) -> Single<AttendanceResultModel> {
+		return attendancesRepository.postAttendances(body: body)
+			.map { dto in
+				return dto.toDomain()
+			}
+	}
+	
 }

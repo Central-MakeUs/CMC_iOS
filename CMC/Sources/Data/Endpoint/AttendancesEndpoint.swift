@@ -11,6 +11,7 @@ import Foundation
 enum AttendancesEndpoint: Endpoint {
 	
 	case getAttendances
+	case postAttendances(body: PostAttendancesBody)
 	
 	var baseURL: URL? {
 		return URL(string: Xcconfig.BASE_URL)
@@ -20,6 +21,8 @@ enum AttendancesEndpoint: Endpoint {
 		switch self {
 		case .getAttendances:
 			return .GET
+		case .postAttendances:
+			return .POST
 		}
 	}
 	
@@ -42,7 +45,12 @@ enum AttendancesEndpoint: Endpoint {
 	}
 	
 	var parameters: HTTPRequestParameterType? {
-		return .none
+		switch self {
+		case .getAttendances:
+			return .none
+		case .postAttendances(let body):
+			return .body(body)
+		}
 	}
 	
 }

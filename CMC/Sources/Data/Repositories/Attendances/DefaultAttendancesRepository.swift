@@ -17,11 +17,22 @@ final class DefaultAttendancesRepository: AttendancesRepository {
 		self.networkService = DefaultNetworkService()
 	}
 	
-	func getAttendances() -> Single<AttendancesDTO> {
+	func getAttendances() -> Single<GetAttendancesDTO> {
 		let endpoint = AttendancesEndpoint.getAttendances
 		return networkService.request(endpoint)
 			.flatMap { data in
-				guard let dto = Utility.decode(AttendancesDTO.self, from: data) else {
+				guard let dto = Utility.decode(GetAttendancesDTO.self, from: data) else {
+					return Single.error(NetworkError.decodingFailed)
+				}
+				return Single.just(dto)
+			}
+	}
+	
+	func postAttendances(body: PostAttendancesBody) -> Single<PostAttendancesDTO> {
+		let endpoint = AttendancesEndpoint.getAttendances
+		return networkService.request(endpoint)
+			.flatMap { data in
+				guard let dto = Utility.decode(PostAttendancesDTO.self, from: data) else {
 					return Single.error(NetworkError.decodingFailed)
 				}
 				return Single.just(dto)
