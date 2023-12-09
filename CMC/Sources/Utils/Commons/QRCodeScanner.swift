@@ -13,18 +13,24 @@ import AVFoundation
 import RxSwift
 import RxCocoa
 
+public enum QRCodeState {
+	case success(code: String)
+	case fail
+}
+
 class ReaderView: UIView {
 	
 	// 카메라 화면을 보여줄 Layer
 	var previewLayer: AVCaptureVideoPreviewLayer?
+	var metaOutput: AVCaptureMetadataOutput?
 	var captureSession: AVCaptureSession?
 	
 	private let disposeBag = DisposeBag()
 	
-	private let scanResultSubject = PublishSubject<String>()
+	private let scanResultSubject = PublishSubject<QRCodeState>()
 	
 	/// 이 놈으로, 밖에서 qr데이터 다룹시다잉
-	var scanResult: Observable<String> {
+	var qrCodeResult: Observable<QRCodeState> {
 		return scanResultSubject.asObservable()
 	}
 	
@@ -44,20 +50,16 @@ class ReaderView: UIView {
 		return captureSession.isRunning
 	}
 	
-	/// 촬영 시 어떤 데이터를 검사할건지? - QRCode
-	let metadataObjectTypes: [AVMetadataObject.ObjectType] = [.qr]
-	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		self.initialSetupView()
+		initialSetupView()
 	}
 	
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
-		self.initialSetupView()
+		initialSetupView()
 	}
 	
-	/// AVCaptureSession을 실행하는 화면을 구성 후 실행합니다.
 	private func initialSetupView() {
 		self.clipsToBounds = true
 		self.captureSession = AVCaptureSession()
@@ -90,13 +92,10 @@ class ReaderView: UIView {
 		if captureSession.canAddOutput(metadataOutput) {
 			captureSession.addOutput(metadataOutput)
 			
-			metadataOutput.rx.didOutputMetadataObjects
-				.subscribe(onNext: { [weak self] metadataObjects in
-					self?.handleMetadataObjects(metadataObjects)
-				})
-				.disposed(by: disposeBag)
+			metaOutput = metadataOutput
+			metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+			metadataOutput.metadataObjectTypes = [.qr]
 			
-			metadataOutput.metadataObjectTypes = self.metadataObjectTypes
 		} else {
 			self.fail()
 			return
@@ -110,20 +109,7 @@ class ReaderView: UIView {
 		 !! 단 해당 값은 먼저 AVCaptureSession를 running 상태로 만든 후 지정해주어야 정상적으로 작동합니다 !!
 		 */
 		self.start()
-		metadataOutput.rectOfInterest = previewLayer!.metadataOutputRectConverted(fromLayerRect: rectOfInterest)
-	}
-	
-	//MARK: - 기존의 AVCaptureMetadataOutputObjectsDelegate 메서드를 Rx로 처리합시더
-	private func handleMetadataObjects(_ metadataObjects: [AVMetadataObject]) {
-		if let metadataObject = metadataObjects.first {
-			guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject,
-						let stringValue = readableObject.stringValue else {
-				return
-			}
-			AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-			scanResultSubject.onNext(stringValue)
-			stop(isButtonTap: true)
-		}
+		
 	}
 	
 	/// 중앙에 사각형의 Focus Zone Layer을 설정합니다.
@@ -174,7 +160,6 @@ class ReaderView: UIView {
 		self.previewLayer = previewLayer
 	}
 	
-	// MARK: - Focus Edge Layer
 	/// Focus Zone의 모서리에 테두리 Layer을 씌웁니다.
 	private func setFocusZoneCornerLayer() {
 		var cornerRadius = previewLayer?.cornerRadius ?? CALayer().cornerRadius
@@ -232,18 +217,44 @@ class ReaderView: UIView {
 // MARK: - ReaderView Running Method
 extension ReaderView {
 	func start() {
-		print("# AVCaptureSession Start Running")
-		self.captureSession?.startRunning()
+		NotificationCenter.default.addObserver(
+			self,
+			selector: #selector(sessionDidStartRunning),
+			name: .AVCaptureSessionDidStartRunning,
+			object: nil
+		)
+		
+		DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+			self?.captureSession?.startRunning()
+		}
 	}
 	
-	func stop(isButtonTap: Bool) {
-		self.captureSession?.stopRunning()
+	@objc func sessionDidStartRunning(notification: Notification) {
+		// captureSession이 시작된 후 수행할 작업
+		DispatchQueue.main.async { [weak self] in
+			guard let ss = self else { return }
+			if let metaOutput = ss.metaOutput {
+				metaOutput.rectOfInterest = ss.previewLayer!.metadataOutputRectConverted(fromLayerRect: ss.rectOfInterest)
+			}
+		}
+		
+		// 필요한 경우 NotificationCenter에서 제거
+		NotificationCenter.default.removeObserver(
+			self,
+			name: .AVCaptureSessionDidStartRunning,
+			object: nil
+		)
 	}
 	
 	func fail() {
 		self.captureSession = nil
+		self.scanResultSubject.onNext(.fail)
 	}
 	
+	func found(code: String) {
+		self.scanResultSubject.onNext(.success(code: code))
+		self.captureSession?.stopRunning()
+	}
 }
 
 internal extension CGPoint {
@@ -257,25 +268,17 @@ internal extension CGPoint {
 	}
 }
 
-/// AVCaptureMetadataOutputObjectsDelegate 관련 Rx 확장
-extension Reactive where Base: AVCaptureMetadataOutput {
-		var didOutputMetadataObjects: Observable<[AVMetadataObject]> {
-				return Observable.create { observer in
-						let delegate = RxAVCaptureMetadataOutputObjectsDelegate(observer: observer)
-						base.setMetadataObjectsDelegate(delegate, queue: DispatchQueue.main)
-						return Disposables.create {
-								base.setMetadataObjectsDelegate(nil, queue: nil)
-						}
-				}
+// AVCaptureMetadataOutputObjectsDelegate 관련 Rx 확장
+extension ReaderView: AVCaptureMetadataOutputObjectsDelegate {
+	func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+		if let metadataObject = metadataObjects.first {
+			guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject,
+						let stringValue = readableObject.stringValue else {
+				return
+			}
+			
+			AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+			found(code: stringValue)
 		}
-}
-
-final class RxAVCaptureMetadataOutputObjectsDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate {
-		private let observer: AnyObserver<[AVMetadataObject]>
-		init(observer: AnyObserver<[AVMetadataObject]>) {
-				self.observer = observer
-		}
-		func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-				observer.onNext(metadataObjects)
-		}
+	}
 }
