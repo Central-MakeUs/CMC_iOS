@@ -69,7 +69,7 @@ class CMCBottomSheetWithActionManager {
 				})
 			})
 		
-		let doButtonObservable = newBottomSheet.doActionButton.rx.tap
+		var doButtonObservable = newBottomSheet.doActionButton.rx.tap
 			.map { true }
 			.do(onNext: { _ in
 				newBottomSheet.topToDown(completion: { _ in
