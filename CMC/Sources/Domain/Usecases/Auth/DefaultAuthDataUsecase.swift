@@ -18,4 +18,9 @@ final class DefaultAuthDataUsecase: AuthDataUsecase {
 		UserDefaultManager.shared.save(signInModel.refreshToken, for: .refreshToken)
 	}
 	
+	func deleteAuthData() {
+		UserDefaultManager.shared.delete(for: .accessToken)
+		UserDefaultManager.shared.delete(for: .refreshToken)
+	}
+	
 }

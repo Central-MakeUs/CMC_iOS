@@ -16,6 +16,7 @@ class MyPageViewModel: ViewModelType{
 	struct Input {
 		let backBtnTapped: Observable<Void>
 		let myInfoBtnTapped: Observable<Void>
+		let isLogoutTapped: Observable<Bool>
 	}
 	
 	struct Output {
@@ -25,11 +26,13 @@ class MyPageViewModel: ViewModelType{
 	var disposeBag: DisposeBag = DisposeBag()
 	
 	weak var coordinator: HomeCoordinator?
+	private let authDataUsecase: AuthDataUsecase
 	
 	init(
 		coordinator: HomeCoordinator
 	) {
 		self.coordinator = coordinator
+		self.authDataUsecase = DefaultAuthDataUsecase()
 	}
 	
 	
@@ -50,6 +53,16 @@ class MyPageViewModel: ViewModelType{
 					)
 				)
 				owner.coordinator?.pushViewController(viewController: myInfoViewController, animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		input.isLogoutTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, isLogout in
+				if isLogout {
+					owner.authDataUsecase.deleteAuthData()
+					owner.coordinator?.finish()
+				}
 			})
 			.disposed(by: disposeBag)
 		

@@ -10,4 +10,5 @@ import Foundation
 
 protocol AuthDataUsecase {
 	func saveAuthData(signInModel: SignInModel)
+	func deleteAuthData()
 }

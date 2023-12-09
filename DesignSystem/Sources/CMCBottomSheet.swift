@@ -56,6 +56,16 @@ public final class CMCBottomSheet: UIView{
 		return button
 	}()
 	
+	public lazy var doActionButton: CMCButton = {
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .actionWithdisable,
+			title: actionTitle ?? ""
+		)
+		return button
+	}()
+	
 	// MARK: - Properties
 	
 	var disposeBag = DisposeBag()
@@ -63,8 +73,9 @@ public final class CMCBottomSheet: UIView{
 	private var title: String
 	private var body: String?
 	private var buttonTitle: String
+	private var actionTitle: String?
 	
-//	public var dismiss = PublishRelay<Bool>()
+	public var isAction = PublishRelay<Void>()
 	
 	// MARK: - Initializers
 	
@@ -73,10 +84,11 @@ public final class CMCBottomSheet: UIView{
 	///   - title : BottomSheet의 메인 타이틀을 결정합니다.
 	///   - body : BottomSheet의 본문을 결정합니다.
 	///   - buttonTitle : BottomSheet의 버튼의 타이틀을 결정합니다.
-	public init(title: String, body: String?, buttonTitle: String) {
+	public init(title: String, body: String?, buttonTitle: String, actionTitle: String?) {
 		self.title = title
 		self.body = body
 		self.buttonTitle = buttonTitle
+		self.actionTitle = actionTitle
 		super.init(frame: .zero)
 		
 		self.backgroundColor = DesignSystemAsset.gray900.color
@@ -85,7 +97,7 @@ public final class CMCBottomSheet: UIView{
 		self.setAddSubView()
 		self.setConstraint()
 		
-//		self.bind()
+		self.bind()
 		
 	}
 	
@@ -100,6 +112,9 @@ public final class CMCBottomSheet: UIView{
 		self.addSubview(mainTitle)
 		self.addSubview(bodyLabel)
 		self.addSubview(cancelButton)
+		if self.actionTitle != nil {
+			self.addSubview(doActionButton)
+		}
 	}
 	
 	private func setConstraint() {
@@ -117,22 +132,41 @@ public final class CMCBottomSheet: UIView{
 			make.trailing.equalToSuperview().offset(-20)
 		}
 		
-		cancelButton.snp.makeConstraints { make in
-			make.height.equalTo(56)
-			make.leading.equalToSuperview().offset(24)
-			make.trailing.equalToSuperview().offset(-24)
-			make.bottom.equalToSuperview().offset(-54)
+		if self.actionTitle != nil {
+			doActionButton.snp.makeConstraints { make in
+				make.height.equalTo(56)
+				make.width.equalToSuperview().multipliedBy(0.5).offset(-36)
+				make.leading.equalToSuperview().offset(24)
+				make.bottom.equalToSuperview().offset(-54)
+			}
+			
+			cancelButton.snp.makeConstraints { make in
+				make.height.equalTo(56)
+				make.width.equalToSuperview().multipliedBy(0.5).offset(-36)
+				make.trailing.equalToSuperview().offset(-24)
+				make.bottom.equalToSuperview().offset(-54)
+			}
+			
+		} else {
+			cancelButton.snp.makeConstraints { make in
+				make.height.equalTo(56)
+				make.leading.equalToSuperview().offset(24)
+				make.trailing.equalToSuperview().offset(-24)
+				make.bottom.equalToSuperview().offset(-54)
+			}
 		}
+		
+		
 		
 	}
 	
-//	private func bind() {
-//		cancelButton.rx.tap
-//			.withUnretained(self)
-//			.subscribe(onNext: { owner, _ in
-//				owner.dismiss.accept(false)
-//			})
-//			.disposed(by: disposeBag)
-//	}
+	private func bind() {
+		doActionButton.rx.tap
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.isAction.accept(())
+			})
+			.disposed(by: disposeBag)
+	}
 	
 }

@@ -181,7 +181,6 @@ class MyPageViewController: BaseViewController {
 	
 	override func bind() {
 		
-		
 		accessoryDetailButtons[1].rx.tapped()
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
@@ -206,9 +205,21 @@ class MyPageViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
+		let isLogoutTapped = accessoryDetailButtons[4].rx.tapped()
+			.asObservable()
+			.flatMapLatest { _ -> Observable<Bool> in
+				return CMCBottomSheetManager.shared.showBottomSheet(
+					title: "정말 로그아웃 하시겠어요?",
+					body: nil,
+					buttonTitle: "돌아가기",
+					actionTitle: "로그아웃"
+				)
+			}
+		
 		let input = MyPageViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
-			myInfoBtnTapped: accessoryDetailButtons[0].rx.tapped().asObservable()
+			myInfoBtnTapped: accessoryDetailButtons[0].rx.tapped().asObservable(),
+			isLogoutTapped: isLogoutTapped
 		)
 		
 		let _ = viewModel.transform(input: input)

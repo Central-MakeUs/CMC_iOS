@@ -150,6 +150,7 @@ extension CMCButton{
 	
 	public enum CMCButtonType {
 		case login(LoginStyle)
+		case actionWithdisable
 		
 		public enum LoginStyle {
 			case inactive
@@ -169,6 +170,8 @@ extension CMCButton{
 				case .none:
 					return false
 				}
+			case .actionWithdisable:
+				return true
 			}
 			
 		}
@@ -203,6 +206,12 @@ extension CMCButton{
 						backgroundColor: DesignSystemAsset.gray800.color
 					)
 				}
+			case .actionWithdisable:
+				return CMCButtonUISet(
+					boarderColor: DesignSystemAsset.gray900.color,
+					mainColor: DesignSystemAsset.gray700.color,
+					backgroundColor: DesignSystemAsset.gray800.color
+				)
 			}
 		}
 	}

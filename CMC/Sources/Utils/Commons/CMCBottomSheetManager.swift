@@ -21,7 +21,7 @@ class CMCBottomSheetManager {
 		
 	}
 	
-	func showBottomSheet(title: String, body: String?, buttonTitle: String) {
+	func showBottomSheet(title: String, body: String?, buttonTitle: String, actionTitle: String? = nil) -> Observable<Bool> {
 		
 		let backgroundView: UIView = {
 			let view = UIView()
@@ -32,7 +32,8 @@ class CMCBottomSheetManager {
 		let newBottomSheet = CMCBottomSheet(
 			title: title,
 			body: body,
-			buttonTitle: buttonTitle
+			buttonTitle: buttonTitle,
+			actionTitle: actionTitle
 		)
 		
 		if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -61,14 +62,27 @@ class CMCBottomSheetManager {
 		})
 		
 		
-		newBottomSheet.cancelButton.rx.tap
-			.subscribe(onNext: { _ in
+		let cancelButtonObservable = newBottomSheet.cancelButton.rx.tap
+			.do(onNext: { _ in
 				newBottomSheet.topToDown(completion: { _ in
 					backgroundView.fadeOut(completion: { _ in backgroundView.removeFromSuperview() })
 				})
 			})
-			.disposed(by: disposeBag)
 		
+		var doButtonObservable = Observable<Bool>.never()
+		if actionTitle != nil {
+			doButtonObservable = newBottomSheet.doActionButton.rx.tap
+				.map { true }
+				.do(onNext: { _ in
+					newBottomSheet.topToDown(completion: { _ in
+						backgroundView.fadeOut(completion: { _ in backgroundView.removeFromSuperview() })
+					})
+				})
+		}
+			
+		
+		return Observable.merge(cancelButtonObservable.map { false }, doButtonObservable)
+			.take(1)
 	}
 	
 	
