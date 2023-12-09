@@ -59,6 +59,7 @@ class BaseProjectProfile: ProjectProfile{
 				]
 		],
 		"CFBundleIconName": "AppIcon",
+		"NSCameraUsageDescription": "QRCode에 접근하기 위해 카메라 권한이 필요합니다.",
 		"UIAppFonts": [
 			"Item 0": "Pretendard-Medium.otf",
 			"Item 1": "Pretendard-Regular.otf",
