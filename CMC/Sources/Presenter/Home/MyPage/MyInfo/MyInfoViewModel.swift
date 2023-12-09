@@ -26,7 +26,7 @@ class MyInfoViewModel: ViewModelType{
 	weak var coordinator: HomeCoordinator?
 	
 	init(
-		coordinator: HomeCoordinator
+		coordinator: HomeCoordinator?
 	) {
 		self.coordinator = coordinator
 	}

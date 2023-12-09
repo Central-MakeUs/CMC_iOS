@@ -65,10 +65,13 @@ class MyInfoViewController: BaseViewController {
 	
 	private lazy var infoLabels : [UILabel] = {
 		var labels: [UILabel] = []
+		let name: String = UserDefaultManager.shared.load(for: .name)!
+		let nickname: String = UserDefaultManager.shared.load(for: .nickname)!
+		let email: String = UserDefaultManager.shared.load(for: .email)!
 		let texts = [
-			"--",
-			"---",
-			"---"
+			name,
+			nickname,
+			email
 		]
 		texts.enumerated().forEach { index, text in
 			let label = UILabel()
@@ -98,32 +101,40 @@ class MyInfoViewController: BaseViewController {
 		return label
 	}()
 	
-	private lazy var currentGenerationInfoLabel: UILabel = {
-		let label = UILabel()
-		label.layer.cornerRadius = 5
-		label.backgroundColor = CMCAsset.gray300.color
-		label.font = CMCFontFamily.Pretendard.medium.font(size: 11)
-		label.textColor = CMCAsset.gray50.color
-		label.text = "--"
-		return label
+	private lazy var currentGenerationInfoLabel: CMCButton = {
+		var gen = "---"
+		if let data: String = UserDefaultManager.shared.load(for: .generation) {
+			gen = data
+		}
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.none),
+			title: gen
+		)
+		return button
 	}()
 	
-	private lazy var currentPartInfoLabel: UILabel = {
-		let label = UILabel()
-		label.layer.cornerRadius = 5
-		label.backgroundColor = CMCAsset.gray300.color
-		label.font = CMCFontFamily.Pretendard.medium.font(size: 11)
-		label.textColor = CMCAsset.gray50.color
-		label.text = "---"
-		return label
+	private lazy var currentPartInfoLabel: CMCButton = {
+		var part = "---"
+		if let data: String = UserDefaultManager.shared.load(for: .part) {
+			part = data
+		}
+		let button = CMCButton(
+			isRound: false,
+			iconTitle: nil,
+			type: .login(.none),
+			title: part
+		)
+		return button
 	}()
 	
 	// MARK: - Properties
-	private let viewModel: MyPageViewModel
+	private let viewModel: MyInfoViewModel
 	
 	// MARK: - Initializers
 	init(
-		viewModel: MyPageViewModel
+		viewModel: MyInfoViewModel
 	) {
 		self.viewModel = viewModel
 		super.init()
@@ -140,6 +151,8 @@ class MyInfoViewController: BaseViewController {
 			cell.addSubview(separeteBars[idx])
 		}
 		view.addSubview(currentGenerationLabel)
+		view.addSubview(currentGenerationInfoLabel)
+		view.addSubview(currentPartInfoLabel)
 	}
 	
 	override func setConstraint() {
@@ -199,21 +212,25 @@ class MyInfoViewController: BaseViewController {
 			label.leading.equalToSuperview().offset(30)
 		}
 		
-		currentGenerationLabel.snp.makeConstraints{ label in
+		currentGenerationInfoLabel.snp.makeConstraints{ label in
 			label.top.equalTo(currentGenerationLabel.snp.bottom).offset(10)
 			label.leading.equalToSuperview().offset(24)
+			label.width.equalTo(66)
+			label.height.equalTo(30)
 		}
 		
 		currentPartInfoLabel.snp.makeConstraints{ label in
-			label.top.equalTo(currentGenerationLabel)
-			label.leading.equalTo(currentGenerationLabel.snp.trailing).offset(8)
+			label.top.equalTo(currentGenerationInfoLabel)
+			label.leading.equalTo(currentGenerationInfoLabel.snp.trailing).offset(8)
+			label.width.equalTo(66)
+			label.height.equalTo(30)
 		}
 		
 	}
 	
 	override func bind() {
 		
-		let input = MyPageViewModel.Input(
+		let input = MyInfoViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable()
 		)
 		

@@ -155,6 +155,7 @@ extension CMCButton{
 			case inactive
 			case clear
 			case disabled
+			case none
 		}
 		
 		var isEnable: Bool {
@@ -164,6 +165,8 @@ extension CMCButton{
 				case .inactive, .clear:
 					return true
 				case .disabled:
+					return false
+				case .none:
 					return false
 				}
 			}
@@ -193,7 +196,12 @@ extension CMCButton{
 						mainColor: DesignSystemAsset.gray50.color,
 						backgroundColor: DesignSystemAsset.main1.color
 					)
-				
+				case .none:
+					return CMCButtonUISet(
+						boarderColor: DesignSystemAsset.gray800.color,
+						mainColor: DesignSystemAsset.gray50.color,
+						backgroundColor: DesignSystemAsset.gray800.color
+					)
 				}
 			}
 		}

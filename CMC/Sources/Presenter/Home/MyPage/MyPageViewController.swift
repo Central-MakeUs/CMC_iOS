@@ -207,7 +207,8 @@ class MyPageViewController: BaseViewController {
 			.disposed(by: disposeBag)
 		
 		let input = MyPageViewModel.Input(
-			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable()
+			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
+			myInfoBtnTapped: accessoryDetailButtons[0].rx.tapped().asObservable()
 		)
 		
 		let _ = viewModel.transform(input: input)
