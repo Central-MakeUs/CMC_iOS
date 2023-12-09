@@ -89,6 +89,13 @@ final class AttendanceViewController: UIViewController {
 				)
 			})
 			.disposed(by: disposeBag)
+		
+		output.needToRestartQRScan
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.readerView.start()
+			})
+			.disposed(by: disposeBag)
 	}
 	
 	private func handleScannedCode(_ code: String) {

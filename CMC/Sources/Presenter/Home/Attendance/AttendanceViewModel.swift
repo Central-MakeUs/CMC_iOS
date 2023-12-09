@@ -21,21 +21,25 @@ class AttendanceViewModel: ViewModelType{
 	
 	struct Output {
 		let qrCode: Observable<String>
+		let needToRestartQRScan: Observable<Void>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
 	
 	weak var coordinator: HomeCoordinator?
+	private let attendanceUsecase: AttendancesUsecase
 	
 	init(
+		attendanceUsecase: AttendancesUsecase,
 		coordinator: HomeCoordinator?
 	) {
+		self.attendanceUsecase = attendanceUsecase
 		self.coordinator = coordinator
 	}
 	
 	
 	func transform(input: Input) -> Output {
-		
+		let needToRestartQRScan = PublishRelay<Void>()
 		
 		let qrCode = input.qrScanResult
 			.withUnretained(self)
@@ -51,17 +55,19 @@ class AttendanceViewModel: ViewModelType{
 		
 		qrCode
 			.withUnretained(self)
-			.subscribe(onNext: { owner, qrcode in
+			.flatMapLatest { owner, qrcode -> Single<AttendanceResultModel> in
 				print("성공한 qrCode: \(qrcode)")
-				let attendanceCompletedViewController = AttendanceCompletedViewController(
-					viewModel: AttendanceCompletedViewModel(
-						coordinator: owner.coordinator
-					)
-				)
-				owner.coordinator?.presentViewController(
-					viewController: attendanceCompletedViewController,
-					style: .overFullScreen
-				)
+				let body = PostAttendancesBody(code: qrcode)
+				return owner.attendanceUsecase.postAttendances(body: body)
+			}
+			.asObservable()
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { result in
+				print("출석 성공: \(result)")
+			}, onError: { error in
+				guard let error = error as? NetworkError else { return }
+				CMCToastManager.shared.addToast(message: error.errorDescription)
+				needToRestartQRScan.accept(())
 			})
 			.disposed(by: disposeBag)
 		
@@ -73,9 +79,18 @@ class AttendanceViewModel: ViewModelType{
 			.disposed(by: disposeBag)
 		
 		
-		
+//		let attendanceCompletedViewController = AttendanceCompletedViewController(
+//			viewModel: AttendanceCompletedViewModel(
+//				coordinator: owner.coordinator
+//			)
+//		)
+//		owner.coordinator?.presentViewController(
+//			viewController: attendanceCompletedViewController,
+//			style: .overFullScreen
+//		)
 		return Output(
-			qrCode: qrCode
+			qrCode: qrCode,
+			needToRestartQRScan: needToRestartQRScan.asObservable()
 		)
 	}
 	

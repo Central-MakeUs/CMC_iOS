@@ -47,6 +47,9 @@ class HomeCoordinator: CoordinatorType {
 					self.popToRootViewController(animated: true)
 					let attendanceViewController = AttendanceViewController(
 						viewModel: AttendanceViewModel(
+							attendanceUsecase: DefaultAttendancesUsecase(
+								attendancesRepository: DefaultAttendancesRepository()
+							),
 							coordinator: self
 						)
 					)
