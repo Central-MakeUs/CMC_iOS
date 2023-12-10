@@ -201,17 +201,15 @@ class CheckMyAttendanceCell: UITableViewCell {
 	}()
 	
 	// MARK: - Properties
-	private let model: AttendanceDetailsModel
+	var model: AttendanceDetailsModel!
 	private var disposeBag = DisposeBag()
 	
 	// MARK: - Initialize
 	
-	init(
+	override init(
 		style: UITableViewCell.CellStyle,
-		reuseIdentifier: String?,
-		model: AttendanceDetailsModel
+		reuseIdentifier: String?
 	) {
-		self.model = model
 		super.init(style: .default, reuseIdentifier: reuseIdentifier)
 		setAddSubviews()
 		setAddConstraints()

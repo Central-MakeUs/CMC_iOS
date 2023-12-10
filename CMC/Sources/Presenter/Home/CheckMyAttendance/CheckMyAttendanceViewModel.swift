@@ -14,49 +14,43 @@ import RxSwift
 import UIKit
 
 class CheckMyAttendanceViewModel: ViewModelType {
+	
+	struct Input {
+		let backBtnTapped: Observable<Void>
+	}
+	
+	struct Output {
+		let attendanceAllStatus: Observable<AttendanceStatusModel>
+		let attendanceDetails: Observable<[AttendanceDetailsModel]>
+	}
+	
+	// MARK: - Properties
+	let disposeBag = DisposeBag()
+	let attendancesUsecase: AttendancesUsecase
+	
+	// MARK: - Initialize
+	init(
+		attendancesUsecase: AttendancesUsecase
+	) {
+		self.attendancesUsecase = attendancesUsecase
+	}
+	
+	// MARK: - Methods
+	func transform(input: Input) -> Output {
+		let attendancesObservable = attendancesUsecase.getAttendances()
+			.asObservable()
+			.share()
 		
-		struct Input {
-			let backBtnTapped: Observable<Void>
-		}
+		let attendanceAllStatus = attendancesObservable
+			.map { $0.0 }  // 첫 번째 요소 (AttendanceStatusModel)
 		
-		struct Output {
-				let eventList: Observable<[CSEventListModel]>
-				let matchDetail: Observable<[MatchDetailsModel]>
-		}
+		let attendanceDetails = attendancesObservable
+			.map { $0.1 }  // 두 번째 요소 ([AttendanceDetailsModel])
 		
-		// MARK: - Properties
-		let disposeBag = DisposeBag()
-		let usecase: OverlayUsecase
-		
-		// MARK: - Initialize
-		init(
-				usecase: OverlayUsecase
-		) {
-				self.usecase = usecase
-		}
-		
-		// MARK: - Methods
-		func transform(input: Input) -> Output {
-				
-				let eventList = usecase.getMatchDatas()
-						.asObservable()
-						.catchAndReturn([])
-						.share()
-				
-				let matchDetail = input.matchUid
-						.flatMap { [weak self] matchUid -> Observable<[MatchDetailsModel]> in
-								guard let self = self else { return .empty() }
-								let query = SelectedMatchQuery(matchUid: matchUid)
-								return self.usecase.getMatchDetails(query: query)
-										.asObservable()
-										.catchAndReturn([])
-						}
-						.share()
-				
-				return Output(
-						eventList: eventList,
-						matchDetail: matchDetail
-				)
-		}
-		
+		return Output(
+			attendanceAllStatus: attendanceAllStatus,
+			attendanceDetails: attendanceDetails
+		)
+	}
+	
 }
