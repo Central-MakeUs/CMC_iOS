@@ -23,7 +23,7 @@ public final class CMCTextField: UIView{
 	}
 	
 	// MARK: - UI
-	fileprivate lazy var textField: CustomTextField = {
+	public lazy var textField: CustomTextField = {
 		let textField = CustomTextField()
 		let leftPadding = UIView(frame: CGRect(x: 0, y: 0, width: 5, height: textField.frame.height))
 		textField.leftView = leftPadding
@@ -329,8 +329,8 @@ extension CMCTextField{
 	
 }
 
-class CustomTextField: UITextField {
-	override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+public class CustomTextField: UITextField {
+	public override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
 		return CGRect(
 			x: bounds.origin.x + 5,
 			y: bounds.origin.y + 15,
@@ -339,7 +339,7 @@ class CustomTextField: UITextField {
 		)
 	}
 	
-	override func textRect(forBounds bounds: CGRect) -> CGRect {
+	public override func textRect(forBounds bounds: CGRect) -> CGRect {
 		return CGRect(
 			x: bounds.origin.x + 5,
 			y: bounds.origin.y + 15,
@@ -348,7 +348,7 @@ class CustomTextField: UITextField {
 		)
 	}
 	
-	override func editingRect(forBounds bounds: CGRect) -> CGRect {
+	public override func editingRect(forBounds bounds: CGRect) -> CGRect {
 		return CGRect(
 			x: bounds.origin.x + 5,
 			y: bounds.origin.y + 15,

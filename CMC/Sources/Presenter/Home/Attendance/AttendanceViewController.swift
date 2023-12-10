@@ -18,11 +18,18 @@ import SnapKit
 final class AttendanceViewController: UIViewController {
 	
 	// MARK: - UI
-	public lazy var backButton: CMCTouchArea = {
-		let backButton = CMCTouchArea(
-			image: CMCAsset._24x24arrowLeft.image
-		)
-		return backButton
+	private lazy var navigationBar: CMCNavigationBar = {
+		let navi = CMCNavigationBar(accessoryLabelHidden: true)
+		navi.backgroundColor = .clear
+		return navi
+	}()
+	
+	private lazy var selfEnterQRCodeLabel: UILabel = {
+		let label = UILabel()
+		label.text = "💡 QR코드가 입력되지 않을경우 여기를 클릭해주세요"
+		label.font = CMCFontFamily.Pretendard.medium.font(size: 13)
+		label.textColor = CMCAsset.gray50.color
+		return label
 	}()
 	
 	private var readerView: ReaderView!
@@ -54,16 +61,21 @@ final class AttendanceViewController: UIViewController {
 	private func setupReaderView() {
 		readerView = ReaderView(frame: view.bounds)
 		view.addSubview(readerView)
-		view.addSubview(backButton)
+		view.addSubview(navigationBar)
+		view.addSubview(selfEnterQRCodeLabel)
 		
-		backButton.snp.makeConstraints {
-			$0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(16)
-			$0.leading.equalToSuperview().offset(16)
-			$0.width.height.equalTo(48)
+		navigationBar.snp.makeConstraints { make in
+			make.leading.top.trailing.equalTo(view.safeAreaLayoutGuide)
+			make.height.equalTo(68)
 		}
 		
 		readerView.snp.makeConstraints {
 			$0.edges.equalToSuperview()
+		}
+		
+		selfEnterQRCodeLabel.snp.makeConstraints {
+			$0.centerX.equalToSuperview()
+			$0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-16)
 		}
 	}
 	
@@ -72,7 +84,8 @@ final class AttendanceViewController: UIViewController {
 	private func bind() {
 		
 		let input = AttendanceViewModel.Input(
-			backBtnTapped: backButton.rx.tapped().asObservable(),
+			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
+			selfEnterQRCodeTapped: selfEnterQRCodeLabel.rx.tapped().asObservable(),
 			qrScanResult: readerView.qrCodeResult
 		)
 		
@@ -101,7 +114,7 @@ final class AttendanceViewController: UIViewController {
 	private func resetReaderView() {
 		// 기존 ReaderView 제거
 		readerView?.removeFromSuperview()
-		backButton.removeFromSuperview()
+		navigationBar.removeFromSuperview()
 		readerView = nil
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
@@ -109,16 +122,21 @@ final class AttendanceViewController: UIViewController {
 			// 새로운 ReaderView 생성 및 설정
 			let newReaderView = ReaderView(frame: owner.view.bounds)
 			owner.view.addSubview(newReaderView)
-			owner.view.addSubview(owner.backButton)
+			owner.view.addSubview(owner.navigationBar)
+			owner.view.addSubview(owner.selfEnterQRCodeLabel)
 			
-			owner.backButton.snp.makeConstraints {
-				$0.top.equalTo(owner.view.safeAreaLayoutGuide.snp.top).offset(16)
-				$0.leading.equalToSuperview().offset(16)
-				$0.width.height.equalTo(48)
+			owner.navigationBar.snp.makeConstraints { make in
+				make.leading.top.trailing.equalTo(owner.view.safeAreaLayoutGuide)
+				make.height.equalTo(68)
 			}
 			
 			newReaderView.snp.makeConstraints {
 				$0.edges.equalToSuperview()
+			}
+			
+			owner.selfEnterQRCodeLabel.snp.makeConstraints {
+				$0.centerX.equalToSuperview()
+				$0.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
 			}
 			// 참조 업데이트
 			owner.readerView = newReaderView

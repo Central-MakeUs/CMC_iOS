@@ -15,6 +15,7 @@ class AttendanceViewModel: ViewModelType{
 	
 	struct Input {
 		let backBtnTapped: Observable<Void>
+		let selfEnterQRCodeTapped: Observable<Void>
 		let qrScanResult: Observable<QRCodeState>
 		
 	}
@@ -86,6 +87,20 @@ class AttendanceViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
+		input.selfEnterQRCodeTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				let selfEnterQRCodeViewController = SelfEnterQRCodeViewController(
+					viewModel: SelfEnterQRCodeViewModel(
+						attendanceUsecase: DefaultAttendancesUsecase(
+							attendancesRepository: DefaultAttendancesRepository()
+						),
+						coordinator: self.coordinator
+					)
+				)
+				owner.coordinator?.pushViewController(viewController: selfEnterQRCodeViewController, animated: true)
+			})
+			.disposed(by: disposeBag)
 		
 		
 		return Output(

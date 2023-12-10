@@ -211,6 +211,13 @@ final class MainSignUpView: BaseView {
 			})
 			.disposed(by: disposeBag)
 		
+		emailTextField.accessoryCMCButton.rx.tapped()
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.emailTextField.textField.endEditing(true)
+			})
+			.disposed(by: disposeBag)
+		
 		passwordTextField.accessoryState
 			.observe(on: MainScheduler.instance)
 			.withUnretained(self)
