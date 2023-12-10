@@ -16,6 +16,7 @@ class HomeViewModel: ViewModelType{
 	struct Input {
 		let settingButtonTapped: Observable<Void>
 		let attendanceBtnTapped: Observable<Void>
+		let checkAttendanceBtnTapped: Observable<Void>
 	}
 	
 	struct Output {
@@ -54,12 +55,20 @@ class HomeViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
+		
+		input.checkAttendanceBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.destination.accept(.checkMyAttendance)
+			})
+			.disposed(by: disposeBag)
+		
 		let notificationsObservable = notificationsUsecase.getLatestNotifications()
 			.asObservable() // Convert Single to Observable
 			.do(onNext: { [weak self] notifications in
 				self?.notificationsDataUsecase.saveNotificationsData(notifications: notifications)
 			}, onError: { error in
-				_ = CMCBottomSheetManager.shared.showBottomSheet(
+				CMCBottomSheetManager.shared.showBottomSheet(
 					title: "공지 내용을 불러오는데 실패하였습니다.",
 					body: "\(error.localizedDescription)",
 					buttonTitle: "확인"

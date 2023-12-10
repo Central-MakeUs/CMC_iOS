@@ -472,7 +472,8 @@ class HomeViewController: BaseViewController {
 		
 		let input = HomeViewModel.Input(
 			settingButtonTapped: settingButton.rx.tapped().asObservable(),
-			attendanceBtnTapped: attendanceView.rx.tapped().asObservable()
+			attendanceBtnTapped: attendanceView.rx.tapped().asObservable(),
+			checkAttendanceBtnTapped: checkAttendanceView.rx.tapped().asObservable()
 		)
 		let output = viewModel.transform(input: input)
 		

@@ -56,6 +56,17 @@ class HomeCoordinator: CoordinatorType {
 					self.pushViewController(viewController: attendanceViewController, animated: true)
 					print("🍎 여기는 출석QR이요~ 🍎")
 				case .checkMyAttendance:
+					CMCIndecatorManager.shared.show()
+					self.popToRootViewController(animated: true)
+					let checkMyAttendanceViewController = CheckMyAttendanceViewController(
+						viewModel: CheckMyAttendanceViewModel(
+							attendancesUsecase: DefaultAttendancesUsecase(
+								attendancesRepository: DefaultAttendancesRepository()
+							),
+							coordinator: self
+						)
+					)
+					self.pushViewController(viewController: checkMyAttendanceViewController, animated: true)
 					print("🍎 여기는 출석 확인하기여~ 🍎")
 				case .myPage:
 					CMCIndecatorManager.shared.show()

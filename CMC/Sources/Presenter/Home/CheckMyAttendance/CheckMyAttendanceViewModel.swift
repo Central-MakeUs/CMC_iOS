@@ -27,12 +27,15 @@ class CheckMyAttendanceViewModel: ViewModelType {
 	// MARK: - Properties
 	let disposeBag = DisposeBag()
 	let attendancesUsecase: AttendancesUsecase
+	weak var coordinator: HomeCoordinator?
 	
 	// MARK: - Initialize
 	init(
-		attendancesUsecase: AttendancesUsecase
+		attendancesUsecase: AttendancesUsecase,
+		coordinator: HomeCoordinator?
 	) {
 		self.attendancesUsecase = attendancesUsecase
+		self.coordinator = coordinator
 	}
 	
 	// MARK: - Methods
@@ -46,6 +49,13 @@ class CheckMyAttendanceViewModel: ViewModelType {
 		
 		let attendanceDetails = attendancesObservable
 			.map { $0.1 }  // 두 번째 요소 ([AttendanceDetailsModel])
+		
+		input.backBtnTapped
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.coordinator?.popViewController(animated: true)
+			})
+			.disposed(by: disposeBag)
 		
 		return Output(
 			attendanceAllStatus: attendanceAllStatus,

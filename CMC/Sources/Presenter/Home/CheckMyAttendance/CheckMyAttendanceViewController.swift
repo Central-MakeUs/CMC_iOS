@@ -148,8 +148,9 @@ final class CheckMyAttendanceViewController: BaseViewController {
 	
 	private lazy var tableView: UITableView = {
 		let tableView = UITableView()
-		tableView.translatesAutoresizingMaskIntoConstraints = false
-		tableView.backgroundColor = .clear
+		tableView.backgroundColor = CMCAsset.background.color
+		tableView.showsVerticalScrollIndicator = false
+		tableView.showsHorizontalScrollIndicator = false
 		tableView.separatorStyle = .none
 		tableView.register(CheckMyAttendanceCell.self, forCellReuseIdentifier: CheckMyAttendanceCell.reuseIdentifier)
 		return tableView
@@ -173,6 +174,7 @@ final class CheckMyAttendanceViewController: BaseViewController {
 		
 		view.addSubview(navigationBar)
 		view.addSubview(navigationLabel)
+		view.addSubview(tableView)
 		
 		view.addSubview(allStatusView)
 		allStatusView.addSubview(allStatusTitleLabel)
@@ -196,8 +198,8 @@ final class CheckMyAttendanceViewController: BaseViewController {
 		
 		allStatusView.snp.makeConstraints { make in
 			make.top.equalTo(navigationBar.snp.bottom).offset(20)
-			make.leading.equalToSuperview().inset(25)
-			make.trailing.equalToSuperview().inset(-19)
+			make.leading.equalToSuperview().offset(25)
+			make.trailing.equalToSuperview().offset(-19)
 			make.height.equalTo(166)
 		}
 		
@@ -216,12 +218,13 @@ final class CheckMyAttendanceViewController: BaseViewController {
 			make.centerX.equalToSuperview()
 			make.bottom.equalToSuperview().offset(-24)
 		}
-			
-		tableView.snp.makeConstraints { make in
-			make.top.equalTo(allStatusView.snp.bottom).offset(12)
-			make.leading.trailing.bottom.equalToSuperview()
-		}
 		
+		tableView.snp.makeConstraints { make in
+			make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 25, bottom: 0, right: 19))
+			make.bottom.equalToSuperview()
+			make.top.equalTo(allStatusView.snp.bottom).offset(12)
+		}
+
 	}
 	
 	override func bind() {
@@ -244,7 +247,7 @@ final class CheckMyAttendanceViewController: BaseViewController {
 			})
 			.bind(to: tableView.rx.items) { tableView, row, model in
 				let cell = tableView.dequeueReusableCell(withIdentifier: CheckMyAttendanceCell.reuseIdentifier) as! CheckMyAttendanceCell
-				cell.model = model
+				cell.configure(with: model)
 				return cell
 			}
 			.disposed(by: disposeBag)
@@ -265,7 +268,7 @@ final class CheckMyAttendanceViewController: BaseViewController {
 
 extension CheckMyAttendanceViewController: UITableViewDelegate {
 	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-		return 120
+		return 140
 	}
 }
 

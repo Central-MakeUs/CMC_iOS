@@ -42,12 +42,8 @@ class CheckMyAttendanceCell: UITableViewCell {
 	private lazy var weekLabel: UILabel = {
 		let label = UILabel()
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 20)
-		if model.enable {
-			label.textColor = CMCAsset.gray50.color
-		} else {
-			label.textColor = CMCAsset.gray800.color
-		}
-		label.text = "\(model.week)" + "주차"
+		label.textColor = CMCAsset.gray800.color
+		label.text = "-주차"
 		return label
 	}()
 	
@@ -63,36 +59,24 @@ class CheckMyAttendanceCell: UITableViewCell {
 	
 	private lazy var dateImage: UIImageView = {
 		let imageView = UIImageView()
-		if model.enable {
-			imageView.image = CMCAsset._14x14attendanceDateValid.image
-		} else {
-			imageView.image = CMCAsset._14x14attendanceDateInvalid.image
-		}
+		imageView.image = CMCAsset._14x14attendanceDateInvalid.image
 		return imageView
 	}()
 	
 	private lazy var dateLabel: UILabel = {
 		let label = UILabel()
 		label.font = CMCFontFamily.Pretendard.medium.font(size: 13)
-		if model.enable {
-			label.textColor = CMCAsset.gray700.color
-		} else {
-			label.textColor = CMCAsset.gray800.color
-		}
-		label.text = onlyDate(date: "\(model.date)")
+		label.textColor = CMCAsset.gray800.color
+		label.text = "--.--"
 		return label
 	}()
 	
 	private lazy var isOfflineLabel: CMCButton = {
-		let title = model.isOffline ? "Offline" : "Online"
-		let type = model.enable
-		? CMCButton.CMCButtonType.login(.none)
-		: CMCButton.CMCButtonType.login(.disabled)
 		let button = CMCButton(
 			isRound: false,
 			iconTitle: nil,
-			type: type,
-			title: title
+			type: .login(.disabled),
+			title: "----"
 		)
 		return button
 	}()
@@ -109,17 +93,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 	
 	private lazy var firstAttendanceImageView: UIImageView = {
 		let imageView = UIImageView()
-		switch model.firstHour {
-		case "ABSENT":
-			imageView.image = CMCAsset._20x20attendanceAbsent.image
-		case "LATE":
-			imageView.image = CMCAsset._20x20attendanceLate.image
-		default:
-			imageView.image = CMCAsset._20x20attendanceValid.image
-		}
-		if !model.enable {
-			imageView.image = CMCAsset._20x20attendanceAbsent.image
-		}
+		imageView.image = CMCAsset._20x20attendanceAbsent.image
 		imageView.contentMode = .scaleAspectFit
 		return imageView
 	}()
@@ -128,17 +102,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 		let label = UILabel()
 		label.text = "1차"
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 13)
-		switch model.firstHour {
-		case "ABSENT":
-			label.textColor = CMCAsset.gray800.color
-		case "LATE":
-			label.textColor = CMCAsset.error.color
-		default:
-			label.textColor = CMCAsset.gray50.color
-		}
-		if !model.enable {
-			label.textColor = CMCAsset.gray800.color
-		}
+		label.textColor = CMCAsset.gray800.color
 		return label
 	}()
 	
@@ -161,17 +125,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 	
 	private lazy var secondAttendanceImageView: UIImageView = {
 		let imageView = UIImageView()
-		switch model.secondHour {
-		case "ABSENT":
-			imageView.image = CMCAsset._20x20attendanceAbsent.image
-		case "LATE":
-			imageView.image = CMCAsset._20x20attendanceLate.image
-		default:
-			imageView.image = CMCAsset._20x20attendanceValid.image
-		}
-		if !model.enable {
-			imageView.image = CMCAsset._20x20attendanceAbsent.image
-		}
+		imageView.image = CMCAsset._20x20attendanceAbsent.image
 		imageView.contentMode = .scaleAspectFit
 		return imageView
 	}()
@@ -180,17 +134,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 		let label = UILabel()
 		label.text = "2차"
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 13)
-		switch model.secondHour {
-		case "ABSENT":
-			label.textColor = CMCAsset.gray800.color
-		case "LATE":
-			label.textColor = CMCAsset.error.color
-		default:
-			label.textColor = CMCAsset.gray50.color
-		}
-		if !model.enable {
-			label.textColor = CMCAsset.gray800.color
-		}
+		label.textColor = CMCAsset.gray800.color
 		return label
 	}()
 	
@@ -201,7 +145,6 @@ class CheckMyAttendanceCell: UITableViewCell {
 	}()
 	
 	// MARK: - Properties
-	var model: AttendanceDetailsModel!
 	private var disposeBag = DisposeBag()
 	
 	// MARK: - Initialize
@@ -213,6 +156,8 @@ class CheckMyAttendanceCell: UITableViewCell {
 		super.init(style: .default, reuseIdentifier: reuseIdentifier)
 		setAddSubviews()
 		setAddConstraints()
+		self.contentView.backgroundColor = CMCAsset.background.color
+		self.isUserInteractionEnabled = false
 	}
 	
 	required init?(coder: NSCoder) {
@@ -240,8 +185,8 @@ class CheckMyAttendanceCell: UITableViewCell {
 	private func setAddConstraints() {
 		
 		realContentView.snp.makeConstraints { make in
-			make.leading.equalToSuperview().offset(25)
-			make.trailing.equalToSuperview().offset(19)
+			make.leading.equalToSuperview().offset(23)
+			make.trailing.equalToSuperview().offset(-29)
 			make.top.equalToSuperview().offset(25)
 			make.bottom.equalToSuperview().offset(-25)
 		}
@@ -252,7 +197,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 		}
 		
 		weekLabel.snp.makeConstraints { make in
-			make.top.equalToSuperview().offset(25)
+			make.top.equalToSuperview()
 			make.centerX.equalToSuperview()
 		}
 		
@@ -262,7 +207,7 @@ class CheckMyAttendanceCell: UITableViewCell {
 		
 		dataStackView.snp.makeConstraints { make in
 			make.centerX.equalTo(weekLabel)
-			make.top.equalTo(weekLabel).offset(12)
+			make.top.equalTo(weekLabel.snp.bottom).offset(12)
 		}
 		
 		isOfflineLabel.snp.makeConstraints { make in
@@ -286,8 +231,9 @@ class CheckMyAttendanceCell: UITableViewCell {
 		
 		centerSeparator.snp.makeConstraints { make in
 			make.centerY.equalTo(firstAttendanceImageView)
-			make.centerX.equalToSuperview()
-			make.height.equalTo(1)
+			make.height.equalTo(2)
+			make.leading.equalTo(firstAttendanceImageView.snp.trailing).offset(12)
+			make.trailing.equalTo(secondAttendanceImageView.snp.leading).offset(-12)
 		}
 		
 		secondAttendanceImageView.snp.makeConstraints { make in
@@ -303,6 +249,71 @@ class CheckMyAttendanceCell: UITableViewCell {
 			make.leading.trailing.bottom.equalToSuperview()
 			make.height.equalTo(1)
 		}
+	}
+	
+	func configure(with model: AttendanceDetailsModel) {
+		weekLabel.text = "\(model.week)" + "주차"
+		
+		dateLabel.text = onlyDate(date: "\(model.date)")
+		
+		let title = model.isOffline ? "Offline" : "Online"
+		let type = model.enable
+		? CMCButton.CMCButtonType.login(.none)
+		: CMCButton.CMCButtonType.login(.disabled)
+		isOfflineLabel.setTitle(title: title)
+		isOfflineLabel.rxType.accept(type)
+		
+		switch model.firstHour {
+		case "ABSENT":
+			firstAttendanceImageView.image = CMCAsset._20x20attendanceAbsent.image
+		case "LATE":
+			firstAttendanceImageView.image = CMCAsset._20x20attendanceLate.image
+		default:
+			firstAttendanceImageView.image = CMCAsset._20x20attendanceValid.image
+		}
+		
+		switch model.firstHour {
+		case "ABSENT":
+			firstAttendanceLabel.textColor = CMCAsset.gray800.color
+		case "LATE":
+			firstAttendanceLabel.textColor = CMCAsset.error.color
+		default:
+			firstAttendanceLabel.textColor = CMCAsset.gray50.color
+		}
+		
+		switch model.secondHour {
+		case "ABSENT":
+			secondAttendanceImageView.image = CMCAsset._20x20attendanceAbsent.image
+		case "LATE":
+			secondAttendanceImageView.image = CMCAsset._20x20attendanceLate.image
+		default:
+			secondAttendanceImageView.image = CMCAsset._20x20attendanceValid.image
+		}
+		
+		switch model.secondHour {
+		case "ABSENT":
+			secondAttendanceLabel.textColor = CMCAsset.gray800.color
+		case "LATE":
+			secondAttendanceLabel.textColor = CMCAsset.error.color
+		default:
+			secondAttendanceLabel.textColor = CMCAsset.gray50.color
+		}
+		
+		if model.enable {
+			weekLabel.textColor = CMCAsset.gray50.color
+			dateImage.image = CMCAsset._14x14attendanceDateValid.image
+			dateLabel.textColor = CMCAsset.gray700.color
+		} else {
+			weekLabel.textColor = CMCAsset.gray800.color
+			dateImage.image = CMCAsset._14x14attendanceDateInvalid.image
+			dateLabel.textColor = CMCAsset.gray800.color
+			isOfflineLabel.rxType.accept(.login(.disabled))
+			firstAttendanceImageView.image = CMCAsset._20x20attendanceAbsent.image
+			firstAttendanceLabel.textColor = CMCAsset.gray800.color
+			secondAttendanceImageView.image = CMCAsset._20x20attendanceAbsent.image
+			secondAttendanceLabel.textColor = CMCAsset.gray800.color
+		}
+		
 	}
 }
 
