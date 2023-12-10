@@ -29,7 +29,7 @@ final class DefaultUserRepository: UserRepository {
 	}
 	
 	func deleteUser() -> Single<DeleteUsersDTO> {
-		let endpoint = UserEndpoint.getUser
+		let endpoint = UserEndpoint.deleteUser
 		return networkService.request(endpoint)
 			.flatMap { data in
 				guard let dto = Utility.decode(DeleteUsersDTO.self, from: data) else {

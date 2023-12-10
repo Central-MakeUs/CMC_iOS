@@ -73,6 +73,9 @@ class HomeCoordinator: CoordinatorType {
 					self.popToRootViewController(animated: true)
 					let myPageViewController = MyPageViewController(
 						viewModel: MyPageViewModel(
+							userUsecase: DefaultUserUsecase(
+								userRepository: DefaultUserRepository()
+							),
 							coordinator: self
 						)
 					)

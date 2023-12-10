@@ -28,10 +28,13 @@ class MyPageViewModel: ViewModelType{
 	
 	weak var coordinator: HomeCoordinator?
 	private let authDataUsecase: AuthDataUsecase
+	private let userUsecase: UserUsecase
 	
 	init(
+		userUsecase: UserUsecase,
 		coordinator: HomeCoordinator
 	) {
+		self.userUsecase = userUsecase
 		self.coordinator = coordinator
 		self.authDataUsecase = DefaultAuthDataUsecase()
 	}
@@ -69,12 +72,28 @@ class MyPageViewModel: ViewModelType{
 		
 		input.isAuthOutTapped
 			.withUnretained(self)
-			.subscribe(onNext: { owner, isAuthOut in
-				if isAuthOut {
-					CMCToastManager.shared.addToast(message: "테스트용: - 회원탈퇴 성공")
-				} else {
-					CMCToastManager.shared.addToast(message: "테스트용: - 회원탈퇴 실패")
-				}
+			.flatMapLatest { owner, _ in
+				owner.userUsecase.deleteUser()
+					.observe(on: MainScheduler.instance)
+					.asObservable()
+					.catch { error -> Observable<DeleteUserModel> in
+						guard let customError = error as? NetworkError else { throw error }
+						CMCToastManager.shared.addToast(message: customError.errorDescription)
+						return .empty()
+					}
+			}
+			.observe(on: MainScheduler.instance)
+			.subscribe(onNext: { [weak self] _ in
+				guard let ss = self else { return }
+				let deleteUserCompletedViewController = DeleteUserCompletedViewController(
+					viewModel: DeleteUserCompletedViewModel(
+						coordinator: ss.coordinator
+					)
+				)
+				ss.coordinator?.presentViewController(
+					viewController: deleteUserCompletedViewController,
+					style: .overFullScreen
+				)
 			})
 			.disposed(by: disposeBag)
 		

@@ -244,7 +244,7 @@ class MyPageViewController: BaseViewController {
 					title: "정말 탈퇴하시겠어요?",
 					body: "현 기수 CMC활동중이라면, 불이익이 발생할 수 있습니다.",
 					buttonTitle: "돌아가기",
-					actionTitle: "로그아웃"
+					actionTitle: "탈퇴하기"
 				)
 			}
 		
