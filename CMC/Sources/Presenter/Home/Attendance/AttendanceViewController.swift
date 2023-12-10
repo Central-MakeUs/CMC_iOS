@@ -33,7 +33,7 @@ final class AttendanceViewController: UIViewController {
 	}()
 	
 	private var readerView: ReaderView!
-	private let disposeBag = DisposeBag()
+	private var disposeBag = DisposeBag()
 	
 	// MARK: - Properties
 	private let viewModel: AttendanceViewModel
@@ -83,9 +83,36 @@ final class AttendanceViewController: UIViewController {
 	
 	private func bind() {
 		
+		
+		navigationBar.backButton.rx.tapped()
+			.asObservable()
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				owner.viewModel.coordinator?.popToRootViewController(animated: true)
+			})
+			.disposed(by: disposeBag)
+		
+		
+		selfEnterQRCodeLabel.rx.tapped().asObservable()
+			.withUnretained(self)
+			.subscribe(onNext: { owner, _ in
+				let selfEnterQRCodeViewController = SelfEnterQRCodeViewController(
+					viewModel: SelfEnterQRCodeViewModel(
+						attendanceUsecase: DefaultAttendancesUsecase(
+							attendancesRepository: DefaultAttendancesRepository()
+						),
+						coordinator: self.viewModel.coordinator
+					)
+				)
+				owner.viewModel.coordinator?.pushViewController(
+					viewController: selfEnterQRCodeViewController,
+					animated: true
+				)
+			})
+			.disposed(by: disposeBag)
+		
+		
 		let input = AttendanceViewModel.Input(
-			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
-			selfEnterQRCodeTapped: selfEnterQRCodeLabel.rx.tapped().asObservable(),
 			qrScanResult: readerView.qrCodeResult
 		)
 		
@@ -114,30 +141,22 @@ final class AttendanceViewController: UIViewController {
 	private func resetReaderView() {
 		// 기존 ReaderView 제거
 		readerView?.removeFromSuperview()
-		navigationBar.removeFromSuperview()
 		readerView = nil
+		disposeBag = DisposeBag()
 		
 		DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
 			guard let owner = self else { return }
 			// 새로운 ReaderView 생성 및 설정
 			let newReaderView = ReaderView(frame: owner.view.bounds)
 			owner.view.addSubview(newReaderView)
-			owner.view.addSubview(owner.navigationBar)
-			owner.view.addSubview(owner.selfEnterQRCodeLabel)
-			
-			owner.navigationBar.snp.makeConstraints { make in
-				make.leading.top.trailing.equalTo(owner.view.safeAreaLayoutGuide)
-				make.height.equalTo(68)
-			}
 			
 			newReaderView.snp.makeConstraints {
 				$0.edges.equalToSuperview()
 			}
 			
-			owner.selfEnterQRCodeLabel.snp.makeConstraints {
-				$0.centerX.equalToSuperview()
-				$0.bottom.equalTo(owner.view.safeAreaLayoutGuide.snp.bottom).offset(-16)
-			}
+			owner.view.bringSubviewToFront(owner.navigationBar)
+			owner.view.bringSubviewToFront(owner.selfEnterQRCodeLabel)
+			
 			// 참조 업데이트
 			owner.readerView = newReaderView
 			owner.bind()

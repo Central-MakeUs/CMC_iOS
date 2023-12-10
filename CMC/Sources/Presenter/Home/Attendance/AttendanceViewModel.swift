@@ -14,10 +14,7 @@ import RxSwift
 class AttendanceViewModel: ViewModelType{
 	
 	struct Input {
-		let backBtnTapped: Observable<Void>
-		let selfEnterQRCodeTapped: Observable<Void>
 		let qrScanResult: Observable<QRCodeState>
-		
 	}
 	
 	struct Output {
@@ -79,30 +76,7 @@ class AttendanceViewModel: ViewModelType{
 				needToRestartQRScan.accept(())
 			})
 			.disposed(by: disposeBag)
-		
-		input.backBtnTapped
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.coordinator?.popToRootViewController(animated: true)
-			})
-			.disposed(by: disposeBag)
-		
-		input.selfEnterQRCodeTapped
-			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				let selfEnterQRCodeViewController = SelfEnterQRCodeViewController(
-					viewModel: SelfEnterQRCodeViewModel(
-						attendanceUsecase: DefaultAttendancesUsecase(
-							attendancesRepository: DefaultAttendancesRepository()
-						),
-						coordinator: self.coordinator
-					)
-				)
-				owner.coordinator?.pushViewController(viewController: selfEnterQRCodeViewController, animated: true)
-			})
-			.disposed(by: disposeBag)
-		
-		
+
 		return Output(
 			qrCode: qrCode,
 			needToRestartQRScan: needToRestartQRScan.asObservable()
