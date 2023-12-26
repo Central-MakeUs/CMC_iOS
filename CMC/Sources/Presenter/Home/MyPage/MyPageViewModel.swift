@@ -72,15 +72,19 @@ class MyPageViewModel: ViewModelType{
 		
 		input.isAuthOutTapped
 			.withUnretained(self)
-			.flatMapLatest { owner, _ in
-				owner.userUsecase.deleteUser()
-					.observe(on: MainScheduler.instance)
-					.asObservable()
-					.catch { error -> Observable<DeleteUserModel> in
-						guard let customError = error as? NetworkError else { throw error }
-						CMCToastManager.shared.addToast(message: customError.errorDescription)
-						return .empty()
-					}
+			.flatMapLatest { owner, isDelete -> Observable<DeleteUserModel> in
+				if isDelete {
+					return owner.userUsecase.deleteUser()
+						.observe(on: MainScheduler.instance)
+						.asObservable()
+						.catch { error -> Observable<DeleteUserModel> in
+							guard let customError = error as? NetworkError else { throw error }
+							CMCToastManager.shared.addToast(message: customError.errorDescription)
+							return .empty()
+						}
+				} else {
+					return .empty()
+				}
 			}
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { [weak self] _ in
