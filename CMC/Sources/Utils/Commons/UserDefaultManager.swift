@@ -13,6 +13,10 @@ class UserDefaultManager {
 	static let shared = UserDefaultManager()
 	private let userDefaults = UserDefaults.standard
 	
+	private init() {
+		
+	}
+	
 	/// 요기에는 내 맘대로 추가 해야징~
 	enum Key: String {
 		case accessToken
@@ -35,4 +39,5 @@ class UserDefaultManager {
 	func delete(for key: Key) {
 		userDefaults.removeObject(forKey: key.rawValue)
 	}
+	
 }

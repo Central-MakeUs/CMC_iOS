@@ -424,7 +424,7 @@ class HomeViewController: BaseViewController {
 			.withUnretained(self)
 			.subscribe(onNext: { owner, url in
 				print("\(url)")
-				guard let url = URL(string: "https://" + url) else { return }
+				guard let url = URL(string: url) else { return }
 				let sfVC = SFSafariViewController(url: url)
 				sfVC.modalPresentationStyle = .overFullScreen
 				owner.present(sfVC, animated: true)

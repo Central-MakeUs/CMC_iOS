@@ -52,7 +52,7 @@ class SelfEnterQRCodeViewController: UIViewController {
 			placeHolder: "인증번호를 입력해주세요",
 			textFieldSubTitle: "인증번호",
 			accessoryType: .none,
-			keyboardType: .phonePad
+			keyboardType: .emailAddress
 		)
 		return textField
 	}()
