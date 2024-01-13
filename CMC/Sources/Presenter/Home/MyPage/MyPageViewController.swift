@@ -202,7 +202,7 @@ class MyPageViewController: BaseViewController {
 	
 	override func bind() {
 		
-		accessoryDetailButtons[1].rx.tapped()
+        MyPageCells[1].rx.tapped()
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
@@ -214,7 +214,7 @@ class MyPageViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
-		accessoryDetailButtons[2].rx.tapped()
+        MyPageCells[2].rx.tapped()
 			.withUnretained(self)
 			.observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
@@ -226,7 +226,7 @@ class MyPageViewController: BaseViewController {
 			})
 			.disposed(by: disposeBag)
 		
-		let isLogoutTapped = accessoryDetailButtons[4].rx.tapped()
+		let isLogoutTapped = MyPageCells[4].rx.tapped()
 			.asObservable()
 			.flatMapLatest { _ -> Observable<Bool> in
 				return CMCBottomSheetWithActionManager.shared.showBottomSheet(
@@ -250,7 +250,7 @@ class MyPageViewController: BaseViewController {
 		
 		let input = MyPageViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
-			myInfoBtnTapped: accessoryDetailButtons[0].rx.tapped().asObservable(),
+			myInfoBtnTapped: MyPageCells[0].rx.tapped().asObservable(),
 			isLogoutTapped: isLogoutTapped,
 			isAuthOutTapped: isAuthOutTapped
 		)
