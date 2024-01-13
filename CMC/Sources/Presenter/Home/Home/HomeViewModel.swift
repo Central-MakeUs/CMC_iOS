@@ -48,13 +48,28 @@ class HomeViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
+        /*
 		input.attendanceBtnTapped
 			.withUnretained(self)
 			.subscribe(onNext: { owner, _ in
 				owner.coordinator?.destination.accept(.attendance)
 			})
 			.disposed(by: disposeBag)
-		
+		*/
+        input.attendanceBtnTapped
+            .flatMapLatest { _ in
+                PrivacyManager.shared.requestPermission()
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { owner, granted in
+                if granted {
+                    owner.coordinator?.destination.accept(.attendance)
+                } else {
+                    let alert = PrivacyManager.shared.goToSettingsAlert()
+                    owner.coordinator?.presentViewController(viewController: alert, style: .automatic)
+                }
+            })
+            .disposed(by: disposeBag)
 		
 		input.checkAttendanceBtnTapped
 			.withUnretained(self)
