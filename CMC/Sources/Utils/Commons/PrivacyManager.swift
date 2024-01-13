@@ -24,8 +24,10 @@ final class PrivacyManager {
             case .authorized:
                 observer.onNext(true)
             case .notDetermined:
-                self.requestCameraPermission { granted in
-                    observer.onNext(granted)
+                DispatchQueue.main.async {
+                    self.requestCameraPermission { granted in
+                        observer.onNext(granted)
+                    }
                 }
             default:
                 observer.onNext(false)
@@ -35,7 +37,11 @@ final class PrivacyManager {
     }
 
     private func requestCameraPermission(closureResult: @escaping (Bool) -> Void) {
-        AVCaptureDevice.requestAccess(for: .video, completionHandler: closureResult)
+        AVCaptureDevice.requestAccess(for: .video) { granted in
+            DispatchQueue.main.async {
+                closureResult(granted)
+            }
+        }
     }
 
     // 나중에 권한 더 필요하면, title은 파라미터로 받던지 하자...
