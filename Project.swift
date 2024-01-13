@@ -44,6 +44,7 @@ class BaseProjectProfile: ProjectProfile{
 		"ITSAppUsesNonExemptEncryption": false,
 		"CFBundleShortVersionString": "1.0",
 		"CFBundleVersion": "1",
+        "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
 		"CFBundleDevelopmentRegion": "ko_KR",
 		"UILaunchStoryboardName": "LaunchScreen",
 		"UIUserInterfaceStyle": "Light",
@@ -89,6 +90,9 @@ class BaseProjectProfile: ProjectProfile{
 	
 	func generateAppConfigurations() -> Settings {
 		return Settings.settings(
+            base: [
+                   "TARGETED_DEVICE_FAMILY": "1"
+            ],
 			configurations: [
 				.debug(name: "Dev", xcconfig: .relativeToCurrentFile("CMC/Resources/Configure/Dev.xcconfig")),
 				.release(name: "Release", xcconfig: .relativeToCurrentFile("CMC/Resources/Configure/Release.xcconfig")),

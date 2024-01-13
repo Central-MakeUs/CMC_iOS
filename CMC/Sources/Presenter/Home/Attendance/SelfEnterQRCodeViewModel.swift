@@ -53,6 +53,7 @@ class SelfEnterQRCodeViewModel: ViewModelType{
 			}
 		
 		qrCodeResult
+            .observe(on: MainScheduler.instance)
 			.subscribe(onNext: { valid, message in
 				if valid {
 					let attendanceCompletedViewController = AttendanceCompletedViewController(
