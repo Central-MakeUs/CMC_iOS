@@ -145,7 +145,13 @@ let project: Project = .init(
 			requirement: .upToNextMajor(from: "4.0.0")),
 		.remote(
 			url: "https://github.com/SnapKit/SnapKit",
-			requirement: .upToNextMajor(from: "5.0.0"))
+			requirement: .upToNextMajor(from: "5.0.0")),
+        .remote(
+            url: "https://github.com/firebase/firebase-ios-sdk.git",
+            requirement: .upToNextMajor(from: "8.0.0")),
+        .remote(
+            url: "https://github.com/DaveWoodCom/XCGLogger.git",
+            requirement: .upToNextMajor(from: "7.0.0"))
 	],
 	settings: .settings(configurations: [
 		.debug(name: "Dev"),
@@ -167,7 +173,13 @@ extension BaseProjectProfile {
 			.package(product: "RxGesture",
 							 type: .runtime),
 			.package(product: "SnapKit",
-							 type: .runtime)
+							 type: .runtime),
+            .package(product: "XCGLogger",
+                             type: .runtime),
+            .package(product: "FirebaseAnalytics",
+                             type: .runtime),
+            .package(product: "FirebaseCrashlytics",
+                             type: .runtime)
 		]
 	}
 }

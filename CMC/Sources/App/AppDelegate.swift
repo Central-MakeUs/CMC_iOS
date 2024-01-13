@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import FirebaseCore
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate{
@@ -18,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate{
 		didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 	) -> Bool {
 		
+        
+        FirebaseConfiguration.shared.setLoggerLevel(.min) /// Firebase 로그 최소화
+        FirebaseApp.configure()
 		return true
 	}
 }
