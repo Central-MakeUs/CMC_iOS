@@ -16,6 +16,7 @@ class MyPageViewModel: ViewModelType{
 	struct Input {
 		let backBtnTapped: Observable<Void>
 		let myInfoBtnTapped: Observable<Void>
+        let changePasswordBtnTapped: Observable<Void>
 		let isLogoutTapped: Observable<Bool>
 		let isAuthOutTapped: Observable<Bool>
 	}
@@ -59,6 +60,21 @@ class MyPageViewModel: ViewModelType{
 				owner.coordinator?.pushViewController(viewController: myInfoViewController, animated: true)
 			})
 			.disposed(by: disposeBag)
+        
+        input.changePasswordBtnTapped
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                let findPasswordViewcontroller = FindPasswordViewController(
+                    viewModel: FindPasswordViewModel(
+                        coordinator: owner.coordinator,
+                        authUsecase: DefaultAuthUsecase(
+                            authRepository: DefaultAuthRepository()
+                        )
+                    )
+                )
+                owner.coordinator?.pushViewController(viewController: findPasswordViewcontroller, animated: true)
+            })
+            .disposed(by: disposeBag)
 		
 		input.isLogoutTapped
 			.withUnretained(self)

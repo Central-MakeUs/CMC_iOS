@@ -30,7 +30,7 @@ class FindPasswordViewModel: ViewModelType{
 	private var authUsecase: AuthUsecase
 	
 	var disposeBag: DisposeBag = DisposeBag()
-	weak var coordinator: AuthCoordinator?
+	weak var coordinator: CoordinatorType?
 	
 	let email = BehaviorRelay<String>(value: "")
 	let nowPage = BehaviorRelay<Int>(value: 1)
@@ -38,7 +38,7 @@ class FindPasswordViewModel: ViewModelType{
 	
 	// MARK: - Initializers
 	init(
-		coordinator: AuthCoordinator?,
+		coordinator: CoordinatorType?,
 		authUsecase: AuthUsecase
 	) {
 		self.coordinator = coordinator

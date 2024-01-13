@@ -251,6 +251,7 @@ class MyPageViewController: BaseViewController {
 		let input = MyPageViewModel.Input(
 			backBtnTapped: navigationBar.backButton.rx.tapped().asObservable(),
 			myInfoBtnTapped: MyPageCells[0].rx.tapped().asObservable(),
+            changePasswordBtnTapped: MyPageCells[3].rx.tapped().asObservable(),
 			isLogoutTapped: isLogoutTapped,
 			isAuthOutTapped: isAuthOutTapped
 		)
