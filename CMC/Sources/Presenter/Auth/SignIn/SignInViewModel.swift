@@ -66,7 +66,7 @@ class SignInViewModel: ViewModelType{
 							body: "아이디 또는 비밀번호를 확인해주세요!",
 							buttonTitle: "확인"
 						)
-						return Observable.error(error)
+						return Observable.empty()
 					}
 			}
 		
@@ -84,7 +84,7 @@ class SignInViewModel: ViewModelType{
 							body: "\(error.localizedDescription)",
 							buttonTitle: "확인"
 						)
-						return Observable.error(error)
+						return Observable.empty()
 					}
 			}
 			.withUnretained(self)
