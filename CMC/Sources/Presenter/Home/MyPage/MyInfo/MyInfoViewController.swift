@@ -103,8 +103,8 @@ class MyInfoViewController: BaseViewController {
 	
 	private lazy var currentGenerationInfoLabel: CMCButton = {
 		var gen = "---"
-		if let data: String = UserDefaultManager.shared.load(for: .generation) {
-			gen = data
+		if let data: Int = UserDefaultManager.shared.load(for: .generation) {
+			gen = "\(data)기"
 		}
 		let button = CMCButton(
 			isRound: false,
@@ -215,14 +215,14 @@ class MyInfoViewController: BaseViewController {
 		currentGenerationInfoLabel.snp.makeConstraints{ label in
 			label.top.equalTo(currentGenerationLabel.snp.bottom).offset(10)
 			label.leading.equalToSuperview().offset(24)
-			label.width.equalTo(66)
+			label.width.equalTo(80)
 			label.height.equalTo(30)
 		}
 		
 		currentPartInfoLabel.snp.makeConstraints{ label in
 			label.top.equalTo(currentGenerationInfoLabel)
 			label.leading.equalTo(currentGenerationInfoLabel.snp.trailing).offset(8)
-			label.width.equalTo(66)
+			label.width.equalTo(80)
 			label.height.equalTo(30)
 		}
 		
