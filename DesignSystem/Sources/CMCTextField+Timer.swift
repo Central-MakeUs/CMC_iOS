@@ -169,7 +169,7 @@ public final class CMCTextField_Timer: UIView {
 		timerCountRelay
 			.withUnretained(self)
 			.subscribe(onNext: { owner, second in
-				if second == 0 {
+				if second < 0 {
 					owner.timerDisposeBag = DisposeBag() // 타이머 구독 해제
 				}
 			})
