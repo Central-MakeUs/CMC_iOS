@@ -124,8 +124,11 @@ final class ConfirmCertifyCodeView: BaseView {
 			.when(.recognized)
 			.withUnretained(self)
 			.subscribe(onNext: { owner, gesture in
-				owner.endEditing(true)
-			})
+        let location = gesture.location(in: owner)
+        if !owner.isPointInsideTextField(location) {
+          owner.endEditing(true)
+        }
+      })
 			.disposed(by: disposeBag)
 		
 		parentViewModel.timerStart

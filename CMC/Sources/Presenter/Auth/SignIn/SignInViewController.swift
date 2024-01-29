@@ -211,8 +211,11 @@ final class SignInViewController: BaseViewController {
 		self.view.rx.tapGesture()
 			.when(.recognized)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.view.endEditing(true)
+			.subscribe(onNext: { owner, gesture in
+        let location = gesture.location(in: owner.view)
+        if !owner.isPointInsideTextField(location) {
+          owner.view.endEditing(true)
+        }
 			})
 			.disposed(by: disposeBag)
 		
@@ -247,5 +250,13 @@ final class SignInViewController: BaseViewController {
 			.disposed(by: disposeBag)
 		
 	}
-	
+  
+}
+
+extension SignInViewController {
+  fileprivate func isPointInsideTextField(_ point: CGPoint) -> Bool {
+      // 모든 텍스트 필드를 순회하면서 탭된 위치가 텍스트 필드 내부인지 확인합니다.
+      let textFields = [emailTextField, passwordTextField]
+      return textFields.contains(where: { $0.frame.contains(point) })
+  }
 }

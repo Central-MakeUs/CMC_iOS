@@ -187,8 +187,11 @@ final class CompletedSignUpView: BaseView {
 		self.rx.tapGesture()
 			.when(.recognized)
 			.withUnretained(self)
-			.subscribe(onNext: { owner, _ in
-				owner.endEditing(true)
+			.subscribe(onNext: { owner, gesture in
+        let location = gesture.location(in: owner)
+        if !owner.isPointInsideTextField(location) {
+          owner.endEditing(true)
+        }
 			})
 			.disposed(by: disposeBag)
 		
@@ -271,4 +274,12 @@ final class CompletedSignUpView: BaseView {
 		
 	}
 	
+}
+
+extension CompletedSignUpView {
+  fileprivate func isPointInsideTextField(_ point: CGPoint) -> Bool {
+      // 모든 텍스트 필드를 순회하면서 탭된 위치가 텍스트 필드 내부인지 확인합니다.
+      let textFields = [nicknameTextField]
+      return textFields.contains(where: { $0.frame.contains(point) })
+  }
 }
