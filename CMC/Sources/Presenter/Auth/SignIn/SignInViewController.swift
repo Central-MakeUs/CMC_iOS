@@ -58,7 +58,7 @@ final class SignInViewController: BaseViewController {
 	
 	private lazy var forgetEmailLabel: UILabel = {
 		let label = UILabel()
-		let text = "아이디를 잊으셨나요?"
+		let text = "아이디 찾기"
 		let attributedString = NSMutableAttributedString(string: text)
 		
 		let underLineAttributes: [NSAttributedString.Key: Any] = [
@@ -68,13 +68,13 @@ final class SignInViewController: BaseViewController {
 		attributedString.addAttributes(underLineAttributes, range: NSRange(location: 0, length: text.count))
 		label.attributedText = attributedString
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 13)
-		label.textColor = CMCAsset.gray500.color
+		label.textColor = CMCAsset.gray700.color
 		return label
 	}()
 	
 	private lazy var forgetPasswordLabel: UILabel = {
 		let label = UILabel()
-		let text = "비밀번호를 잊으셨나요?"
+		let text = "비밀번호 재설정하기"
 		let attributedString = NSMutableAttributedString(string: text)
 		
 		let underLineAttributes: [NSAttributedString.Key: Any] = [
@@ -84,7 +84,7 @@ final class SignInViewController: BaseViewController {
 		attributedString.addAttributes(underLineAttributes, range: NSRange(location: 0, length: text.count))
 		label.attributedText = attributedString
 		label.font = CMCFontFamily.Pretendard.bold.font(size: 13)
-		label.textColor = CMCAsset.gray500.color
+		label.textColor = CMCAsset.gray700.color
 		return label
 	}()
 	
