@@ -42,7 +42,7 @@ class BaseProjectProfile: ProjectProfile{
 	let infoPlist: [String: Plist.Value] = [
 		"Base_Url" : "$(BASE_URL)",
 		"ITSAppUsesNonExemptEncryption": false,
-		"CFBundleShortVersionString": "1.0.1",
+		"CFBundleShortVersionString": "1.0.2",
 		"CFBundleVersion": "1",
         "UISupportedInterfaceOrientations": ["UIInterfaceOrientationPortrait"],
 		"CFBundleDevelopmentRegion": "ko_KR",
