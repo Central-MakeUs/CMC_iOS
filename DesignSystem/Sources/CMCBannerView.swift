@@ -38,6 +38,8 @@ public final class CMCBannerView: UIView {
 		let label = UILabel()
 		label.font = DesignSystemFontFamily.Pretendard.bold.font(size: 18)
 		label.textColor = DesignSystemAsset.main1.color
+        label.numberOfLines = 0
+        label.lineBreakMode = .byCharWrapping
 		let text = subTitle + " 확인해주세요!"
 		let attributedString = NSMutableAttributedString(string: text)
 		let whiteAttribute: [NSAttributedString.Key: Any] =
@@ -120,6 +122,7 @@ public final class CMCBannerView: UIView {
 		subTitleLabel.snp.makeConstraints { make in
 			make.centerY.equalTo(toNotionButton)
 			make.leading.equalTo(logoImageView)
+            make.trailing.equalTo(toNotionButton.snp.leading).offset(16)
 		}
 	}
 	
