@@ -108,6 +108,7 @@ class SignInViewModel: ViewModelType{
 		
 		input.forgetIDBtnTapped
 			.withUnretained(self)
+            .observe(on: MainScheduler.instance)
 			.subscribe(onNext: { owner, _ in
 				CMCBottomSheetManager.shared.showBottomSheet(
 					title: "아이디 찾기는\n운영진에게 문의해주세요 :)",

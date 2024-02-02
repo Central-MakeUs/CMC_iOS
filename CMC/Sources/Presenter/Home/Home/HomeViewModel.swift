@@ -20,7 +20,7 @@ class HomeViewModel: ViewModelType{
 	}
 	
 	struct Output {
-		let notificationsForBanner: Observable<[LatestNotificationsModel]>
+		let notificationsForBanner: Observable<[AllNotificationsModel]>
 	}
 	
 	var disposeBag: DisposeBag = DisposeBag()
@@ -78,10 +78,12 @@ class HomeViewModel: ViewModelType{
 			})
 			.disposed(by: disposeBag)
 		
-		let notificationsObservable = notificationsUsecase.getLatestNotifications()
-			.asObservable() // Convert Single to Observable
-			.do(onNext: { [weak self] notifications in
-				self?.notificationsDataUsecase.saveNotificationsData(notifications: notifications)
+		let notificationsObservable = notificationsUsecase.getAllNotifications()
+			.asObservable()
+            .debug()
+            .observe(on: MainScheduler.instance)
+			.do(onNext: { _ in
+				
 			}, onError: { error in
 				CMCBottomSheetManager.shared.showBottomSheet(
 					title: "공지 내용을 불러오는데 실패하였습니다.",

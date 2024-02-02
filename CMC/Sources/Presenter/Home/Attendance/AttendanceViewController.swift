@@ -120,6 +120,7 @@ final class AttendanceViewController: UIViewController {
 		
 		output.qrCode
 			.withUnretained(self)
+            .observe(on: MainScheduler.instance)
 			.subscribe(onError: { error in
 				guard let error = error as? NetworkError else { return }
 				CMCBottomSheetManager.shared.showBottomSheet(
